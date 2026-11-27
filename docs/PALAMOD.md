@@ -4826,13 +4826,15 @@ client. Valeurs retenues (`MineralSeed`, `SeedSpeed`, `SeedTraits`) :
 - Données : verrous et récompenses dans `data/jobs.json`, XP dans `data/job_progression.json`, les
   plants dans `#dohy:crops` (sans quoi un plant posé ne rapporterait rien) et
   `#minecraft:maintains_farmland`.
-- Assets : `tools/botanist_assets.py` (`--check` en CI) — textures dessinées pour le mod, aux
-  couleurs des matières.
+- Assets : `tools/botanist_assets.py` (`--check` en CI) — les textures de JobsReborn (stades des
+  plants, graines, endium organique), copiées telles quelles depuis le jar par `--import` ; crédit
+  dans le README.
 
 ### Écarts
 
 - **Pas de métier Botaniste** : le Fermier (voir plus haut).
-- **Les textures** sont propres au mod ; celles de JobsReborn ne sont pas reprises.
+- **Les textures** sont celles de JobsReborn (Paladium Games), reprises à la demande du joueur le
+  2026-11-27 (la première version avait des dessins propres au mod).
 - **« En faction »** : l'info-bulle de Paladium réserve les graines au serveur faction ; il n'y a
   qu'un serveur ici.
 - **Rattrapage** : à la première connexion, un joueur reçoit les graines des niveaux de Fermier

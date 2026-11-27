@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  *
  * <p>Les noms sont ceux de JobsReborn ({@code amethyst_seed}, {@code amethyst_crop},
  * {@code organic_endium_nugget}), sous le namespace {@code palamod} comme le reste
- * du contenu de Paladium. Textures dessinees par {@code tools/botanist_assets.py}.
+ * du contenu de Paladium. Textures de JobsReborn, reprises par {@code tools/botanist_assets.py}.
  */
 public final class PalaBotanist {
 

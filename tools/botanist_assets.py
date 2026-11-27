@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Le Botaniste, lot 1 : graines minerales, plants et endium organique.
 
-    python3 -I tools/botanist_assets.py [--preview DOSSIER]
+    python3 -I tools/botanist_assets.py --import JobsReborn-1.92.0.pala [--preview DOSSIER]
     python3 -I tools/botanist_assets.py --check
 
-Les textures sont dessinees ici, pixel par pixel, en 16 x 16 (le format du
-namespace palamod) : quatre stades par plant, une graine par minerai et l'endium
-organique. Elles ne reprennent pas celles de JobsReborn ; seules les couleurs
-viennent des matieres du mod (lingots, findium, trixium, pierre d'invocation,
-pepite d'endium), pour qu'une graine se reconnaisse a son minerai.
+Les textures sont celles de JobsReborn 1.92.0 (Paladium Games), copiees octet
+pour octet depuis le jar fourni par le joueur : les quatre stades de chaque plant
+(assets/jobs/textures/blocks/botanist/<minerai>_crop_stage_<n>.png), les graines
+et l'endium organique (assets/jobs/textures/items/botanist/). Credit dans le
+README (« Credits des textures »). Le jar n'est pas dans le depot : --import ne
+sert qu'a les reprendre.
 
 Ecrit aussi les modeles (parent minecraft:block/crop, comme les cultures de
 PalaMod), les blockstates (age 0 a 3), les objets, les tables de butin (vides :
@@ -16,11 +17,13 @@ le plant calcule sa recolte lui-meme, MineralCropBlock.getDrops), la recette de
 l'endium organique et les noms.
 
 `--check` (CI) refait le JSON et les noms en memoire et echoue si un fichier a
-change ou si une texture manque. Pillow n'est requis que pour ecrire les textures.
+change ou si une texture manque.
 """
 import json
 import os
+import struct
 import sys
+import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "src", "main", "resources")
@@ -28,179 +31,58 @@ ASSETS = os.path.join(RES, "assets", "palamod")
 DATA = os.path.join(RES, "data", "palamod")
 NS = "palamod"
 
-# id : (nom fr de la graine, nom en, nom fr du plant, nom en du plant, rampe de six tons, sombre -> clair)
+# id : (nom fr de la graine, nom en, nom fr du plant, nom en du plant)
 SEEDS = {
-    "amethyst": ("Graine d'amethyste", "Amethyst Seed", "Plant d'amethyste", "Amethyst Plant",
-                 [(50, 13, 77), (121, 35, 177), (172, 61, 211), (245, 104, 255), (255, 172, 249), (255, 220, 255)]),
-    "titane": ("Graine de titane", "Titanium Seed", "Plant de titane", "Titanium Plant",
-               [(38, 34, 34), (65, 59, 56), (95, 89, 84), (143, 137, 129), (168, 163, 156), (214, 212, 208)]),
-    "paladium": ("Graine de paladium", "Paladium Seed", "Plant de paladium", "Paladium Plant",
-                 [(95, 16, 6), (160, 30, 12), (212, 42, 22), (255, 111, 39), (255, 227, 101), (255, 247, 152)]),
+    "amethyst": ("Graine d'amethyste", "Amethyst Seed", "Plant d'amethyste", "Amethyst Plant"),
+    "titane": ("Graine de titane", "Titanium Seed", "Plant de titane", "Titanium Plant"),
+    "paladium": ("Graine de paladium", "Paladium Seed", "Plant de paladium", "Paladium Plant"),
     "green_paladium": ("Graine de paladium vert", "Green Paladium Seed", "Plant de paladium vert",
-                       "Green Paladium Plant",
-                       [(18, 61, 37), (33, 93, 60), (68, 170, 110), (105, 228, 161), (167, 251, 205), (240, 255, 248)]),
-    "findium": ("Graine de findium", "Findium Seed", "Plant de findium", "Findium Plant",
-                [(120, 26, 0), (190, 44, 0), (229, 90, 0), (254, 158, 0), (255, 214, 0), (255, 252, 140)]),
-    "trixium": ("Graine de trixium", "Trixium Seed", "Plant de trixium", "Trixium Plant",
-                [(16, 46, 72), (34, 92, 130), (70, 156, 206), (134, 222, 253), (196, 244, 255), (255, 255, 255)]),
-    "invoker": ("Graine d'invoker", "Invoker Seed", "Plant d'invoker", "Invoker Plant",
-                [(0, 52, 58), (0, 94, 103), (21, 137, 146), (7, 200, 220), (7, 239, 255), (220, 255, 255)]),
-    "endium": ("Graine d'endium", "Endium Seed", "Plant d'endium", "Endium Plant",
-               [(4, 4, 68), (13, 12, 103), (16, 15, 138), (43, 46, 189), (60, 62, 238), (227, 163, 255)]),
+                       "Green Paladium Plant"),
+    "findium": ("Graine de findium", "Findium Seed", "Plant de findium", "Findium Plant"),
+    "trixium": ("Graine de trixium", "Trixium Seed", "Plant de trixium", "Trixium Plant"),
+    "invoker": ("Graine d'invoker", "Invoker Seed", "Plant d'invoker", "Invoker Plant"),
+    "endium": ("Graine d'endium", "Endium Seed", "Plant d'endium", "Endium Plant"),
 }
 ORGANIC = ("organic_endium_nugget", "Endium organique", "Organic Endium")
 
-# Le feuillage et la tige : la rampe des feuilles des cereales (agri_crop_assets.py).
-LEAF = {"l": (28, 68, 14), "L": (68, 132, 28), "h": (136, 194, 58)}
-STEM = {"s": (44, 98, 20), "S": (98, 164, 40)}
-# L'endium organique : la pepite d'endium mangee de vert.
-ORGANIC_COLORS = {"0": (4, 4, 68), "e": (43, 46, 189), "E": (60, 62, 238), "p": (227, 163, 255),
-                  "g": (44, 98, 20), "G": (98, 164, 40), "H": (180, 222, 96)}
-
-# Les stades : « . » vide, l/L/h feuilles, s/S tige, 0 a 5 la rampe du minerai.
-STAGES = [
-    [
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "......L..L......",
-        "......lLLl......",
-        ".......Ss.......",
-        ".......Ss.......",
-    ],
-    [
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "................",
-        "........L.......",
-        ".......hL.......",
-        ".....L.Ss.L.....",
-        "....lLLSsLLl....",
-        ".....ll.s.ll....",
-        ".......Ss.......",
-        ".......Ss.......",
-        ".......Ss.......",
-    ],
-    [
-        "................",
-        "................",
-        "................",
-        ".......01.......",
-        "......0231......",
-        "......0331......",
-        ".......Ss.......",
-        "....LL.Ss.LL....",
-        "...lLLhSshLLl...",
-        "....ll.Ss.ll....",
-        ".......Ss.......",
-        "..LL...Ss...LL..",
-        ".lLLh..Ss..hLLl.",
-        "..ll...Ss...ll..",
-        ".......Ss.......",
-        ".......Ss.......",
-    ],
-    [
-        ".......4........",
-        "......045.......",
-        "......2343......",
-        "..4...2343...4..",
-        ".045..12321.045.",
-        ".234...1Ss..234.",
-        ".123...Ss...123.",
-        "..1.LL.Ss.LL.1..",
-        "...lLLhSshLLl...",
-        "....ll.Ss.ll....",
-        ".......Ss.......",
-        "..LL...Ss...LL..",
-        ".lLLh..Ss..hLLl.",
-        "..ll...Ss...ll..",
-        ".......Ss.......",
-        ".......Ss.......",
-    ],
-]
-
-# La graine : une goutte du minerai, cerclee de sombre, et sa pousse.
-SEED = [
-    "................",
-    "................",
-    "..........Lh....",
-    ".........lL.....",
-    "......000s......",
-    ".....01120......",
-    "....0123320.....",
-    "....0134320.....",
-    "...012345320....",
-    "...012345320....",
-    "...01234321.....",
-    "....0123210.....",
-    ".....01110......",
-    "......000.......",
-    "................",
-    "................",
-]
-
-ORGANIC_NUGGET = [
-    "................",
-    "................",
-    "................",
-    "................",
-    "......00........",
-    "....00Ge00......",
-    "...0GeEEpe0.....",
-    "...0eEpEEg0.....",
-    "..0gEEeEEGe0....",
-    "..0GHgEEeEG0....",
-    "...0GGeEgG0.....",
-    "....00GGG00.....",
-    "......000.......",
-    "................",
-    "................",
-    "................",
-]
+# Le jar de JobsReborn : chemin dans le jar -> chemin dans assets/palamod.
+JAR_BLOCKS = "assets/jobs/textures/blocks/botanist/"
+JAR_ITEMS = "assets/jobs/textures/items/botanist/"
 
 
-def draw(rows, colors):
-    from PIL import Image
-
-    assert len(rows) == 16 and all(len(row) == 16 for row in rows), "un motif fait 16 x 16"
-    image = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
-    for y, row in enumerate(rows):
-        for x, code in enumerate(row):
-            if code != ".":
-                image.putpixel((x, y), colors[code] + (255,))
-    return image
-
-
-def palette(ramp):
-    colors = dict(LEAF)
-    colors.update(STEM)
-    colors.update({str(i): tone for i, tone in enumerate(ramp)})
-    return colors
+def texture_map():
+    """Ce que --import copie : (chemin dans le jar, chemin sous assets/palamod)."""
+    pairs = []
+    for seed in SEEDS:
+        for stage in range(4):
+            name = "%s_crop_stage_%d.png" % (seed, stage)
+            pairs.append((JAR_BLOCKS + name, "textures/block/" + name))
+        pairs.append((JAR_ITEMS + seed + "_seed.png", "textures/item/%s_seed.png" % seed))
+    pairs.append((JAR_ITEMS + ORGANIC[0] + ".png", "textures/item/%s.png" % ORGANIC[0]))
+    return pairs
 
 
-def textures():
-    images = {}
-    for seed, (_fr, _en, _cfr, _cen, ramp) in SEEDS.items():
-        colors = palette(ramp)
-        for stage, rows in enumerate(STAGES):
-            images["textures/block/%s_crop_stage_%d.png" % (seed, stage)] = draw(rows, colors)
-        images["textures/item/%s_seed.png" % seed] = draw(SEED, colors)
-    images["textures/item/%s.png" % ORGANIC[0]] = draw(ORGANIC_NUGGET, ORGANIC_COLORS)
-    return images
+def png_size(data):
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return struct.unpack(">II", data[16:24])
+
+
+def import_textures(jar):
+    """Copie les textures du jar, telles quelles : 16 x 16, rien n'est redessine."""
+    with zipfile.ZipFile(jar) as archive:
+        names = set(archive.namelist())
+        for source, target in texture_map():
+            if source not in names:
+                raise SystemExit("%s absent du jar %s" % (source, jar))
+            data = archive.read(source)
+            if png_size(data) != (16, 16):
+                raise SystemExit("%s : pas un PNG de 16 x 16" % source)
+            path = os.path.join(ASSETS, target)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "wb") as handle:
+                handle.write(data)
+    print("%d textures reprises de %s" % (len(texture_map()), os.path.basename(jar)))
 
 
 def outputs():
@@ -269,7 +151,7 @@ def lang_updates():
     for code, entries in LANG.items():
         labels = dict(entries)
         french = code == "fr_fr"
-        for seed, (seed_fr, seed_en, crop_fr, crop_en, _ramp) in SEEDS.items():
+        for seed, (seed_fr, seed_en, crop_fr, crop_en) in SEEDS.items():
             labels["item.%s.%s_seed" % (NS, seed)] = seed_fr if french else seed_en
             labels["block.%s.%s_crop" % (NS, seed)] = crop_fr if french else crop_en
         labels["item.%s.%s" % (NS, ORGANIC[0])] = ORGANIC[1] if french else ORGANIC[2]
@@ -280,6 +162,7 @@ def lang_updates():
 def main():
     check = "--check" in sys.argv
     preview = sys.argv[sys.argv.index("--preview") + 1] if "--preview" in sys.argv else None
+    jar = sys.argv[sys.argv.index("--import") + 1] if "--import" in sys.argv else None
     stale = []
     for path, content in outputs().items():
         current = open(path, encoding="utf-8").read() if os.path.exists(path) else None
@@ -306,17 +189,13 @@ def main():
             json.dump(lang, handle, indent=2, ensure_ascii=False)
             handle.write("\n")
     if not check:
-        for relative, image in textures().items():
-            target = os.path.join(ASSETS, relative)
-            os.makedirs(os.path.dirname(target), exist_ok=True)
-            image.save(target)
+        if jar:
+            import_textures(jar)
         if preview:
             sheet(preview)
-    names = ["textures/block/%s_crop_stage_%d.png" % (seed, stage) for seed in SEEDS for stage in range(4)]
-    names += ["textures/item/%s_seed.png" % seed for seed in SEEDS] + ["textures/item/%s.png" % ORGANIC[0]]
-    for relative in names:
+    for _source, relative in texture_map():
         if not os.path.exists(os.path.join(ASSETS, relative)):
-            stale.append("%s absente" % relative)
+            stale.append("%s absente (--import JobsReborn-1.92.0.pala)" % relative)
     if stale:
         for line in stale:
             print("::error::Botaniste : %s n'est pas a jour. Lance 'python3 -I tools/botanist_assets.py'." % line)
@@ -326,10 +205,9 @@ def main():
 
 
 def sheet(folder):
-    """Une planche agrandie (x8) de toutes les textures, pour les regarder."""
+    """Une planche agrandie (x8) des textures, pour les regarder."""
     from PIL import Image
 
-    images = textures()
     rows = [["textures/block/%s_crop_stage_%d.png" % (seed, stage) for stage in range(4)]
             + ["textures/item/%s_seed.png" % seed] for seed in SEEDS]
     rows.append(["textures/item/%s.png" % ORGANIC[0]])
@@ -337,7 +215,7 @@ def sheet(folder):
     board = Image.new("RGBA", (5 * (16 * scale + gap) + gap, len(rows) * (16 * scale + gap) + gap), (60, 60, 60, 255))
     for r, row in enumerate(rows):
         for c, name in enumerate(row):
-            tile = images[name].resize((16 * scale, 16 * scale), Image.NEAREST)
+            tile = Image.open(os.path.join(ASSETS, name)).convert("RGBA").resize((16 * scale, 16 * scale), Image.NEAREST)
             board.alpha_composite(tile, (gap + c * (16 * scale + gap), gap + r * (16 * scale + gap)))
     os.makedirs(folder, exist_ok=True)
     board.save(os.path.join(folder, "botanist_sheet.png"))

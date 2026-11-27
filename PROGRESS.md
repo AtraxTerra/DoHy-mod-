@@ -208,8 +208,8 @@ la liste des manques ; commencé par le point 4, le Botaniste de **JobsReborn 1.
 - **Fermier** : verrous (20 à 100), graines en récompense de niveau (74 en tout), XP de récolte ;
   rattrapage à la connexion pour les niveaux déjà franchis.
 - Temps et quantités **calibrés** (la configuration du serveur de Paladium n'est pas dans le jar) :
-  `PALAMOD.md` § 47, `BALANCE.md` § 6 quinquatrigesies ; textures dessinées pour le mod
-  (`tools/botanist_assets.py`).
+  `PALAMOD.md` § 47, `BALANCE.md` § 6 quinquatrigesies ; textures de JobsReborn, reprises du jar
+  avec crédit dans le README (`tools/botanist_assets.py --import`).
 
 **Non vérifié en jeu** : la pousse chunk déchargé et serveur arrêté (graines hors ligne), le
 rattrapage sur une sauvegarde existante.
