@@ -38,6 +38,15 @@ jobs:
           mkdir -p run/mods && cp "$jar" run/mods/
           echo "CREATE_FLY_JAR=$jar" >> "$GITHUB_ENV"
           ls -la run/mods
+      - name: Steam 'n' Rails (port NeoForge)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Le port NeoForge de Steam 'n' Rails (AtraxTerra/Mod-ported, version snr-latest) : le monde le
+          # charge, le harnais ne compile pas contre lui (blocs cherches par identifiant).
+          url=$(gh api repos/AtraxTerra/Mod-ported/releases/tags/snr-latest --jq '.assets[] | select(.name | startswith("Steam_Rails")) | .browser_download_url')
+          curl -fsSL -o run/mods/steam-rails-neoforge.jar "$url"
+          ls -la run/mods
       - name: Monde
         run: |
           mkdir -p run/world/datapacks

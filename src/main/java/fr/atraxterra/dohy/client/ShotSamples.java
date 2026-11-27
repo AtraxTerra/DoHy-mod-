@@ -316,12 +316,35 @@ final class ShotSamples {
         return field.get(owner);
     }
 
-    // -- Les trains de Create Fly (port NeoForge) -------------------------------------------------------
+    // -- Les trains de Create Fly (port NeoForge) et de Steam 'n' Rails ---------------------------------
 
     private static int gx;
     private static int gy;
     private static int gz;
-    private static final List<BlockPos> STATIONS = new ArrayList<>();
+
+    /** Une ligne d'essai : une voie droite nord-sud, trois gares, un train assemble a la premiere. */
+    private static final class Line {
+        final String label;
+        final int dx;
+        final String track;
+        final int stationSide;
+        final List<BlockPos> stations = new ArrayList<>();
+        UUID train;
+
+        Line(String label, int dx, String track, int stationSide) {
+            this.label = label;
+            this.dx = dx;
+            this.track = track;
+            this.stationSide = stationSide;
+        }
+
+        int x() {
+            return gx + dx;
+        }
+    }
+
+    private static final Line CREATE = new Line("create", 0, "create:track", 1);
+    private static final Line WIDE = new Line("snr large", 24, "railways:track_create_andesite_wide", 2);
 
     private static ServerLevel over(ServerPlayer player) {
         return ((ServerLevel) player.level()).getServer().overworld();
@@ -358,39 +381,58 @@ final class ShotSamples {
                 new BlockHitResult(hit, face, pos, false));
     }
 
+    /** Un bloc par son identifiant, ou null s'il n'existe pas (mod absent). */
+    private static Block block(String id) {
+        Identifier key = Identifier.parse(id);
+        return BuiltInRegistries.BLOCK.containsKey(key) ? BuiltInRegistries.BLOCK.getValue(key) : null;
+    }
+
+    private static String id(BlockState state) {
+        return BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+    }
+
+    /** Une voie droite nord-sud : la forme ZO de Create, que les voies de Steam 'n' Rails reprennent. */
+    private static BlockState straight(Block track) {
+        BlockState state = track.defaultBlockState();
+        if (state.hasProperty(com.zurrtum.create.content.trains.track.TrackBlock.SHAPE)) {
+            state = state.setValue(com.zurrtum.create.content.trains.track.TrackBlock.SHAPE,
+                    com.zurrtum.create.content.trains.track.TrackShape.ZO);
+        }
+        return state;
+    }
+
     /** Une gare posee comme un joueur : clic sur la voie, puis clic sur le sol a cote. */
-    private static BlockPos station(ServerPlayer player, int z, String name) {
+    private static BlockPos station(ServerPlayer player, Line line, int z, String name) {
         ServerLevel level = over(player);
-        BlockPos track = new BlockPos(gx, gy, z);
+        int x = line.x();
+        BlockPos track = new BlockPos(x, gy, z);
         // Le joueur regarde vers +Z : la gare vise ce sens de la voie.
-        look(player, gx + 2.5d, gy + 1.0d, z - 2.5d, 0.0f, 30.0f);
+        look(player, x + 2.5d, gy + 1.0d, z - 2.5d, 0.0f, 30.0f);
         ItemStack item = new ItemStack(com.zurrtum.create.AllItems.TRACK_STATION);
         InteractionResult select = click(player, item, track, Direction.UP);
-        BlockPos ground = new BlockPos(gx + 1, gy - 1, z);
+        BlockPos ground = new BlockPos(x + line.stationSide, gy - 1, z);
         InteractionResult place = click(player, item, ground, Direction.UP);
         BlockPos pos = ground.above();
-        String state = BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()).toString();
         if (level.getBlockEntity(pos) instanceof com.zurrtum.create.content.trains.station.StationBlockEntity be) {
             boolean renamed = be.updateName(name);
             var global = be.getStation();
-            log("gare {} : selection {}, pose {}, bloc {}, voie valide {}, gare globale {}, renommee {}", name, select, place,
-                    state, be.edgePoint.hasValidTrack(), global == null ? "aucune" : global.name, renamed);
+            log("[{}] gare {} : selection {}, pose {}, bloc {}, voie valide {}, gare globale {}, renommee {}", line.label, name,
+                    select, place, id(level.getBlockState(pos)), be.edgePoint.hasValidTrack(),
+                    global == null ? "aucune" : global.name, renamed);
         } else {
-            log("gare {} : selection {}, pose {}, bloc {} (pas de gare)", name, select, place, state);
+            log("[{}] gare {} : selection {}, pose {}, bloc {} (pas de gare)", line.label, name, select, place,
+                    id(level.getBlockState(pos)));
         }
-        STATIONS.add(pos);
+        line.stations.add(pos);
         return pos;
     }
 
-    private static com.zurrtum.create.content.trains.station.StationBlockEntity stationAt(ServerPlayer player, int index) {
-        return (com.zurrtum.create.content.trains.station.StationBlockEntity) over(player).getBlockEntity(STATIONS.get(index));
+    private static com.zurrtum.create.content.trains.station.StationBlockEntity stationAt(ServerPlayer player, Line line, int index) {
+        return (com.zurrtum.create.content.trains.station.StationBlockEntity) over(player).getBlockEntity(line.stations.get(index));
     }
 
-    private static com.zurrtum.create.content.trains.entity.Train train() {
-        for (var train : com.zurrtum.create.Create.RAILWAYS.trains.values()) {
-            return train;
-        }
-        return null;
+    private static com.zurrtum.create.content.trains.entity.Train train(Line line) {
+        return line.train == null ? null : com.zurrtum.create.Create.RAILWAYS.trains.get(line.train);
     }
 
     private static String describe(com.zurrtum.create.content.trains.entity.Train train) {
@@ -400,16 +442,218 @@ final class ShotSamples {
         var entity = train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
         var current = train.getCurrentStation();
         var destination = train.navigation.destination;
-        return String.format(java.util.Locale.ROOT, "%s : %d voiture(s), conducteur av %s ar %s, vitesse %.3f, cible %.3f, position %s, en gare %s, destination %s, deraille %s",
-                train.name.getString(), train.carriages.size(), train.hasForwardConductor(), train.hasBackwardConductor(),
+        String bogeys = train.carriages.isEmpty() ? "?" : BuiltInRegistries.BLOCK.getKey(train.carriages.get(0).leadingBogey().type).toString();
+        return String.format(java.util.Locale.ROOT, "%s : %d voiture(s), bogie %s, conducteur av %s ar %s, vitesse %.3f, cible %.3f, position %s, en gare %s, destination %s, deraille %s",
+                train.name.getString(), train.carriages.size(), bogeys, train.hasForwardConductor(), train.hasBackwardConductor(),
                 train.speed, train.targetSpeed,
                 entity == null ? "?" : String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", entity.getX(), entity.getY(), entity.getZ()),
                 current == null ? "non" : current.name, destination == null ? "aucune" : destination.name, train.derailed);
     }
 
+    /** Voie, gares, train, depart, trajet et arrivee d'une ligne : les etapes {prefix}1 a {prefix}7. */
+    private static void trainSteps(String prefix, Line line) {
+        ShotHarness.SHOTS.add(server(prefix + "1_voie", 60, player -> {
+            ServerLevel level = over(player);
+            Block track = block(line.track);
+            if (track == null) {
+                log("[{}] voie : {} absente, ligne ignoree", line.label, line.track);
+                return;
+            }
+            int x = line.x();
+            fill(level, x - 8, gy - 1, gz - 44, x + 8, gy - 1, gz + 48, Blocks.STONE_BRICKS.defaultBlockState());
+            fill(level, x - 8, gy, gz - 44, x + 8, gy + 12, gz + 48, Blocks.AIR.defaultBlockState());
+            BlockState rail = straight(track);
+            for (int z = gz - 40; z <= gz + 44; z++) {
+                level.setBlock(new BlockPos(x, gy, z), rail, 3);
+            }
+            log("[{}] voie : {} blocs de {} a z {}..{}", line.label, 85, id(rail), gz - 40, gz + 44);
+            look(player, x + 10.5d, gy + 8.0d, gz, 90.0f, 30.0f);
+        }));
+        ShotHarness.SHOTS.add(server(prefix + "2_gares", 40, player -> {
+            if (block(line.track) == null) {
+                return;
+            }
+            log("[{}] reseaux de voie : {}", line.label, com.zurrtum.create.Create.RAILWAYS.trackNetworks.size());
+            station(player, line, gz + 4, "Gare A");
+            station(player, line, gz + 38, "Gare B");
+            station(player, line, gz - 30, "Gare C");
+            look(player, line.x() + 10.5d, gy + 6.0d, gz + 4.5d, 90.0f, 20.0f);
+        }));
+        ShotHarness.SHOTS.add(server(prefix + "3_train", 60, player -> {
+            if (line.stations.size() < 3) {
+                return;
+            }
+            ServerLevel level = over(player);
+            String[] names = {"Gare A", "Gare B", "Gare C"};
+            for (int i = 0; i < line.stations.size(); i++) {
+                var be = stationAt(player, line, i);
+                boolean renamed = be.updateName(names[i]);
+                log("[{}] gare {} : gare globale {}, renommee {}", line.label, names[i],
+                        be.getStation() == null ? "aucune" : be.getStation().name, renamed);
+            }
+            var a = stationAt(player, line, 0);
+            boolean assembling = a.enterAssemblyMode(player);
+            Direction dir = a.getAssemblyDirection();
+            BlockPos target = a.edgePoint.getGlobalPosition();
+            log("[{}] assemblage : {}, sens {}, voie visee {}", line.label, assembling, dir, target);
+            if (dir == null) {
+                return;
+            }
+            BlockPos bogeyTrack = target.relative(dir, 1);
+            InteractionResult casing = click(player, new ItemStack(com.zurrtum.create.AllItems.RAILWAY_CASING, 4), bogeyTrack, Direction.UP);
+            BlockPos bogey = bogeyTrack.above();
+            log("[{}] bogie : clic {}, bloc {}", line.label, casing, id(level.getBlockState(bogey)));
+            BlockPos controls = bogey.above();
+            // Create compte comme commandes avant celles qui regardent dans le sens d'assemblage.
+            level.setBlock(controls, com.zurrtum.create.AllBlocks.TRAIN_CONTROLS.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir), 3);
+            // Sans conducteur, Create ne cherche aucun chemin : un blaze derriere les commandes conduit.
+            BlockPos driver = controls.relative(dir);
+            level.setBlock(driver, com.zurrtum.create.AllBlocks.BLAZE_BURNER.defaultBlockState()
+                    .setValue(com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL,
+                            com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HeatLevel.SMOULDERING), 3);
+            log("[{}] conducteur : {}", line.label, id(level.getBlockState(driver)));
+            BlockPos low = new BlockPos(Math.min(bogey.getX(), driver.getX()), bogey.getY(), Math.min(bogey.getZ(), driver.getZ()));
+            BlockPos high = new BlockPos(Math.max(bogey.getX(), driver.getX()), controls.getY(), Math.max(bogey.getZ(), driver.getZ()));
+            level.addFreshEntity(new com.zurrtum.create.content.contraptions.glue.SuperGlueEntity(level,
+                    new AABB(Vec3.atLowerCornerOf(low), Vec3.atLowerCornerOf(high.offset(1, 1, 1)))));
+            a.refreshAssemblyInfo();
+            a.assemble(player.getUUID());
+            // Comme le bouton de l'ecran de gare : un train assemble fait quitter le mode assemblage
+            // (une gare en assemblage barre la voie a la recherche de chemin).
+            var present = a.getStation() == null ? null : a.getStation().getPresentTrain();
+            line.train = present == null ? null : present.id;
+            boolean exited = present != null && a.exitAssemblyMode();
+            log("[{}] apres assemblage : {} train(s) en tout ; {} ; erreur {} ; fin du mode assemblage {}", line.label,
+                    com.zurrtum.create.Create.RAILWAYS.trains.size(), describe(train(line)),
+                    a.lastException == null ? "aucune" : a.lastException.component.getString(), exited);
+            look(player, line.x() + 8.5d, gy + 4.0d, bogey.getZ() + 0.5d, 90.0f, 15.0f);
+        }));
+        ShotHarness.SHOTS.add(server(prefix + "4_depart", 40, player -> {
+            var train = train(line);
+            if (train == null) {
+                log("[{}] depart : pas de train", line.label);
+                return;
+            }
+            for (int index : new int[]{1, 2}) {
+                var station = stationAt(player, line, index).getStation();
+                if (station == null) {
+                    continue;
+                }
+                var path = train.navigation.findPathTo(station, Double.MAX_VALUE);
+                log("[{}] chemin vers {} : {}", line.label, station.name, path == null ? "aucun" : "trouve");
+                if (path != null) {
+                    double cost = train.navigation.startNavigation(path);
+                    log("[{}] navigation vers {} : cout {}", line.label, station.name, cost);
+                    break;
+                }
+            }
+            log("[{}] depart : {}", line.label, describe(train));
+            look(player, line.x() + 9.5d, gy + 5.0d, gz + 4.5d, 90.0f, 20.0f);
+        }));
+        ShotHarness.SHOTS.add(server(prefix + "5_route", 40, player -> {
+            var train = train(line);
+            log("[{}] en route : {}", line.label, describe(train));
+            var entity = train == null || train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
+            double z = entity == null ? gz + 10 : entity.getZ();
+            look(player, line.x() + 9.5d, gy + 5.0d, z, 90.0f, 20.0f);
+        }));
+        ShotHarness.SHOTS.add(server(prefix + "6_arrivee", 200, player -> log("[{}] plus tard : {}", line.label, describe(train(line)))));
+        ShotHarness.SHOTS.add(server(prefix + "7_gare", 40, player -> {
+            var train = train(line);
+            log("[{}] arrivee : {}", line.label, describe(train));
+            var entity = train == null || train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
+            double z = entity == null ? gz + 38 : entity.getZ();
+            look(player, line.x() + 9.5d, gy + 5.0d, z, 90.0f, 20.0f);
+        }));
+    }
+
+    // -- Steam 'n' Rails : vitrine ---------------------------------------------------------------------
+
+    private static final String[] SNR_TRACKS = {"track_oak", "track_spruce", "track_birch", "track_jungle", "track_acacia",
+            "track_dark_oak", "track_mangrove", "track_cherry", "track_bamboo", "track_stripped_bamboo", "track_crimson",
+            "track_warped", "track_blackstone", "track_ender", "track_tieless", "track_phantom", "track_monorail",
+            "track_oak_narrow", "track_oak_wide", "track_create_andesite_narrow", "track_create_andesite_wide"};
+
+    private static final String[] SNR_BLOCKS = {"semaphore", "track_switch_andesite", "track_switch_brass", "track_coupler",
+            "buffer", "big_buffer", "small_buffer", "buffer_narrow", "buffer_wide", "headstock", "link_and_pin",
+            "copycat_headstock", "fuel_tank", "portable_fuel_interface", "conductor_whistle", "conductor_vent",
+            "smokestack_caboosestyle", "smokestack_coalburner", "smokestack_diesel", "smokestack_long",
+            "smokestack_oilburner", "smokestack_streamlined", "smokestack_woodburner", "handcar",
+            "singleaxle_bogey", "doubleaxle_bogey", "tripleaxle_bogey", "medium_bogey", "large_create_styled_0_10_0",
+            "narrow_small_bogey", "wide_doubleaxle_bogey", "mono_bogey",
+            "black_riveted_locometal", "black_plated_locometal", "black_locometal_boiler", "red_locometal_boiler",
+            "brass_wrapped_locometal_boiler", "black_locometal_smokebox", "black_locometal_vent",
+            "hazard_stripes_chevron_on_black"};
+
+    private static void snrSteps() {
+        ShotHarness.SHOTS.add(server("r1_voies_snr", 60, player -> {
+            ServerLevel level = over(player);
+            if (block("railways:track_oak") == null) {
+                log("snr : Steam 'n' Rails absent, vitrine ignoree");
+                return;
+            }
+            int x0 = gx + 44;
+            fill(level, x0 - 4, gy - 1, gz - 12, x0 + 3 * SNR_TRACKS.length + 2, gy - 1, gz + 40, Blocks.STONE_BRICKS.defaultBlockState());
+            List<String> missing = new ArrayList<>();
+            for (int i = 0; i < SNR_TRACKS.length; i++) {
+                Block track = block("railways:" + SNR_TRACKS[i]);
+                if (track == null) {
+                    missing.add(SNR_TRACKS[i]);
+                    continue;
+                }
+                BlockState rail = straight(track);
+                for (int z = gz - 8; z <= gz + 8; z++) {
+                    level.setBlock(new BlockPos(x0 + 3 * i, gy, z), rail, 3);
+                }
+            }
+            log("snr : {} voies posees, absentes {}", SNR_TRACKS.length - missing.size(), missing);
+            look(player, x0 + 1.5d * SNR_TRACKS.length, gy + 18.0d, gz - 24.0d, 0.0f, 38.0f);
+        }));
+        ShotHarness.SHOTS.add(server("r2_blocs_snr", 60, player -> {
+            ServerLevel level = over(player);
+            if (block("railways:track_oak") == null) {
+                return;
+            }
+            int x0 = gx + 44;
+            int z0 = gz + 18;
+            List<String> missing = new ArrayList<>();
+            for (int i = 0; i < SNR_BLOCKS.length; i++) {
+                Block b = block("railways:" + SNR_BLOCKS[i]);
+                if (b == null) {
+                    missing.add(SNR_BLOCKS[i]);
+                    continue;
+                }
+                BlockPos pos = new BlockPos(x0 + 3 * (i % 10), gy, z0 + 4 * (i / 10));
+                level.setBlock(pos, b.defaultBlockState(), 2);
+                String placed = id(level.getBlockState(pos));
+                if (!placed.equals("railways:" + SNR_BLOCKS[i])) {
+                    missing.add(SNR_BLOCKS[i] + " -> " + placed);
+                }
+            }
+            log("snr : {} blocs poses, problemes {}", SNR_BLOCKS.length - missing.size(), missing);
+            look(player, x0 + 13.5d, gy + 9.0d, z0 - 7.0d, 0.0f, 35.0f);
+        }));
+        ShotHarness.SHOTS.add(server("r3_conducteur_snr", 60, player -> {
+            if (block("railways:track_oak") == null) {
+                return;
+            }
+            Identifier key = Identifier.parse("railways:conductor");
+            boolean known = BuiltInRegistries.ENTITY_TYPE.containsKey(key);
+            int x0 = gx + 44;
+            int z0 = gz + 34;
+            op(player, "summon railways:conductor " + (x0 + 2) + " " + gy + " " + z0);
+            ServerLevel level = over(player);
+            int found = level.getEntities((Entity) null, new AABB(x0 - 2, gy - 1, z0 - 3, x0 + 6, gy + 3, z0 + 3),
+                    e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).equals(key)).size();
+            log("snr : conducteur {} , {} present(s)", known ? "enregistre" : "inconnu", found);
+            look(player, x0 + 2.5d, gy + 1.6d, z0 - 3.5d, 0.0f, 10.0f);
+        }));
+    }
+
     static void register() {
         ShotHarness.SHOTS.add(client("p0_reglages", 5, () -> Minecraft.getInstance().options.renderDistance().set(8)));
-        ShotHarness.SHOTS.add(server("t1_voie", 60, player -> {
+        ShotHarness.SHOTS.add(server("p1_monde", 20, player -> {
             me = player.getUUID();
             op(player, "time set noon");
             op(player, "weather clear");
@@ -421,114 +665,17 @@ final class ShotSamples {
             gz = 16 * 40 + 8;
             level.getChunk(gx >> 4, gz >> 4);
             gy = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, gx, gz);
-            fill(level, gx - 8, gy - 1, gz - 44, gx + 8, gy - 1, gz + 48, Blocks.STONE_BRICKS.defaultBlockState());
-            fill(level, gx - 8, gy, gz - 44, gx + 8, gy + 12, gz + 48, Blocks.AIR.defaultBlockState());
-            BlockState rail = com.zurrtum.create.AllBlocks.TRACK.defaultBlockState()
-                    .setValue(com.zurrtum.create.content.trains.track.TrackBlock.SHAPE,
-                            com.zurrtum.create.content.trains.track.TrackShape.ZO);
-            for (int z = gz - 40; z <= gz + 44; z++) {
-                level.setBlock(new BlockPos(gx, gy, z), rail, 3);
-            }
-            log("voie : {} blocs de {} a z {}..{}", 85, BuiltInRegistries.BLOCK.getKey(rail.getBlock()), gz - 40, gz + 44);
-            look(player, gx + 10.5d, gy + 8.0d, gz, 90.0f, 30.0f);
+            log("monde : sol a y {}, Steam 'n' Rails {}", gy, block("railways:track_oak") == null ? "absent" : "present");
         }));
-        ShotHarness.SHOTS.add(server("t2_gares", 40, player -> {
-            var graphs = com.zurrtum.create.Create.RAILWAYS.trackNetworks;
-            log("reseaux de voie : {}", graphs.size());
-            station(player, gz + 4, "Gare A");
-            station(player, gz + 38, "Gare B");
-            station(player, gz - 30, "Gare C");
-            look(player, gx + 10.5d, gy + 6.0d, gz + 4.5d, 90.0f, 20.0f);
-        }));
-        ShotHarness.SHOTS.add(server("t3_train", 60, player -> {
-            ServerLevel level = over(player);
-            String[] names = {"Gare A", "Gare B", "Gare C"};
-            for (int i = 0; i < STATIONS.size(); i++) {
-                var be = stationAt(player, i);
-                boolean renamed = be.updateName(names[i]);
-                log("gare {} : gare globale {}, renommee {}", names[i], be.getStation() == null ? "aucune" : be.getStation().name, renamed);
-            }
-            var a = stationAt(player, 0);
-            boolean assembling = a.enterAssemblyMode(player);
-            Direction dir = a.getAssemblyDirection();
-            BlockPos target = a.edgePoint.getGlobalPosition();
-            log("assemblage : {}, sens {}, voie visee {}", assembling, dir, target);
-            if (dir == null) {
-                return;
-            }
-            BlockPos bogeyTrack = target.relative(dir, 1);
-            InteractionResult casing = click(player, new ItemStack(com.zurrtum.create.AllItems.RAILWAY_CASING, 4), bogeyTrack, Direction.UP);
-            BlockPos bogey = bogeyTrack.above();
-            log("bogie : clic {}, bloc {}", casing, BuiltInRegistries.BLOCK.getKey(level.getBlockState(bogey).getBlock()));
-            BlockPos controls = bogey.above();
-            // Create compte comme commandes avant celles qui regardent dans le sens d'assemblage.
-            level.setBlock(controls, com.zurrtum.create.AllBlocks.TRAIN_CONTROLS.defaultBlockState()
-                    .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir), 3);
-            // Sans conducteur, Create ne cherche aucun chemin : un blaze derriere les commandes conduit.
-            BlockPos driver = controls.relative(dir);
-            level.setBlock(driver, com.zurrtum.create.AllBlocks.BLAZE_BURNER.defaultBlockState()
-                    .setValue(com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL,
-                            com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HeatLevel.SMOULDERING), 3);
-            log("conducteur : {}", BuiltInRegistries.BLOCK.getKey(level.getBlockState(driver).getBlock()));
-            BlockPos low = new BlockPos(Math.min(bogey.getX(), driver.getX()), bogey.getY(), Math.min(bogey.getZ(), driver.getZ()));
-            BlockPos high = new BlockPos(Math.max(bogey.getX(), driver.getX()), controls.getY(), Math.max(bogey.getZ(), driver.getZ()));
-            level.addFreshEntity(new com.zurrtum.create.content.contraptions.glue.SuperGlueEntity(level,
-                    new AABB(Vec3.atLowerCornerOf(low), Vec3.atLowerCornerOf(high.offset(1, 1, 1)))));
-            a.refreshAssemblyInfo();
-            a.assemble(player.getUUID());
-            // Comme le bouton de l'ecran de gare : un train assemble fait quitter le mode assemblage
-            // (une gare en assemblage barre la voie a la recherche de chemin).
-            boolean assembled = a.getStation() != null && a.getStation().getPresentTrain() != null;
-            boolean exited = assembled && a.exitAssemblyMode();
-            log("apres assemblage : {} train(s) ; {} ; erreur {} ; fin du mode assemblage {}", com.zurrtum.create.Create.RAILWAYS.trains.size(),
-                    describe(train()), a.lastException == null ? "aucune" : a.lastException.component.getString(), exited);
-            look(player, gx + 8.5d, gy + 4.0d, bogey.getZ() + 0.5d, 90.0f, 15.0f);
-        }));
-        ShotHarness.SHOTS.add(server("t4_depart", 40, player -> {
-            var train = train();
-            if (train == null) {
-                log("depart : pas de train");
-                return;
-            }
-            String chosen = null;
-            for (int index : new int[]{1, 2}) {
-                var station = stationAt(player, index).getStation();
-                if (station == null) {
-                    continue;
-                }
-                var path = train.navigation.findPathTo(station, Double.MAX_VALUE);
-                log("chemin vers {} : {}", station.name, path == null ? "aucun" : "trouve");
-                if (path != null) {
-                    double cost = train.navigation.startNavigation(path);
-                    chosen = station.name;
-                    log("navigation vers {} : cout {}", chosen, cost);
-                    break;
-                }
-            }
-            log("depart : {}", describe(train));
-            look(player, gx + 9.5d, gy + 5.0d, gz + 4.5d, 90.0f, 20.0f);
-        }));
-        ShotHarness.SHOTS.add(server("t5_route", 40, player -> {
-            var train = train();
-            log("en route : {}", describe(train));
-            var entity = train == null || train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
-            double z = entity == null ? gz + 10 : entity.getZ();
-            look(player, gx + 9.5d, gy + 5.0d, z, 90.0f, 20.0f);
-        }));
-        ShotHarness.SHOTS.add(server("t6_arrivee", 200, player -> {
-            log("plus tard : {}", describe(train()));
-        }));
-        ShotHarness.SHOTS.add(server("t7_gare", 40, player -> {
-            var train = train();
-            log("arrivee : {}", describe(train));
-            var entity = train == null || train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
-            double z = entity == null ? gz + 38 : entity.getZ();
-            look(player, gx + 9.5d, gy + 5.0d, z, 90.0f, 20.0f);
+        trainSteps("t", CREATE);
+        trainSteps("w", WIDE);
+        snrSteps();
+        ShotHarness.SHOTS.add(server("z_sauvegarde", 20, player -> {
             var server = player.level().getServer();
             server.saveEverything(false, true, true);
             java.nio.file.Path data = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).resolve("data");
             try (var files = java.nio.file.Files.list(data)) {
-                files.filter(f -> f.getFileName().toString().contains("create"))
+                files.filter(f -> f.getFileName().toString().contains("create") || f.getFileName().toString().contains("railways"))
                         .forEach(f -> log("sauvegarde : {} ({} octets)", f.getFileName(), f.toFile().length()));
             } catch (Throwable t) {
                 LOG.error("dohy-bug: sauvegarde", t);
