@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.object.book.BookModel;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
@@ -209,7 +208,7 @@ public final class KitStations {
                 // Le nom en runes, comme le jeu le pose, puis le cout en niveaux.
                 int runes = !enabled ? 0xFF4D485C : Paint.mix(0xFF9187B0, 0xFFE6DDFF, hover);
                 graphics.textWithWordWrap(font, name, (int) OPTION_X + 20, (int) y + 1, room, runes, false);
-                g.right(Ui.WIDE, number, OPTION_X + OPTION_W - 2.5f, y + 10.4f, 5.0f,
+                g.right(Ui.WIDE, number, OPTION_X + OPTION_W - 2.5f, y + 9.8f, 5.7f,
                         enabled ? Ui.Theme.GREEN_L : 0xFF2F6B3B);
                 if (over) {
                     graphics.requestCursor(CursorTypes.POINTING_HAND);
@@ -245,11 +244,10 @@ public final class KitStations {
 
     /**
      * L'enclume : le champ du nouveau nom (celui du jeu, sur un champ du kit), les deux
-     * objets, la fleche et le resultat ; la croix rouge du jeu quand rien ne sort ; le cout
+     * objets, la fleche et le resultat ; une croix rouge quand rien ne sort ; le cout
      * en niveaux sous le resultat, en rouge s'il est trop cher ou que les niveaux manquent.
      */
     public static final class Anvil extends AnvilScreen {
-        private static final Identifier ERROR = Identifier.withDefaultNamespace("container/anvil/error");
         private final ItemStack icon;
         private EditBox name;
 
@@ -304,10 +302,12 @@ public final class KitStations {
             int plus = menu.getSlot(1).hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42;
             p.rect(56.0f, 54.35f, 7.0f, 1.3f, plus);
             p.rect(58.85f, 51.5f, 1.3f, 7.0f, plus);
+            // Rien ne sort : la fleche s'eteint en rouge sous une croix, la ou le jeu met la sienne.
             boolean failed = (menu.getSlot(0).hasItem() || menu.getSlot(1).hasItem()) && !result.hasItem();
             p.arrow(99.0f, 50.5f, 24.0f, 9.0f, failed ? 0xFF4A2A2A : result.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42);
             if (failed) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ERROR, 99, 45, 28, 21);
+                p.glow(111.0f, 55.0f, 11.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+                p.cross(111.0f, 55.0f, 12.0f, Ui.Theme.RED_LIGHT);
             }
             pose.popMatrix();
         }

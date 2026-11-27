@@ -28,12 +28,13 @@ import java.util.Map;
  *
  * <p>Sans le moteur (shaders refuses par la carte graphique), les images sont des
  * textures dynamiques, generees une fois et gardees : disques par rayon, halo radial,
- * rampes de degrade. La coche et la fleche restent des textures dans les deux cas.
+ * rampes de degrade. La coche, la croix et la fleche restent des textures dans les deux cas.
  */
 public final class Paint {
 
     private static final Map<Integer, Identifier> DISCS = new HashMap<>();
     private static final Map<Integer, Identifier> CHECKS = new HashMap<>();
+    private static final Map<Integer, Identifier> CROSSES = new HashMap<>();
     private static final Map<Long, Identifier> ARROWS = new HashMap<>();
     private static final Map<Integer, Identifier> RINGS = new HashMap<>();
     private static Identifier glow;
@@ -385,6 +386,18 @@ public final class Paint {
         end();
     }
 
+    /** Une croix de {@code size} unites de cote, centree sur (cx, cy) : un refus, une erreur. */
+    public void cross(float cx, float cy, float size, int color) {
+        if (size <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int s = Math.max(4, p(size));
+        graphics.blit(RenderPipelines.GUI_TEXTURED, cross(s), p(cx) - s / 2, p(cy) - s / 2, 0.0f, 0.0f, s, s, s, s, s,
+                s, color);
+        end();
+    }
+
     /**
      * Une fleche vers la droite (trait et pointe arrondis) dans le rectangle donne,
      * dont la hauteur fixe l'epaisseur du trait : les polices n'en ont pas non plus.
@@ -668,6 +681,33 @@ public final class Paint {
                 }
             }
             return register("check_" + value, image);
+        });
+    }
+
+    /** Une croix blanche de {@code size} pixels, aux traits lisses et arrondis. */
+    private static Identifier cross(int size) {
+        int key = Math.min(size, 128);
+        return CROSSES.computeIfAbsent(key, value -> {
+            NativeImage image = new NativeImage(value, value, true);
+            double stroke = 0.085d;
+            for (int py = 0; py < value; py++) {
+                for (int px = 0; px < value; px++) {
+                    int inside = 0;
+                    for (int sy = 0; sy < 4; sy++) {
+                        for (int sx = 0; sx < 4; sx++) {
+                            double x = (px + (sx + 0.5d) / 4.0d) / value;
+                            double y = (py + (sy + 0.5d) / 4.0d) / value;
+                            double d = Math.min(segment(x, y, 0.24d, 0.24d, 0.76d, 0.76d),
+                                    segment(x, y, 0.76d, 0.24d, 0.24d, 0.76d));
+                            if (d <= stroke) {
+                                inside++;
+                            }
+                        }
+                    }
+                    image.setPixel(px, py, white(inside / 16.0f));
+                }
+            }
+            return register("cross_" + value, image);
         });
     }
 
