@@ -4839,3 +4839,91 @@ client. Valeurs retenues (`MineralSeed`, `SeedSpeed`, `SeedTraits`) :
   déjà franchis ; elles sont ensuite données en montant de niveau, comme toute récompense.
 - **Ni poudre d'os, ni totem de fertilité, ni bot de farming** : le plant suit le temps, et le bot
   ne récolte que les cultures vanilla et assimilées (`CropBlock`). La récolte se fait à la main.
+
+## 48. Le Botaniste, lot 2a : le pot et les trois plantes de base (2026-11-27)
+
+Suite du § 47, toujours d'après **JobsReborn 1.92.0** au bytecode : `BlockBotanistPot`,
+`BotanistPotBlockData`, `BotanistMutationStage`, `BotanistMutationRemoveCause`,
+`BotanistNeedFailure`, `IBotanistNeed`, `ItemBotanistMutationSeed`, `ItemBotanistWateringCan`
+(`ABotanistChargedTool`), `ItemBotanistGuitar`, `JobsBotanistRecipes`, `BotanistMutationRarity`,
+`BotanistClimate`, et les textes de `BotanistCrosshairProvider` et `BotanistItemTooltipNode`.
+
+Le laboratoire de JobsReborn est découpé en trois lots : **2a** (celui-ci) le pot, trois plantes,
+les besoins, l'arrosoir et la guitare ; **2b** les nibblers et le filet, les mutations à la
+floraison, la mutation inconnue, le scanner, le codex et les douze autres plantes ; **2c** la
+centrifugeuse, la réserve de graines et le centre de contrôle.
+
+### Ce qui vient du jar
+
+- **Le cycle d'une plante** (`BotanistMutationStage`) : graine, **bourgeon**, **floraison**,
+  **fanée**. « Récoltable au clic droit à chaque floraison », puis une nouvelle fleur ; « Après la
+  dernière récolte : un clic droit rend des graines de la mutation ».
+- **Les causes de disparition** (`BotanistMutationRemoveCause`) : besoin raté, fanée trop
+  longtemps, graines récupérées (et récoltée mutée, au lot 2b).
+- **Les besoins** (`IBotanistNeed`) : arroser, jouer un air, secouer (« Secoue-la d'un clic droit,
+  main vide »), percer la boule de spores (« Perce sa boule d'un clic droit, main vide »), donner un
+  objet (charbon, poudre d'os, poudre de glowstone, pépite d'or, glace, sable, boule de neige,
+  lingot de paladium). Configuration par défaut : 90 secondes pour répondre ; raté, le besoin
+  **ralentit** la plante d'une minute (`BotanistNeedFailure.SLOW`, 20 × 60 ticks) ; un objet
+  réclamé l'est par 1 à 3.
+- **Le climat** (`BotanistClimate` : normal, glacial, désertique) : hors climat, la plante fane au
+  bourgeon (« Hors climat » au viseur).
+- **L'arrosoir** : dix charges, 32 utilisations, pas de réparation, se remplit à une source
+  d'eau. **La guitare** : 32 utilisations (« Guitare cassée »). Recettes de `JobsBotanistRecipes` :
+  arrosoir `IWI / KIK / _K_` (lingot de paladium, seau d'eau, bâton de paladium), guitare
+  `_SK / PNS / PP_` (fil de diamant, bâton de paladium, planches, bloc musical).
+- **Le viseur** (`BotanistCrosshairProvider`) : « Bourgeon dans », « Fleurit dans », « Réclame : »,
+  « Récoltes restantes », « Fane dans », « Disparaît dans », « Hors climat », « Récupérer les
+  graines » ; repris tels quels dans l'étiquette du pot visé.
+- Les noms des trois plantes (`ironwheat`, `moonfrost`, `sand_coral`) sont ceux des mutations de
+  JobsReborn ; leurs noms français sont à nous (blé de fer, givrelune, corail des sables).
+
+### Ce qui est calibré
+
+Les durées, les récoltes, la liste des besoins de chaque plante et ses récoltes sont dans la
+configuration du serveur de Paladium. Valeurs retenues (`Mutation`, `Need`) :
+
+| Plante | Climat | Bourgeon | Fleur | Refleurit | Récolte (par fleur) | Besoins possibles | XP par fleur |
+|---|---|---|---|---|---|---|---|
+| Blé de fer | normal | 8 min | 12 min | 10 min | 1-2 blé, 3-6 pépites de fer | eau, guitare, secouer, objet | 60 |
+| Givrelune | glacial | 8 min | 13 min | 10 min | 2-4 boules de neige, 1-2 glace, 1-2 glowstone | eau, guitare, boule, objet | 70 |
+| Corail des sables | désertique | 9 min | 14 min | 11 min | 2-4 sable, 2-5 pépites d'or, 0-1 cactus | eau, secouer, boule, objet | 80 |
+
+- **Trois floraisons** par plante ; une fleur non cueillie fane en 20 min, une plante fanée
+  disparaît en 20 min ; elle rend **1 ou 2 graines** (une seule si elle a fané hors climat).
+- **Un besoin par stade de pousse**, entre le quart et les trois quarts du stade : quatre par
+  plante. Rempli, il rapporte 15 XP de Fermier.
+- **Tout se compte près du maître** : la plante ne pousse, ne réclame et ne fane que s'il est en
+  ligne, dans la dimension du pot, à moins de 48 blocs. JobsReborn tient ses pots dans un
+  laboratoire où l'on se téléporte ; ici, le pot se pose dans le monde, et c'est la présence du
+  joueur qui tient lieu de laboratoire. Loin, l'étiquette dit « En pause ».
+- **Climat** : celui de l'agriculture (`agri.Climate`, température de base du biome) — froid pour
+  glacial (sous 0,4), chaud pour désertique (dès 0,9).
+- Chiffres et revenus : `BALANCE.md` § 6 sexatrigesies.
+
+### Fermier
+
+- Verrous au **niveau 10** : le pot, l'arrosoir, la guitare et les trois graines (`data/jobs.json`).
+- Récompenses : au niveau 10, deux pots et deux graines de chaque plante (une par climat : on
+  plante celle de son biome) ; au niveau 15, deux pots de plus. Rattrapage à la connexion pour
+  qui a déjà passé ces niveaux (drapeau `palamod:botanist_lab_caught_up`, distinct de celui des
+  graines minérales).
+
+### Code
+
+- `palamod/botanist/` : `BotanistPotBlock` (états `stage` et `plant`, pour le modèle),
+  `BotanistPotBlockEntity` (maître, chronos, besoin), `PotStage`, `Mutation`, `Need`,
+  `MutationSeedItem`, `WateringCanItem` (composant `palamod:watering_can_charges`), `GuitarItem`.
+- `client/botanist/` : `BotanistPotRenderer` (l'objet du besoin au-dessus de la plante,
+  l'étiquette au viseur), `BotanistClient`.
+- Assets : `tools/botanist_lab_assets.py` (`--check` en CI) — textures dessinées pour le mod ;
+  blockstate multipart (le pot, plus la plante selon le stade).
+
+### Écarts
+
+- **Pas de laboratoire Genis** pour l'instant : le pot se fabrique (`T_T / TDT / TTT`, terre
+  cuite et terre ; il n'a pas de recette dans JobsReborn) et se pose où l'on veut.
+- **Déraciner** : JobsReborn le fait au clic maintenu ; ici, deux clics droits accroupi, main vide,
+  à moins de trois secondes.
+- **Les modèles animés** de JobsReborn ne sont pas repris : plantes, pot et outils sont dessinés
+  pour le mod, la plante en croix dans le terreau.

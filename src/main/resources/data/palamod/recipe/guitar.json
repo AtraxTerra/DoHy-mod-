@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " SK",
+    "PNS",
+    "PP "
+  ],
+  "key": {
+    "S": "palamod:diamond_string",
+    "K": "palamod:paladium_stick",
+    "P": "#minecraft:planks",
+    "N": "minecraft:note_block"
+  },
+  "result": {
+    "id": "palamod:guitar",
+    "count": 1
+  }
+}

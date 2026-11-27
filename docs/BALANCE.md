@@ -1827,6 +1827,40 @@ le nombre de tirages (`MineralSeed.draws`).
 Leviers : `MineralSeed` (pousse, quantités, poids, niveaux, récompenses), `SeedSpeed`
 (facteurs, chances), `SeedTraits.offlineChance`.
 
+## 6 sexatrigesies. Laboratoire du botaniste — ce que rapporte un pot (2026-11-27)
+
+Description : `docs/PALAMOD.md` § 48. Comme pour les graines minérales, les chiffres de Paladium
+sont dans la configuration de son serveur ; tout est calibré ici.
+
+**Un pot rapporte surtout de l'XP de Fermier, et demande de la présence.** La plante ne compte
+son temps que si son maître est à moins de 48 blocs, et réclame quatre fois dans sa vie (un
+besoin par stade de pousse, 90 secondes pour répondre). Ce que rapporte un pot, besoins remplis :
+
+| Plante | Vie (3 fleurs) | XP (3 fleurs + 4 besoins) | XP par heure de présence | Récolte de la vie |
+|---|---|---|---|---|
+| Blé de fer | 40 min | 3 × 60 + 4 × 15 = 240 | ~360 | ~4,5 blé, ~13,5 pépites de fer (~1,5 lingot) |
+| Givrelune | 41 min | 3 × 70 + 60 = 270 | ~395 | ~9 boules de neige, ~4,5 glace, ~4,5 glowstone |
+| Corail des sables | 45 min | 3 × 80 + 60 = 300 | ~400 | ~9 sable, ~10,5 pépites d'or (~1,2 lingot), ~1,5 cactus |
+
+Un besoin raté coûte une minute et ses 15 XP. Pour comparer : un plant d'améthyste rapporte
+60 XP par demi-heure (120 par heure) sans rien demander, mais il faut en avoir les graines.
+
+- **Au niveau 15**, un niveau de Fermier vaut 100 × 15^1,6 ≈ 7 600 XP : quatre pots (ceux des
+  récompenses) en donnent ~1 500 par heure de présence, une dizaine ~3 600.
+- **Les graines** : une plante en rend 1,5 en moyenne ; replantées, elles multiplient le stock par
+  1,5 à chaque vie (deux graines deviennent une dizaine en quatre vies, ~3 h). Ce n'est donc pas la
+  graine qui borne le laboratoire, c'est le **nombre de pots** (6 terre cuite et 1 terre l'un) et
+  surtout l'**attention** : avec vingt pots, on répond à un besoin toutes les minutes.
+- **La récolte** vaut peu au catalogue (fer, or, glowstone en petites quantités) : c'est voulu, la
+  valeur du laboratoire est l'XP et, au lot 2b, les mutations à la floraison.
+
+**À surveiller** : si un mur de pots devient une ferme d'XP sans effort, le levier le plus doux est
+le temps de réponse (`Need.TIMEOUT`), puis l'XP par besoin (`Mutation.NEED_XP`), puis la portée
+(`BotanistPotBlockEntity.RANGE`).
+
+Leviers : `Mutation` (durées, XP, récoltes, besoins), `Need` (délai, retard), `Mutation.HARVESTS`,
+`WILT_TICKS`, `GONE_TICKS`, `SEEDS_MIN` / `SEEDS_MAX`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

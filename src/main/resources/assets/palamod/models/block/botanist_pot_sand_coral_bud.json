@@ -1,0 +1,6 @@
+{
+  "parent": "palamod:block/botanist_pot_plant",
+  "textures": {
+    "plant": "palamod:block/sand_coral_bud"
+  }
+}

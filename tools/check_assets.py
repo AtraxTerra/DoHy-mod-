@@ -39,7 +39,9 @@ EXPECTED_PNG = (16, 16)
 ITEM_FACTORIES = ("registerSimpleItem", "registerItem", "simple", "seed", "planter",
                   "sword", "pickaxe", "axe", "shovel", "hoe", "armor", "stick", "ring", "amulet",
                   # Les gadgets des lucky blocks (LuckyGadgets) et les objets saisonniers (SeasonItems).
-                  "gadgetItem", "seasonItem")
+                  "gadgetItem", "seasonItem",
+                  # Les graines de mutation du botaniste (PalaBotanist).
+                  "mutationSeed")
 BLOCK_FACTORIES = ("registerSimpleBlock", "registerBlock", "ore", "storage", "crop", "soil",
                    # Les objets de defense (chapitre 22) : obsidiennes piegees, a spike, enclumes.
                    "effect", "spikeObsidian", "anvil",

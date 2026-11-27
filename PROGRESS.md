@@ -122,6 +122,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 23c | **Boss de métier et donjons V12** : modes Facile/Normal/Difficile (progression Normal inchangée), boss Dark aux paliers en 0 du Difficile, salles d'élite, de piège et de survie, douze élites, six capacités de boss ; autel des offrandes sur le parvis du spawn, quatre gardiens qui arrivent une heure après l'offrande et attendent dans une salle de boss au décor de leur donjon, dix niveaux ; gardiens et élites aux modèles des donjons de Paladium. Livrés avec : clicker joueur déconnecté, Clic Shop sans attente, pousses des arbres PalaMod — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 25 | **Objets de déblocage qui manquaient** : rituel d'endium (totem, 4 autels, 40 poudres, 25 zombies, pépite d'endium), étiquette en endium, knocker infernal, bateau en bambou, 5 boussoles de chasseur, table d'alchimiste (3 potions d'imprégnation, potion de maladie, 4 flèches, effet Givre), herbes colorées (10 couleurs) et racinier refaits aux textures de PalaJobs ; **JEI** pour la palamachine et la table — sans la cage à familier (familiers) — voir § 44 | fait (en validation) |
 | 26 | **Botaniste de JobsReborn, lot 1** : huit graines minérales (améthyste, titane, paladium, paladium vert, findium, trixium, invoker, endium) et leurs plants à quatre stades, vitesse et pousse hors ligne tirées à la récolte, endium organique ; au Fermier (verrous, récompenses, XP), rattrapage des graines à la connexion — voir § 47 | fait (en validation) |
+| 27 | **Botaniste de JobsReborn, lot 2a** : pot du botaniste, trois plantes de base (blé de fer, givrelune, corail des sables, une par climat), cycle bourgeon, fleur, fanée, trois récoltes et graines rendues, besoins (arroser, jouer un air, secouer, percer la boule, donner un objet), arrosoir et guitare ; la plante ne pousse que près de son maître ; au Fermier (niveau 10) — voir § 48 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -193,6 +194,29 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-27 — le laboratoire du botaniste, lot 2a : le pot et les plantes de base
+
+**Demande** : suite du point 4 (Botaniste de JobsReborn), le laboratoire découpé en trois lots ;
+le joueur a aussi demandé de convertir Zephyr-UI (le moteur d'interface de Paladium), à faire
+après ce lot.
+
+- **Pot du botaniste** : on y plante une graine de mutation ; seul celui qui l'a posé s'en sert.
+- **Trois plantes**, une par climat : blé de fer (normal), givrelune (glacial), corail des sables
+  (désertique). Hors de son climat, une plante fane au bourgeon.
+- **Cycle** : graine, bourgeon, fleur (récolte au clic droit), trois floraisons, puis fanée : un
+  clic droit rend une ou deux graines. Une fleur oubliée fane, une plante fanée disparaît.
+- **Besoins** : un par stade de pousse, 90 secondes pour répondre (arroser, jouer un air à la
+  guitare, secouer ou percer la boule main vide, donner un objet) ; raté, la plante ralentit
+  d'une minute. **Arrosoir** (dix charges) et **guitare**, recettes de JobsReborn.
+- **Présence** : la plante ne pousse, ne réclame et ne fane que si son maître est à moins de
+  48 blocs ; l'étiquette du pot visé dit où elle en est (repris du viseur de JobsReborn).
+- **Fermier** : verrous au niveau 10, pots et graines en récompense, XP par fleur et par besoin ;
+  rattrapage à la connexion. Chiffres : `PALAMOD.md` § 48, `BALANCE.md` § 6 sexatrigesies ;
+  textures dessinées pour le mod (`tools/botanist_lab_assets.py`).
+
+**Non vérifié en jeu** : le rendu du pot et des plantes, l'étiquette et l'icône de besoin, les
+sons et particules.
 
 ### 2026-11-27 — le Botaniste de JobsReborn : les graines minérales
 

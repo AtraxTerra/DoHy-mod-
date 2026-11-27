@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "IWI",
+    "KIK",
+    " K "
+  ],
+  "key": {
+    "I": "palamod:paladium_ingot",
+    "W": "minecraft:water_bucket",
+    "K": "palamod:paladium_stick"
+  },
+  "result": {
+    "id": "palamod:watering_can",
+    "count": 1
+  }
+}

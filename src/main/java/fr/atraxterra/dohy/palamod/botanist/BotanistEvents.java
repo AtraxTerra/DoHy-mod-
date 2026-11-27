@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Le rattrapage des graines minerales, une fois par joueur.
+ * Le rattrapage des graines minerales, puis du laboratoire, une fois par joueur.
  *
  * <p>Les graines sont des recompenses de niveau de Fermier ({@code data/jobs.json}),
  * versees en montant de niveau. Un joueur qui avait deja passe ces niveaux avant
@@ -36,19 +36,35 @@ public final class BotanistEvents {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || player.getData(PalaBotanist.SEEDS_CAUGHT_UP.get())) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
-        player.setData(PalaBotanist.SEEDS_CAUGHT_UP.get(), Boolean.TRUE);
-        int level = JobApi.level(player, Job.FARMER);
-        Set<String> seeds = new HashSet<>();
-        for (MineralSeed seed : MineralSeed.values()) {
-            seeds.add("palamod:" + seed.seedName());
+        if (!player.getData(PalaBotanist.SEEDS_CAUGHT_UP.get())) {
+            player.setData(PalaBotanist.SEEDS_CAUGHT_UP.get(), Boolean.TRUE);
+            Set<String> seeds = new HashSet<>();
+            for (MineralSeed seed : MineralSeed.values()) {
+                seeds.add("palamod:" + seed.seedName());
+            }
+            catchUp(player, seeds, "message.palamod.mineral_seed.catch_up", "Graines minerales");
         }
+        // Le laboratoire (lot 2a) : meme regle, drapeau a part, pour qui avait deja les graines minerales.
+        if (!player.getData(PalaBotanist.LAB_CAUGHT_UP.get())) {
+            player.setData(PalaBotanist.LAB_CAUGHT_UP.get(), Boolean.TRUE);
+            Set<String> lab = new HashSet<>();
+            lab.add("palamod:botanist_pot");
+            for (Mutation mutation : Mutation.values()) {
+                lab.add("palamod:" + mutation.seedName());
+            }
+            catchUp(player, lab, "message.palamod.botanist_lab.catch_up", "Laboratoire du botaniste");
+        }
+    }
+
+    /** Verse les recompenses de Fermier deja franchies dont l'objet est dans {@code ids}. */
+    private static void catchUp(ServerPlayer player, Set<String> ids, String message, String log) {
+        int level = JobApi.level(player, Job.FARMER);
         int given = 0;
         for (JobConfig.Reward reward : JobConfig.config().rewards()) {
-            if (Job.FARMER != Job.byKey(reward.job()) || reward.level() > level || !seeds.contains(reward.id())) {
+            if (Job.FARMER != Job.byKey(reward.job()) || reward.level() > level || !ids.contains(reward.id())) {
                 continue;
             }
             ItemStack stack = JobApi.rewardStack(player, reward);
@@ -56,8 +72,7 @@ public final class BotanistEvents {
                 continue;
             }
             if (given == 0) {
-                player.sendSystemMessage(Component.translatable("message.palamod.mineral_seed.catch_up")
-                        .withStyle(ChatFormatting.GOLD));
+                player.sendSystemMessage(Component.translatable(message).withStyle(ChatFormatting.GOLD));
             }
             player.sendSystemMessage(Component.literal("  " + stack.getCount() + "x ")
                     .withStyle(ChatFormatting.WHITE)
@@ -66,13 +81,13 @@ public final class BotanistEvents {
             given++;
         }
         if (given > 0) {
-            DoHy.LOGGER.info("Graines minerales rattrapees pour {} : {} recompense(s), Fermier {}",
-                    player.getScoreboardName(), given, level);
+            DoHy.LOGGER.info("{} rattrape(s) pour {} : {} recompense(s), Fermier {}",
+                    log, player.getScoreboardName(), given, level);
         }
     }
 
     /** Une pile decoupee a la taille maximale ; ce qui ne rentre pas tombe aux pieds. */
-    private static void give(ServerPlayer player, ItemStack stack) {
+    static void give(ServerPlayer player, ItemStack stack) {
         int remaining = stack.getCount();
         int max = Math.max(1, stack.getMaxStackSize());
         while (remaining > 0) {

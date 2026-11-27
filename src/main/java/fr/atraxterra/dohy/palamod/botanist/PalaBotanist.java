@@ -4,10 +4,13 @@ import com.mojang.serialization.Codec;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -24,13 +27,17 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Le Botaniste de JobsReborn, lot 1 : les graines minerales et leurs plants.
+ * Le Botaniste de JobsReborn : les graines minerales (lot 1) et le laboratoire
+ * (lot 2a : pots, plantes de base, besoins, arrosoir et guitare).
  *
  * <p>JobsReborn (1.92.0) est le mod des metiers de la nouvelle generation de
- * Paladium ; son Botaniste fait pousser du minerai. Ce lot en reprend les huit
+ * Paladium ; son Botaniste fait pousser du minerai. Le lot 1 en reprend les huit
  * graines minerales, leurs plants, leurs caracteres (vitesse, pousse hors ligne)
- * et l'endium organique. Le laboratoire (pots, besoins des plantes, mutations,
- * scanner, centrifugeuse, centre de controle) est le lot suivant.
+ * et l'endium organique. Le lot 2a apporte le pot ({@link BotanistPotBlock}), les
+ * trois plantes de base, une par climat ({@link Mutation}), leurs besoins
+ * ({@link Need}), l'arrosoir et la guitare. Les nibblers et le filet, les
+ * mutations a la floraison, le scanner, la centrifugeuse et le centre de
+ * controle sont des lots suivants.
  *
  * <p>Pas de metier Botaniste a part : les graines se debloquent et rapportent au
  * <b>Fermier</b>, le metier de l'agriculture ici (voir {@code docs/PALAMOD.md} § 47).
@@ -56,12 +63,25 @@ public final class PalaBotanist {
                     .persistent(SeedTraits.CODEC)
                     .networkSynchronized(SeedTraits.STREAM_CODEC));
 
+    /** Les charges de l'arrosoir (dix, comme l'{@code ABotanistChargedTool} de JobsReborn). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CHARGES =
+            COMPONENTS.registerComponentType("watering_can_charges", builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
+
     /**
      * Le rattrapage des graines a ete fait pour ce joueur ({@link BotanistEvents}) :
      * une fois, mort comprise.
      */
     public static final Supplier<AttachmentType<Boolean>> SEEDS_CAUGHT_UP = ATTACHMENTS.register(
             "mineral_seeds_caught_up", () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(Codec.BOOL.fieldOf("done"))
+                    .copyOnDeath()
+                    .build());
+
+    /** Le meme rattrapage pour le laboratoire : pots et graines de mutation. */
+    public static final Supplier<AttachmentType<Boolean>> LAB_CAUGHT_UP = ATTACHMENTS.register(
+            "botanist_lab_caught_up", () -> AttachmentType.builder(() -> Boolean.FALSE)
                     .serialize(Codec.BOOL.fieldOf("done"))
                     .copyOnDeath()
                     .build());
@@ -115,9 +135,40 @@ public final class PalaBotanist {
     public static final DeferredItem<Item> ORGANIC_ENDIUM = ITEMS.registerItem("organic_endium_nugget",
             properties -> new BotanistItem("tooltip.palamod.organic_endium_nugget.use", properties));
 
+    // -- Le laboratoire (lot 2a) --------------------------------------------------------
+
+    /** Le pot : terre cuite, se casse vite, son de pot decore ; pas un bloc plein. */
+    public static final DeferredBlock<BotanistPotBlock> POT = BLOCKS.registerBlock("botanist_pot",
+            BotanistPotBlock::new, properties -> properties
+                    .strength(1.0f)
+                    .sound(SoundType.DECORATED_POT)
+                    .mapColor(MapColor.TERRACOTTA_ORANGE)
+                    .noOcclusion());
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BotanistPotBlockEntity>> POT_TYPE =
+            TYPES.register("botanist_pot",
+                    () -> new BlockEntityType<>(BotanistPotBlockEntity::new, Set.<Block>of(POT.get())));
+    public static final DeferredItem<BlockItem> POT_ITEM = ITEMS.registerSimpleBlockItem(POT, properties -> properties);
+
+    public static final DeferredItem<MutationSeedItem> IRONWHEAT_SEED =
+            mutationSeed("ironwheat_seed", Mutation.IRONWHEAT);
+    public static final DeferredItem<MutationSeedItem> MOONFROST_SEED =
+            mutationSeed("moonfrost_seed", Mutation.MOONFROST);
+    public static final DeferredItem<MutationSeedItem> SAND_CORAL_SEED =
+            mutationSeed("sand_coral_seed", Mutation.SAND_CORAL);
+
+    public static final Map<Mutation, DeferredItem<MutationSeedItem>> MUTATION_SEEDS = bymutation(List.of(
+            IRONWHEAT_SEED, MOONFROST_SEED, SAND_CORAL_SEED));
+
+    /** L'arrosoir et la guitare : 32 utilisations chacun, sans reparation (JobsReborn). */
+    public static final DeferredItem<WateringCanItem> WATERING_CAN = ITEMS.registerItem("watering_can",
+            WateringCanItem::new, properties -> properties.durability(32));
+    public static final DeferredItem<GuitarItem> GUITAR = ITEMS.registerItem("guitar",
+            GuitarItem::new, properties -> properties.durability(32));
+
     public static final List<DeferredItem<? extends Item>> ORDERED = List.of(
             AMETHYST_SEED, TITANE_SEED, PALADIUM_SEED, GREEN_PALADIUM_SEED,
-            FINDIUM_SEED, TRIXIUM_SEED, INVOKER_SEED, ENDIUM_SEED, ORGANIC_ENDIUM);
+            FINDIUM_SEED, TRIXIUM_SEED, INVOKER_SEED, ENDIUM_SEED, ORGANIC_ENDIUM,
+            POT_ITEM, WATERING_CAN, GUITAR, IRONWHEAT_SEED, MOONFROST_SEED, SAND_CORAL_SEED);
 
     private PalaBotanist() {
     }
@@ -140,6 +191,18 @@ public final class PalaBotanist {
         // SeedTraits.DEFAULT a la lecture, et la pile reste empilable avec une
         // recompense ou une graine de l'onglet creatif.
         return ITEMS.registerItem(name, properties -> new MineralSeedItem(crop.get(), properties, seed));
+    }
+
+    private static DeferredItem<MutationSeedItem> mutationSeed(String name, Mutation mutation) {
+        return ITEMS.registerItem(name, properties -> new MutationSeedItem(properties, mutation));
+    }
+
+    private static <T> Map<Mutation, T> bymutation(List<T> ordered) {
+        Map<Mutation, T> map = new EnumMap<>(Mutation.class);
+        for (Mutation mutation : Mutation.values()) {
+            map.put(mutation, ordered.get(mutation.ordinal()));
+        }
+        return Map.copyOf(map);
     }
 
     private static <T> Map<MineralSeed, T> byseed(List<T> ordered) {
