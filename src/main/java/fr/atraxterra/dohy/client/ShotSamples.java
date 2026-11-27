@@ -130,6 +130,10 @@ final class ShotSamples {
             player.getInventory().add(new ItemStack(Items.NETHER_WART, 12));
             player.getInventory().add(new ItemStack(Items.IRON_INGOT, 9));
             player.giveExperienceLevels(30);
+            // La case sous la souris (au centre de l'ecran) : videe, pour que sa bulle ne cache rien.
+            ItemStack center = player.getInventory().getItem(13);
+            player.getInventory().setItem(13, ItemStack.EMPTY);
+            player.getInventory().setItem(35, center);
         }));
         station("e1_enchant", 40, "minecraft:enchanting_table", menu -> {
             menu.getSlot(0).set(new ItemStack(Items.IRON_PICKAXE));
