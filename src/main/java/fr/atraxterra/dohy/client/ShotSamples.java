@@ -400,8 +400,9 @@ final class ShotSamples {
         var entity = train.carriages.isEmpty() ? null : train.carriages.get(0).anyAvailableEntity();
         var current = train.getCurrentStation();
         var destination = train.navigation.destination;
-        return String.format(java.util.Locale.ROOT, "%s : %d voiture(s), vitesse %.3f, cible %.3f, position %s, en gare %s, destination %s, deraille %s",
-                train.name.getString(), train.carriages.size(), train.speed, train.targetSpeed,
+        return String.format(java.util.Locale.ROOT, "%s : %d voiture(s), conducteur av %s ar %s, vitesse %.3f, cible %.3f, position %s, en gare %s, destination %s, deraille %s",
+                train.name.getString(), train.carriages.size(), train.hasForwardConductor(), train.hasBackwardConductor(),
+                train.speed, train.targetSpeed,
                 entity == null ? "?" : String.format(java.util.Locale.ROOT, "%.1f %.1f %.1f", entity.getX(), entity.getY(), entity.getZ()),
                 current == null ? "non" : current.name, destination == null ? "aucune" : destination.name, train.derailed);
     }
@@ -463,8 +464,16 @@ final class ShotSamples {
             // Create compte comme commandes avant celles qui regardent dans le sens d'assemblage.
             level.setBlock(controls, com.zurrtum.create.AllBlocks.TRAIN_CONTROLS.defaultBlockState()
                     .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir), 3);
+            // Sans conducteur, Create ne cherche aucun chemin : un blaze derriere les commandes conduit.
+            BlockPos driver = controls.relative(dir);
+            level.setBlock(driver, com.zurrtum.create.AllBlocks.BLAZE_BURNER.defaultBlockState()
+                    .setValue(com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL,
+                            com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HeatLevel.SMOULDERING), 3);
+            log("conducteur : {}", BuiltInRegistries.BLOCK.getKey(level.getBlockState(driver).getBlock()));
+            BlockPos low = new BlockPos(Math.min(bogey.getX(), driver.getX()), bogey.getY(), Math.min(bogey.getZ(), driver.getZ()));
+            BlockPos high = new BlockPos(Math.max(bogey.getX(), driver.getX()), controls.getY(), Math.max(bogey.getZ(), driver.getZ()));
             level.addFreshEntity(new com.zurrtum.create.content.contraptions.glue.SuperGlueEntity(level,
-                    new AABB(Vec3.atLowerCornerOf(bogey), Vec3.atLowerCornerOf(controls.offset(1, 1, 1)))));
+                    new AABB(Vec3.atLowerCornerOf(low), Vec3.atLowerCornerOf(high.offset(1, 1, 1)))));
             a.refreshAssemblyInfo();
             a.assemble(player.getUUID());
             log("apres assemblage : {} train(s) ; {} ; erreur {}", com.zurrtum.create.Create.RAILWAYS.trains.size(),
