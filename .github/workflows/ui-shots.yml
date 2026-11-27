@@ -3,7 +3,7 @@ name: ui-shots
 # dedie, puis client sous Xvfb ; pousse le tout sur shots-out.
 on:
   push:
-    branches: [tmp/shots-ecrans]
+    branches: [tmp/shots-hud]
 permissions:
   contents: write
 jobs:
