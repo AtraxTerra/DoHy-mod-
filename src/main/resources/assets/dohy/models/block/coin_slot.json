@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "front": "dohy:block/coin_slot_front",
+    "side": "dohy:block/coin_slot_side",
+    "top": "dohy:block/coin_slot_top",
+    "bottom": "dohy:block/coin_slot_bottom"
+  }
+}

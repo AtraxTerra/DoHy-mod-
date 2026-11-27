@@ -119,6 +119,10 @@
     "palamod:sacrifice_hotel",
     "palamod:print_press",
     "palamod:paladium_slab",
-    "palamod:pet_cage"
+    "palamod:pet_cage",
+    "dohy:random_machine",
+    "dohy:dice",
+    "dohy:coin_slot",
+    "dohy:payout_box"
   ]
 }

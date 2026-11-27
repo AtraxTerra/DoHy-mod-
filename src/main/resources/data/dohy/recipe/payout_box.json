@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GDG",
+    "GCG",
+    "IRI"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "D": "minecraft:dispenser",
+    "C": "minecraft:chest",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "dohy:payout_box",
+    "count": 1
+  }
+}

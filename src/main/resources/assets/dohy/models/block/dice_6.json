@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "dohy:block/dice_6",
+    "north": "dohy:block/dice_2",
+    "south": "dohy:block/dice_5",
+    "east": "dohy:block/dice_3",
+    "west": "dohy:block/dice_4",
+    "up": "dohy:block/dice_6",
+    "down": "dohy:block/dice_1"
+  }
+}

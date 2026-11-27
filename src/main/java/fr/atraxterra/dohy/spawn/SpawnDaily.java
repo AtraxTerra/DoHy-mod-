@@ -125,12 +125,21 @@ public final class SpawnDaily extends MenuController {
             }
             days.add(card);
         }
+        // La loterie du spawn se tient au guichet de l'hotesse (lot 27).
+        List<Card> lottery = List.of(Card.of(new ItemStack(Items.PAPER), "Loterie du spawn",
+                        fr.atraxterra.dohy.casino.LotteryMenu.teaser(player))
+                .accent(0xFFFAC400).action("lottery|ouvrir la loterie"));
         return new MenuView(id(), "Recompense du jour", "Un jour saute : retour au jour 1", stats, List.of(
-                new MenuView.Section("LA SERIE", "upgrade", MenuView.GRID, days)), false);
+                new MenuView.Section("LA SERIE", "upgrade", MenuView.GRID, days),
+                new MenuView.Section("LA LOTERIE", "resources", MenuView.GRID, lottery)), false);
     }
 
     @Override
     protected void card(ServerPlayer player, String key, int button) {
+        if ("lottery".equals(key)) {
+            fr.atraxterra.dohy.casino.LotteryMenu.INSTANCE.open(player);
+            return;
+        }
         if (!"claim".equals(key)) {
             return;
         }

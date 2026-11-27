@@ -543,6 +543,105 @@
       }
     },
     {
+      "id": "casino",
+      "category": "economie",
+      "order": 11,
+      "icon": "dohy:random_machine",
+      "title": "Le casino",
+      "card": [
+        "Machines, des et panneaux",
+        "[Casino] : ton casino"
+      ],
+      "summary": [
+        "Un casino en redstone : un monnayeur et son panneau [Casino] encaissent le ticket et lancent le jeu, une machine aleatoire ou un de decident, la caisse des gains et son panneau [Casino2] paient le gagnant. Des clients fictifs viennent jouer selon la loi du pays sur le jeu."
+      ],
+      "sections": [
+        {
+          "title": "Les blocs",
+          "text": [
+            "Machine aleatoire : le signal entre par l'arriere et sort par la fleche, une fois sur deux par defaut ; son maitre regle la chance de 1 a 99 % d'un clic droit.",
+            "De de casino : un clic droit ou un signal le lance ; un comparateur lit la face du dessus, de 1 a 6.",
+            "Monnayeur : payer son panneau [Casino] fait partir une impulsion d'une demi-seconde sur ses six faces.",
+            "Caisse des gains : quand elle s'allume, son panneau [Casino2] paie la derniere mise de son jeu, faite dans les 5 secondes."
+          ]
+        },
+        {
+          "title": "Les panneaux",
+          "text": [
+            "[Casino], sur un monnayeur : le nom du casino, le prix du ticket (1000, 1 000, 2k...), puis le nom du jeu.",
+            "[Casino2], sur une caisse : le nom du casino, la somme gagnee, puis le nom du jeu, le meme.",
+            "Ton clic debout ouvre le jeu aux clients et lance une partie d'essai, sans argent ; accroupi, tu reecris le panneau."
+          ]
+        },
+        {
+          "title": "Les clients",
+          "text": [
+            "Des joueurs fictifs : environ 12 par heure et par jeu, x1,5 si le jeu est legal dans le pays, x0,4 s'il est interdit ; moins si le jeu rend peu (un taux de redistribution de 80 % les attire tous) ou si le ticket est cher. 60 parties par heure au plus.",
+            "Pres de toi, le client joue vraiment et c'est ton circuit qui decide ; loin, sa partie suit les chiffres du jeu.",
+            "Le ticket va au coffre du casino (20 % de taxes si le jeu est legal, des pots-de-vin s'il est tolere), les gains en sortent. Interdit, la police peut saisir la moitie du coffre.",
+            "/casino : le coffre, les jeux, la somme jouee, la somme distribuee et le taux de redistribution."
+          ]
+        }
+      ],
+      "see": [
+        "loterie",
+        "entreprises",
+        "lois_police"
+      ],
+      "discover": {
+        "items": [
+          "dohy:random_machine",
+          "dohy:dice",
+          "dohy:coin_slot",
+          "dohy:payout_box"
+        ],
+        "views": [
+          "dohy:casino_book",
+          "dohy:casino_machine"
+        ]
+      }
+    },
+    {
+      "id": "loterie",
+      "category": "economie",
+      "order": 12,
+      "icon": "minecraft:paper",
+      "title": "La loterie",
+      "card": [
+        "Un ticket a 5 000 $,",
+        "tirage le dimanche"
+      ],
+      "summary": [
+        "La loterie du spawn, chez l'hotesse ou par /loto : des tickets a 5 000 $, un tirage chaque dimanche a 20 h, et un seul ticket gagne toute la cagnotte."
+      ],
+      "sections": [
+        {
+          "title": "Les tickets",
+          "text": [
+            "5 000 $ le ticket, cent par tirage au plus. 80 % de chaque ticket vont a la cagnotte, qui part de 50 000 $.",
+            "Des joueurs fictifs achetent aussi : a peu pres un candidat de plus toutes les deux heures, un ou deux tickets chacun."
+          ]
+        },
+        {
+          "title": "Le tirage",
+          "text": [
+            "Chaque dimanche a 20 h (heure de Paris), un ticket au hasard parmi tous gagne la cagnotte.",
+            "Absent au tirage, tu es paye a ta connexion. Sans aucun ticket vendu, la cagnotte est reportee.",
+            "L'ecran montre la cagnotte, ta chance et les cinq derniers tirages."
+          ]
+        }
+      ],
+      "see": [
+        "casino"
+      ],
+      "discover": {
+        "views": [
+          "dohy:lottery",
+          "dohy:spawn_daily"
+        ]
+      }
+    },
+    {
       "id": "collections",
       "category": "economie",
       "order": 3,

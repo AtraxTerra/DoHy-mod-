@@ -193,6 +193,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-26 — le casino et la loterie
+
+**Demande** : point 13 de « 9, 2, 5, 7, 13, 22 » (`docs/ORGANISATIONS.md`, lot 27).
+
+- **Blocs** : machine aléatoire (chance réglable de 1 à 99 %), dé de casino (lu au comparateur),
+  monnayeur et caisse des gains ; panneaux `[Casino]` (ticket, lance le jeu) et `[Casino2]` (paie
+  le gagnant), écrits comme sur NationsGlory.
+- **Clients fictifs** selon la loi du pays sur le jeu (12 par heure et par jeu, ×1,5 légal, ×0,4
+  interdit), joués par le vrai circuit quand le monnayeur est chargé ; taxes, pots-de-vin, descentes
+  de police ; `/casino` (coffre, somme jouée, distribuée, taux de redistribution).
+- **Loterie du spawn** chez l'hôtesse ou par `/loto` : tickets à 5 000 $, cagnotte de 50 000 $ +
+  80 % des tickets, joueurs fictifs, tirage le dimanche à 20 h.
+
 ### 2026-11-26 — À vos marques
 
 **Demande** : point 7 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « À vos marques »).

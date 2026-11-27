@@ -269,5 +269,9 @@
   "block.dohy.base_claim_controller": "Base Claim Controller",
   "tooltip.dohy.base_claim_controller": "Le coeur de ta base : gloire et ELO chaque jour, coffre de 55 cases",
   "tooltip.dohy.base_claim_controller.place": "Au centre d'un claim de 3 x 3 chunks, les 8 blocs autour et dessus vides",
-  "tooltip.dohy.base_claim_controller.warn": "Pose ratee : il disparait. Pillable en 2 minutes de clic droit"
+  "tooltip.dohy.base_claim_controller.warn": "Pose ratee : il disparait. Pillable en 2 minutes de clic droit",
+  "block.dohy.random_machine": "Machine aleatoire",
+  "block.dohy.dice": "De de casino",
+  "block.dohy.coin_slot": "Monnayeur",
+  "block.dohy.payout_box": "Caisse des gains"
 }
