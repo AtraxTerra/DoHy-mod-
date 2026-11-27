@@ -66,7 +66,7 @@ final class ShotSamples {
             level.setBlock(pos, block.defaultBlockState(), 3);
             BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.DOWN, pos, false);
             InteractionResult result = player.gameMode.useItemOn(player, level, ItemStack.EMPTY,
-                    InteractionHand.OFF_HAND, hit);
+                    InteractionHand.MAIN_HAND, hit);
             LOG.info("dohy-shots: bloc " + id + " -> " + result);
         }));
     }
