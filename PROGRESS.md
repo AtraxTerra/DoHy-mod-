@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-27
+Dernière mise à jour : 2026-11-28
 
 ---
 
@@ -123,6 +123,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 25 | **Objets de déblocage qui manquaient** : rituel d'endium (totem, 4 autels, 40 poudres, 25 zombies, pépite d'endium), étiquette en endium, knocker infernal, bateau en bambou, 5 boussoles de chasseur, table d'alchimiste (3 potions d'imprégnation, potion de maladie, 4 flèches, effet Givre), herbes colorées (10 couleurs) et racinier refaits aux textures de PalaJobs ; **JEI** pour la palamachine et la table — sans la cage à familier (familiers) — voir § 44 | fait (en validation) |
 | 26 | **Botaniste de JobsReborn, lot 1** : huit graines minérales (améthyste, titane, paladium, paladium vert, findium, trixium, invoker, endium) et leurs plants à quatre stades, vitesse et pousse hors ligne tirées à la récolte, endium organique ; au Fermier (verrous, récompenses, XP), rattrapage des graines à la connexion — voir § 47 | fait (en validation) |
 | 27 | **Botaniste de JobsReborn, lot 2a** : pot du botaniste, trois plantes de base (blé de fer, givrelune, corail des sables, une par climat), cycle bourgeon, fleur, fanée, trois récoltes et graines rendues, besoins (arroser, jouer un air, secouer, percer la boule, donner un objet), arrosoir et guitare ; la plante ne pousse que près de son maître ; au Fermier (niveau 10) — voir § 48 | fait (en validation) |
+| 28 | **Botaniste de JobsReborn, lot 2b** : douze plantes de plus (quinze, cinq par climat, sur quatre raretés), mutation à la floraison vers une plante plus rare, mutation inconnue, scanner de Genis (charbon, scan de 15 ou 45 s, découverte et XP), codex des mutations, nibblers (panique, fuite) et filet pour les attraper et les relâcher ; au Fermier (niveaux 10, 25, 45, 70) — voir § 49 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -194,6 +195,40 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-28 — le laboratoire du botaniste, lot 2b : mutations, scanner, codex, nibblers
+
+**Demande** : suite du Botaniste de JobsReborn (« les deux » : l'épuration des écrans, puis ce
+lot ; « continue botaniste » après la panne du serveur).
+
+- **Douze plantes de plus**, aux identifiants de JobsReborn : quinze en tout, cinq par climat, sur
+  quatre raretés (commune, rare, épique, légendaire), chacune avec ses durées, récoltes, besoins
+  et sa fiche (famille, variété, rôle).
+- **Mutation à la floraison** : une plante peut muter vers une plante plus rare de son climat
+  (8 %, 5 %, 3 % par floraison), si son maître a le niveau de Fermier de la plante cible. Récoltée,
+  la fleur mutée rend une **mutation inconnue** et la plante disparaît.
+- **Scanner de Genis** (deux blocs, le modèle de JobsReborn et ses quatre animations) : une
+  mutation inconnue ou une graine absente du codex, du charbon, « LANCER LE SCAN » ; 15 s pour une
+  plante connue, 45 s pour une découverte, qui l'ajoute au **codex** et rapporte son XP de
+  découverte. Écran au style des machines du kit, notification à la découverte.
+- **Codex** (bouton du scanner) : les quinze plantes par rareté, celles à découvrir en
+  silhouette, la fiche de la plante choisie, ses quatre variantes et ses parents. Le codex se
+  garde sur le joueur, mort comprise.
+- **Nibblers** (modèle, animations et sons de JobsReborn) : un besoin des plantes rares et
+  au-delà ; ils apparaissent près du pot, se figent en criant quand on approche, puis fuient.
+  **Filet** (huit places) : on les attrape, puis on les relâche sur la plante.
+- **Fermier** : scanner au niveau 10, filet et graines rares au 25, épiques au 45, légendaires au
+  70 ; scanner et filet en récompense, rattrapage à la connexion. Chiffres : `PALAMOD.md` § 49,
+  `BALANCE.md` § 6 septtrigesies ; fiche « Le botaniste » dans l'encyclopédie.
+
+**Vérifié** : captures des quinze plantes en fleur (dont des fleurs mutées), d'une plante à ses
+quatre états, de l'étiquette d'un pot, d'un besoin de nibblers (les nibblers autour du pot, leur
+panique, l'attrape au filet, la relâche qui remplit le besoin), du scanner dans le monde (sans
+charbon, en attente, en scan, terminé), de son écran (prêt, en scan, résultat et notification,
+graine déjà connue), du codex (une plante connue, une inconnue, une légendaire sur une autre
+variante) et d'une récolte mutée.
+
+**Non vérifié en jeu** : les sons (le client de la CI joue sans son).
 
 ### 2026-11-28 — les notifications du jeu au style du kit
 

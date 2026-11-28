@@ -94,6 +94,8 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
         boolean mutated;
         /** La hauteur de l'icone du besoin, en blocs ; l'etiquette passe au-dessus. */
         float top = NEED_Y;
+        /** Le haut de la plante (ou du pot vide), en blocs : l'etiquette s'y pose sans besoin. */
+        float plantTop = 1.0f;
         /** L'animation a jouer et ou on en est, en secondes. */
         String clip;
         float clipSeconds;
@@ -123,6 +125,8 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
         state.mutated = pot.mutated();
         state.top = state.mutation == null ? NEED_Y
                 : Math.max(NEED_Y, (10.0f + HEIGHTS.getOrDefault(state.mutation, 18) + 7.0f) / 16.0f);
+        state.plantTop = state.mutation == null ? 1.0f
+                : Math.max(1.0f, SOIL + HEIGHTS.getOrDefault(state.mutation, 18) / 16.0f);
         pot.trackStage(now);
         state.clip = null;
         if (state.mutation != null) {
@@ -305,7 +309,10 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
             }
             pose.popPose();
         }
-        double labelY = state.top + 0.4d;
+        // Au-dessus de l'icone du besoin s'il y en a une, sinon juste au-dessus de la plante (le jeu
+        // ajoute encore un demi-bloc sous l'etiquette).
+        boolean badge = state.needIcon != null || state.hasNeedItem;
+        double labelY = badge ? state.top + 0.4d : state.plantTop - 0.1d;
         if (state.line != null) {
             collector.submitNameTag(pose, new Vec3(0.5d, labelY, 0.5d), -10, state.line, false, light, camera);
         }
