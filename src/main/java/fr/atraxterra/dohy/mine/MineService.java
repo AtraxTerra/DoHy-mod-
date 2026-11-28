@@ -19,6 +19,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Inventory;
@@ -95,7 +98,7 @@ import java.util.stream.Stream;
  *       ardoise des abimes, ni granite, diorite, andesite ou tuf ;</li>
  *   <li>mourir a la Mine ne fait rien perdre : l'inventaire et l'experience
  *       sont rendus a la reapparition ;</li>
- *   <li>aucun monstre ;</li>
+ *   <li>aucun monstre, hors ceux des salles a spawner ({@link MineSpawnerRoomFeature}) ;</li>
  *   <li>on ne sort pas de la zone en cours.</li>
  * </ul>
  *
@@ -416,13 +419,23 @@ public final class MineService {
         tell(player, "Mort a la Mine : rien n'est perdu.", ChatFormatting.GREEN);
     }
 
-    /** Aucun monstre a la Mine. */
+    /** Aucun monstre a la Mine, hors ceux de ses salles a spawner ({@link MineSpawnerRoomFeature}). */
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Enemy && !event.loadedFromDisk()
-                && event.getLevel().dimension() == DIMENSION) {
+                && event.getLevel().dimension() == DIMENSION && !fromSpawner(event.getEntity())) {
             event.setCanceled(true);
         }
+    }
+
+    /**
+     * Ne d'un spawner : la creature elle-meme, son cavalier (le squelette d'une araignee chevauchee,
+     * monte avant d'entrer dans le monde), ou un petit cube de magma, ne de la mort d'un plus gros —
+     * la Mine n'en fait naitre aucun autrement.
+     */
+    private static boolean fromSpawner(Entity entity) {
+        return entity.getRootVehicle() instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER
+                || entity.getType() == EntityTypes.MAGMA_CUBE;
     }
 
     // -- Le menage au demarrage --------------------------------------------------------

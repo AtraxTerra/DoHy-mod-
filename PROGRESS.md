@@ -195,6 +195,14 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-28 — les salles à spawner de la Mine
+
+- `MineSpawnerRoomFeature` : des salles closes de 7 × 7 dans la roche de la Mine, une chance sur six
+  par chunk (une salle tous les sept chunks environ), treize créatures des métiers de Chasseur et
+  d'Alchimiste tirées au poids, chacune dans son décor. Les monstres de spawner, leur cavalier et
+  les petits du cube de magma sont admis à la Mine ; les autres monstres restent refusés. Voir
+  `docs/CONTENU_DOHY.md`, « Les salles à spawner ».
+
 ### 2026-11-27 — les cartouches du HUD en cartes du kit
 
 - Le cartouche des finders et la barre du réceptacle à wither passent aux cartes et barres du HUD

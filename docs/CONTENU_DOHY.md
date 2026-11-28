@@ -1065,7 +1065,52 @@ de la roche du fond au plafond, ni ciel ni surface.
 - **Pas de cobblestone** : la pierre, l'ardoise et leurs pavés ne donnent rien — ni le granite, la
   diorite, l'andésite et le tuf, qu'on perce sans cesse dans une mine toute en roche.
 - **Mourir ne fait rien perdre** : inventaire et expérience rendus à la réapparition.
-- **Aucun monstre.**
+- **Aucun monstre**, hors ceux des salles à spawner (ci-dessous) : la créature d'un spawner, son
+  cavalier (le squelette d'une araignée chevauchée) et les petits d'un cube de magma.
+
+### Les salles à spawner (2026-11-28)
+
+Demande du joueur : « dans la mine ajoute la génération des spawners à mobs (uniquement des
+spawners pour les mobs des métiers de chasseur et alchimiste), un taux assez commun mais pas trop ».
+
+- **Une salle close** de 7 × 7 sur 4 de haut, taillée dans la roche comme les cryptes de la
+  dimension du Mineur, le spawner du jeu au milieu. On la trouve en creusant, ou au **détecteur de
+  spawners** : un peu plus d'une dans ses 9 chunks, en moyenne.
+- **Le taux** : une chance sur six par chunk, entre y = −48 et 112. Une fois refusées les places
+  qui ne vont pas (galerie trop large, lave à côté, salle d'arrivée à moins de 24 blocs), il reste
+  **une salle tous les sept chunks** environ, soit un peu plus de 2 000 par zone.
+- **Les créatures**, tirées sur 100, toutes dans les tables d'XP du Chasseur ou de l'Alchimiste :
+
+  | Créature | Part | Métiers | La salle |
+  |---|---|---|---|
+  | Zombie | 15 | Chasseur | crypte de pierre taillée, toiles, une tête sur un socle |
+  | Squelette | 13 | Chasseur | ossuaire d'ardoise, piliers d'os, un crâne |
+  | Araignée | 12 | Chasseur, Alchimiste | nid de toiles |
+  | Araignée venimeuse | 9 | Chasseur, Alchimiste | galerie de mine boisée : cadres, rails, toiles |
+  | Creeper | 8 | Chasseur | sanctuaire de grès aux piliers ciselés |
+  | Sorcière | 5 | Chasseur, Alchimiste | laboratoire : bibliothèque, chaudron, alambic, établi |
+  | Cube de magma | 5 | Alchimiste | forge de pierre noire, braises au sol, colonnes de basalte |
+  | Blaze | 3 | Chasseur, Alchimiste | autel de briques du Nether, verrues sur sable des âmes |
+  | Vache | 7 | Chasseur | étable d'épicéa, foin, abreuvoir |
+  | Cochon | 7 | Chasseur | porcherie de palétuvier dans la boue, carottes |
+  | Mouton | 6 | Chasseur | bergerie de bouleau, laine, foin, abreuvoir |
+  | Poule | 6 | Chasseur | poulailler d'acacia, nids de foin, perchoir |
+  | Lapin | 4 | Chasseur | terrier de boue séchée sous les racines, carottes |
+
+- **Les monstres dans le noir, les bêtes à la lumière** : la Mine ne fait naître un monstre qu'à
+  une lumière nulle (le cube de magma et le blaze s'en passent) ; une bête veut de l'herbe sous les
+  pattes et plus de 8 de lumière : ses salles ont un sol d'herbe et quatre lanternes au plafond.
+- **Écartés** : les boss (dragon, wither, warden, gardien ancien) ; le gardien, le ghast, le
+  shulker, la brute piglin, l'enderman et le squelette wither, créatures de l'eau, du Nether ou de
+  l'End ; la chauve-souris et le cube de soufre ; le serpent, l'escargot et l'éléphant du PalaMod
+  (appâts et monture des familiers).
+- **Des spawners de donjon** : le marteau des cavernes y prend une âme (zombie, squelette,
+  araignée, araignée venimeuse, sorcière, creeper, vache, cochon), le casser donne 1 250 XP de
+  Chasseur à partir du niveau 40, et une créature qui en sort ne rapporte qu'un quarantième de son
+  XP de métier : les règles de toujours.
+- **Les matériaux** évitent la pierre, l'ardoise des abîmes, l'andésite, la diorite, le granite, le
+  tuf et la calcite : les minerais, posés après les salles, les remplaceraient, et le lichen
+  luisant y pousserait, dont la lumière suffit à éteindre une salle à monstres.
 
 ### Administration
 
@@ -1077,6 +1122,10 @@ de la roche du fond au plafond, ni ciel ni surface.
 - `mine/MineService` (calendrier, zone en cours, salle d'arrivée, règles, ménage des fichiers,
   commande) ; `spawn/SpawnTerminalBlock` (le service MINE), `SpawnBuilder` (le contremaître près de
   l'entrée, depuis la version 11), `SpawnApi.backToPad`.
+- `mine/MineSpawnerRoomFeature` (les salles à spawner, sur le chantier `MinerRuinFeature.Site` des
+  cryptes du Mineur) et `mine/MineFeatures` (la feature `dohy:mine_spawner_room`) ;
+  `worldgen/configured_feature/mine_spawner_room.json` et `worldgen/placed_feature/mine/spawner_room.json`,
+  écrits par `tools/dohy_assets.py`.
 - `data/dohy/dimension/mine.json`, `dimension_type/mine.json` (plafond, pas de ciel),
   `worldgen/noise_settings/mine.json` (densité constante : de la roche partout ; surface : bedrock et
   ardoise), `worldgen/biome/mine.json`, le tag `worldgen/placed_feature/mine_mod_ores` et le
