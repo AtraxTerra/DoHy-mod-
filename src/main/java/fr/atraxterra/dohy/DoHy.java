@@ -65,6 +65,8 @@ public final class DoHy {
         // Les bots de farming : ils recoltent, replantent et remplissent les coffres qu'on leur lie.
         fr.atraxterra.dohy.farmbot.DoHyFarmBots.register(modBus);
         fr.atraxterra.dohy.earth.mine.DoHyMines.register(modBus);
+        // La Mine : ses salles a spawner.
+        fr.atraxterra.dohy.mine.MineFeatures.register(modBus);
         LOGGER.info("DoHy charge");
     }
 }
