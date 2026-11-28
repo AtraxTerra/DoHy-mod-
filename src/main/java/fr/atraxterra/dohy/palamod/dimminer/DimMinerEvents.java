@@ -1,6 +1,7 @@
 package fr.atraxterra.dohy.palamod.dimminer;
 
 import fr.atraxterra.dohy.world.PlacedBlocks;
+import fr.atraxterra.dohy.world.SpawnerBirth;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
@@ -8,8 +9,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
@@ -88,7 +87,7 @@ public final class DimMinerEvents {
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Enemy && DimMinerManager.levelIs(event.getLevel())
                 && !(event.getEntity() instanceof MinerBoss)
-                && !(event.getEntity() instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER)) {
+                && !SpawnerBirth.of(event.getEntity())) {
             event.setCanceled(true);
         }
     }

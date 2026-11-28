@@ -186,5 +186,93 @@
     "sounds": [
       "palamod:mob/snake/snake_death"
     ]
+  },
+  "botanist.nibbler.idle": {
+    "sounds": [
+      "palamod:botanist/nibbler/idle1",
+      "palamod:botanist/nibbler/idle2",
+      "palamod:botanist/nibbler/idle3",
+      "palamod:botanist/nibbler/idle4",
+      "palamod:botanist/nibbler/idle5",
+      "palamod:botanist/nibbler/idle6",
+      "palamod:botanist/nibbler/idle7"
+    ]
+  },
+  "botanist.nibbler.walk": {
+    "sounds": [
+      "palamod:botanist/nibbler/walk1",
+      "palamod:botanist/nibbler/walk2",
+      "palamod:botanist/nibbler/walk3"
+    ]
+  },
+  "botanist.nibbler.panic": {
+    "sounds": [
+      "palamod:botanist/nibbler/panic"
+    ]
+  },
+  "botanist.nibbler.scream": {
+    "sounds": [
+      "palamod:botanist/nibbler/scream1",
+      "palamod:botanist/nibbler/scream2",
+      "palamod:botanist/nibbler/scream3",
+      "palamod:botanist/nibbler/scream4",
+      "palamod:botanist/nibbler/scream5"
+    ]
+  },
+  "botanist.net.grab": {
+    "sounds": [
+      "palamod:botanist/net/grab1",
+      "palamod:botanist/net/grab2",
+      "palamod:botanist/net/grab3"
+    ]
+  },
+  "botanist.net.nibblers": {
+    "sounds": [
+      "palamod:botanist/net/nibblers1",
+      "palamod:botanist/net/nibblers2",
+      "palamod:botanist/net/nibblers3"
+    ]
+  },
+  "botanist.net.whoosh": {
+    "sounds": [
+      "palamod:botanist/net/whoosh"
+    ]
+  },
+  "botanist.scanner.no_coal": {
+    "sounds": [
+      "palamod:botanist/scanner/no_coal"
+    ]
+  },
+  "botanist.scanner.scan_complete": {
+    "sounds": [
+      "palamod:botanist/scanner/scan_complete"
+    ]
+  },
+  "botanist.scanner.scan_in_progress": {
+    "sounds": [
+      "palamod:botanist/scanner/scan_in_progress"
+    ]
+  },
+  "botanist.plant.bud": {
+    "sounds": [
+      "palamod:botanist/plant/common/bud1",
+      "palamod:botanist/plant/common/bud2",
+      "palamod:botanist/plant/common/bud3",
+      "palamod:botanist/plant/common/bud4"
+    ]
+  },
+  "botanist.plant.blooming": {
+    "sounds": [
+      "palamod:botanist/plant/common/blooming1",
+      "palamod:botanist/plant/common/blooming2",
+      "palamod:botanist/plant/common/blooming3"
+    ]
+  },
+  "botanist.plant.wilted": {
+    "sounds": [
+      "palamod:botanist/plant/common/wilted1",
+      "palamod:botanist/plant/common/wilted2",
+      "palamod:botanist/plant/common/wilted3"
+    ]
   }
 }

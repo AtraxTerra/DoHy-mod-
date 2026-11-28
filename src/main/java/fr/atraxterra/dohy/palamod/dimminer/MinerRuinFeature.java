@@ -332,15 +332,18 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
 
     // -- Le chantier ------------------------------------------------------------------
 
-    /** Le terrain d'une ruine : l'origine est la case du spawner, au-dessus du sol. */
-    private static final class Site {
+    /**
+     * Le terrain d'une ruine : l'origine est la case du spawner, au-dessus du sol. Public pour
+     * les salles a spawner de la Mine ({@code mine/MineSpawnerRoomFeature}), taillees pareil.
+     */
+    public static final class Site {
         final WorldGenLevel level;
         final BlockPos origin;
-        final RandomSource random;
+        public final RandomSource random;
         final List<BlockPos> shaped = new ArrayList<>();
         final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
 
-        Site(WorldGenLevel level, BlockPos origin, RandomSource random) {
+        public Site(WorldGenLevel level, BlockPos origin, RandomSource random) {
             this.level = level;
             this.origin = origin;
             this.random = random;
@@ -350,18 +353,23 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
             return cursor.set(origin.getX() + x, origin.getY() + y, origin.getZ() + z);
         }
 
-        void set(int x, int y, int z, BlockState state) {
+        public void set(int x, int y, int z, BlockState state) {
             level.setBlock(at(x, y, z), state, Block.UPDATE_CLIENTS);
         }
 
         /** Un bloc dont la forme depend de ses voisins (barriere) : ajuste a la fin. */
-        void shaped(int x, int y, int z, BlockState state) {
+        public void shaped(int x, int y, int z, BlockState state) {
             set(x, y, z, state);
             shaped.add(at(x, y, z).immutable());
         }
 
-        BlockState pick(Block... blocks) {
+        public BlockState pick(Block... blocks) {
             return blocks[random.nextInt(blocks.length)].defaultBlockState();
+        }
+
+        /** Vrai si la case est vide : pour semer un decor sans ecraser le reste. */
+        public boolean empty(int x, int y, int z) {
+            return level.getBlockState(at(x, y, z)).isAir();
         }
 
         private boolean solid(int x, int y, int z) {
@@ -389,7 +397,7 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         /** Sous terre : de la roche aux huit coins, et pas de liquide au centre. */
-        boolean enclosed() {
+        public boolean enclosed() {
             if (origin.getY() - 2 <= level.getMinY() || !level.getFluidState(at(0, 0, 0)).isEmpty()
                     || !level.getFluidState(at(0, 3, 0)).isEmpty()) {
                 return false;
@@ -466,7 +474,7 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
          * Le spawner. {@code free} : avec ses propres regles d'apparition (toute
          * lumiere, tout sol), pour la surface ; sinon celles de la creature.
          */
-        void spawner(int x, int y, int z, EntityType<?> type, boolean free) {
+        public void spawner(int x, int y, int z, EntityType<?> type, boolean free) {
             BlockPos pos = at(x, y, z).immutable();
             level.setBlock(pos, Blocks.SPAWNER.defaultBlockState(), Block.UPDATE_CLIENTS);
             if (!(level.getBlockEntity(pos) instanceof SpawnerBlockEntity spawner)) {
@@ -489,7 +497,7 @@ public class MinerRuinFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         /** Les barrieres se raccordent a leurs voisines. */
-        void settle() {
+        public void settle() {
             for (BlockPos pos : shaped) {
                 BlockState state = level.getBlockState(pos);
                 level.setBlock(pos, Block.updateFromNeighbourShapes(state, level, pos), Block.UPDATE_CLIENTS);

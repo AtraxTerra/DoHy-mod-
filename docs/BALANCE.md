@@ -1861,6 +1861,65 @@ le temps de réponse (`Need.TIMEOUT`), puis l'XP par besoin (`Mutation.NEED_XP`)
 Leviers : `Mutation` (durées, XP, récoltes, besoins), `Need` (délai, retard), `Mutation.HARVESTS`,
 `WILT_TICKS`, `GONE_TICKS`, `SEEDS_MIN` / `SEEDS_MAX`.
 
+## 6 septtrigesies. Mutations du botaniste — ce que vaut une plante rare (2026-11-28)
+
+Description : `docs/PALAMOD.md` § 49. Les niveaux, chances, durées du scanner et XP de JobsReborn
+sont dans la configuration de son serveur : tout est calibré ici, par rareté (`Rarity`).
+
+| Rareté | Fermier | Mutation par floraison | Une mutation par vie (3 fleurs) | XP de découverte | Nibblers par besoin |
+|---|---|---|---|---|---|
+| Commune | 10 | 8 % | 22 % (une vie sur 4,5) | 150 | — |
+| Rare | 25 | 5 % | 14 % (une sur 7) | 300 | 1 |
+| Épique | 45 | 3 % | 9 % (une sur 11,5) | 800 | 2 |
+| Légendaire | 70 | — | — | 2 000 | 3 |
+
+Une fleur mutée récoltée met fin à la plante (sans graines rendues), d'où au plus une mutation par
+vie : 1 − (1 − p)³. Ce que rapporte un pot, besoins remplis (vie = bourgeon + fleur + deux
+refloraisons ; XP = 3 fleurs + 4 besoins de 15) :
+
+| Plante | Vie | XP de la vie | XP par heure de présence |
+|---|---|---|---|
+| Communes (lot 2a) | 40 à 45 min | 240 à 300 | ~360 à 400 |
+| Luminelle, Mèche-épine | 49 min | 3 × 100 + 60 = 360 | ~440 |
+| Duvetine | 48 min | 360 | ~450 |
+| Lys chantant, Fleur solaire | 50 min | 360 | ~430 |
+| Cosse fumante | 51 min | 360 | ~425 |
+| Gueule de jade, Aurelys | 58 min | 3 × 160 + 60 = 540 | ~560 |
+| Fleur des miasmes | 59 min | 540 | ~550 |
+| Racine-mère, Arcanium | 73 min | 3 × 260 + 60 = 840 | ~690 |
+| Orchidée de braise | 74 min | 840 | ~680 |
+
+- **Le temps d'une mutation**, pour un pot : ~3 h de présence pour qu'une commune donne une rare
+  (4,5 vies de ~42 min), ~5,7 h d'une rare à l'épique, ~11 h d'une épique à la légendaire. Les
+  pots travaillent en parallèle, mais une plante nouvelle arrive en **une seule graine** : il faut
+  la replanter (1,5 graine par vie) avant d'en remplir ses pots. Simulé (2 000 parties, toujours
+  la graine la plus rare dans chaque pot libre, un climat) : une première légendaire vient en
+  **~5 h de présence avec dix pots** (3 à 7,5 h pour huit parties sur dix), ~6,5 h avec cinq,
+  ~4 h avec vingt.
+- **Le vrai verrou est le niveau** : la légendaire se plante au Fermier 70, soit ~2,4 M d'XP de
+  Fermier cumulée depuis le niveau 1 (~160 k au 25, ~740 k au 45). Le laboratoire (~500 XP par
+  heure et par pot) y contribue, il ne suffit pas à lui seul.
+- **L'XP de découverte** est un bonus, pas un moteur : un niveau de Fermier vaut 100 × N^1,6 XP,
+  soit ~17 200 au niveau 25, ~44 200 au 45 et ~89 600 au 70 ; une découverte en vaut 2 % environ
+  (300, 800, 2 000). Les quinze découvertes rapportent 3 × 150 + 6 × 300 + 3 × 800 + 3 × 2 000
+  = 10 650 XP en tout.
+- **Le scanner** coûte un charbon par scan (15 s pour une plante connue, 45 s pour une
+  découverte) : négligeable, il borne seulement le rythme (une mutation à la fois par scanner).
+- **Les récoltes** restent modestes au catalogue : la racine-mère donne ~7,5 lingots de paladium
+  par vie (~540 $ au prix du chapitre économique, ~72 $ le lingot), l'aurelys ~27 pépites et
+  ~4,5 lingots d'or, l'arcanium ~27 lapis. La valeur du laboratoire reste l'XP de Fermier, et la
+  collection du codex.
+- **Les nibblers** rendent un besoin plus long à remplir (les attraper au filet, puis les
+  relâcher), pas plus rare : ils comptent comme un besoin parmi les autres de la plante.
+
+**À surveiller** : si les légendaires arrivent trop vite (un mur de pots de rares), le levier le
+plus doux est la chance de muter des rares et des épiques (`Rarity`), puis l'XP par fleur des
+légendaires (`Mutation`). Si elles n'arrivent jamais, c'est la chance des épiques (3 %) qu'on
+relève d'abord.
+
+Leviers : `Rarity` (niveau, chance, XP de découverte, nibblers), `Mutation` (durées, XP, récoltes,
+besoins, cibles), `GeneScannerBlockEntity.KNOWN_TICKS` / `DISCOVERY_TICKS`, `NetItem.CAPACITY`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

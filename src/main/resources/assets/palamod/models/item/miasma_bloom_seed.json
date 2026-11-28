@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "palamod:item/miasma_bloom_seed"
+  }
+}

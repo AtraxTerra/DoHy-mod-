@@ -2,9 +2,18 @@ package fr.atraxterra.dohy.palamod.botanist;
 
 import com.mojang.serialization.Codec;
 import fr.atraxterra.dohy.palamod.PalaMod;
+import fr.atraxterra.dohy.palamod.machine.MachineLayout;
+import fr.atraxterra.dohy.palamod.machine.MachineMenu;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -14,6 +23,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -35,9 +45,11 @@ import java.util.function.Supplier;
  * graines minerales, leurs plants, leurs caracteres (vitesse, pousse hors ligne)
  * et l'endium organique. Le lot 2a apporte le pot ({@link BotanistPotBlock}), les
  * trois plantes de base, une par climat ({@link Mutation}), leurs besoins
- * ({@link Need}), l'arrosoir et la guitare. Les nibblers et le filet, les
- * mutations a la floraison, le scanner, la centrifugeuse et le centre de
- * controle sont des lots suivants.
+ * ({@link Need}), l'arrosoir et la guitare. Le lot 2b apporte les douze autres
+ * plantes et les mutations a la floraison, la mutation inconnue et le dechet, le
+ * scanner de Genis ({@link GeneScannerBlock}) et le codex ({@link BotanistCodex}),
+ * les nibblers ({@link Nibbler}) et le filet ({@link NetItem}). La centrifugeuse,
+ * la reserve de graines et le centre de controle sont du lot suivant.
  *
  * <p>Pas de metier Botaniste a part : les graines se debloquent et rapportent au
  * <b>Fermier</b>, le metier de l'agriculture ici (voir {@code docs/PALAMOD.md} § 47).
@@ -56,6 +68,12 @@ public final class PalaBotanist {
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, PalaMod.NAMESPACE);
     private static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PalaMod.NAMESPACE);
+    private static final DeferredRegister<EntityType<?>> ENTITIES =
+            DeferredRegister.create(Registries.ENTITY_TYPE, PalaMod.NAMESPACE);
+    private static final DeferredRegister<SoundEvent> SOUNDS =
+            DeferredRegister.create(Registries.SOUND_EVENT, PalaMod.NAMESPACE);
+    private static final DeferredRegister<MenuType<?>> MENUS =
+            DeferredRegister.create(Registries.MENU, PalaMod.NAMESPACE);
 
     /** Les caracteres d'une graine (NBT {@code speed} et {@code offline} dans JobsReborn). */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<SeedTraits>> TRAITS =
@@ -68,6 +86,25 @@ public final class PalaBotanist {
             COMPONENTS.registerComponentType("watering_can_charges", builder -> builder
                     .persistent(Codec.INT)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** Les nibblers du filet (NBT {@code nibblers} de JobsReborn, huit au plus). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> NIBBLERS =
+            COMPONENTS.registerComponentType("net_nibblers", builder -> builder
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** La plante portee par une mutation inconnue (NBT {@code mutation} de JobsReborn). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> MUTATION_TARGET =
+            COMPONENTS.registerComponentType("botanist_mutation_target", builder -> builder
+                    .persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8));
+
+    /** Le codex des mutations du joueur ({@link BotanistCodex}), garde a la mort. */
+    public static final Supplier<AttachmentType<List<String>>> CODEX = ATTACHMENTS.register(
+            "botanist_codex", () -> AttachmentType.<List<String>>builder(() -> List.of())
+                    .serialize(Codec.STRING.listOf().fieldOf("discovered"))
+                    .copyOnDeath()
+                    .build());
 
     /**
      * Le rattrapage des graines a ete fait pour ce joueur ({@link BotanistEvents}) :
@@ -85,6 +122,30 @@ public final class PalaBotanist {
                     .serialize(Codec.BOOL.fieldOf("done"))
                     .copyOnDeath()
                     .build());
+
+    /** Et pour le lot 2b : le scanner et le filet. */
+    public static final Supplier<AttachmentType<Boolean>> LAB2_CAUGHT_UP = ATTACHMENTS.register(
+            "botanist_lab2_caught_up", () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(Codec.BOOL.fieldOf("done"))
+                    .copyOnDeath()
+                    .build());
+
+    // -- Les sons du lot 2b (ceux de JobsReborn) ----------------------------------------------
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIBBLER_IDLE = sound("botanist.nibbler.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIBBLER_WALK = sound("botanist.nibbler.walk");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIBBLER_PANIC = sound("botanist.nibbler.panic");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NIBBLER_SCREAM = sound("botanist.nibbler.scream");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NET_GRAB = sound("botanist.net.grab");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NET_NIBBLERS = sound("botanist.net.nibblers");
+    public static final DeferredHolder<SoundEvent, SoundEvent> NET_WHOOSH = sound("botanist.net.whoosh");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCANNER_NO_COAL = sound("botanist.scanner.no_coal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCANNER_COMPLETE =
+            sound("botanist.scanner.scan_complete");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SCANNER_SCAN = sound("botanist.scanner.scan_in_progress");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_BUD = sound("botanist.plant.bud");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_BLOOMING = sound("botanist.plant.blooming");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_WILTED = sound("botanist.plant.wilted");
 
     // -- Les plants -------------------------------------------------------------
 
@@ -149,15 +210,43 @@ public final class PalaBotanist {
                     () -> new BlockEntityType<>(BotanistPotBlockEntity::new, Set.<Block>of(POT.get())));
     public static final DeferredItem<BlockItem> POT_ITEM = ITEMS.registerSimpleBlockItem(POT, properties -> properties);
 
+    // Les graines des quinze plantes, une par plante, dans l'ordre de Mutation (par climat).
     public static final DeferredItem<MutationSeedItem> IRONWHEAT_SEED =
             mutationSeed("ironwheat_seed", Mutation.IRONWHEAT);
+    public static final DeferredItem<MutationSeedItem> GLOWBLOOM_SEED =
+            mutationSeed("glowbloom_seed", Mutation.GLOWBLOOM);
+    public static final DeferredItem<MutationSeedItem> PUFFBLOOM_SEED =
+            mutationSeed("puffbloom_seed", Mutation.PUFFBLOOM);
+    public static final DeferredItem<MutationSeedItem> JADE_MAW_SEED =
+            mutationSeed("jade_maw_seed", Mutation.JADE_MAW);
+    public static final DeferredItem<MutationSeedItem> MOTHERROOT_SEED =
+            mutationSeed("motherroot_seed", Mutation.MOTHERROOT);
     public static final DeferredItem<MutationSeedItem> MOONFROST_SEED =
             mutationSeed("moonfrost_seed", Mutation.MOONFROST);
+    public static final DeferredItem<MutationSeedItem> THORNWICK_SEED =
+            mutationSeed("thornwick_seed", Mutation.THORNWICK);
+    public static final DeferredItem<MutationSeedItem> SONGLILY_SEED =
+            mutationSeed("songlily_seed", Mutation.SONGLILY);
+    public static final DeferredItem<MutationSeedItem> AURELYS_SEED =
+            mutationSeed("aurelys_seed", Mutation.AURELYS);
+    public static final DeferredItem<MutationSeedItem> ARCANIUM_SEED =
+            mutationSeed("arcanium_seed", Mutation.ARCANIUM);
     public static final DeferredItem<MutationSeedItem> SAND_CORAL_SEED =
             mutationSeed("sand_coral_seed", Mutation.SAND_CORAL);
+    public static final DeferredItem<MutationSeedItem> SUNBLOOM_SEED =
+            mutationSeed("sunbloom_seed", Mutation.SUNBLOOM);
+    public static final DeferredItem<MutationSeedItem> SMOKEPOD_SEED =
+            mutationSeed("smokepod_seed", Mutation.SMOKEPOD);
+    public static final DeferredItem<MutationSeedItem> MIASMA_BLOOM_SEED =
+            mutationSeed("miasma_bloom_seed", Mutation.MIASMA_BLOOM);
+    public static final DeferredItem<MutationSeedItem> EMBER_ORCHID_SEED =
+            mutationSeed("ember_orchid_seed", Mutation.EMBER_ORCHID);
 
     public static final Map<Mutation, DeferredItem<MutationSeedItem>> MUTATION_SEEDS = bymutation(List.of(
-            IRONWHEAT_SEED, MOONFROST_SEED, SAND_CORAL_SEED));
+            IRONWHEAT_SEED, GLOWBLOOM_SEED, PUFFBLOOM_SEED, JADE_MAW_SEED, MOTHERROOT_SEED,
+            MOONFROST_SEED, THORNWICK_SEED, SONGLILY_SEED, AURELYS_SEED, ARCANIUM_SEED,
+            SAND_CORAL_SEED, SUNBLOOM_SEED, SMOKEPOD_SEED, MIASMA_BLOOM_SEED, EMBER_ORCHID_SEED));
+
 
     /** L'arrosoir et la guitare : 32 utilisations chacun, sans reparation (JobsReborn). */
     public static final DeferredItem<WateringCanItem> WATERING_CAN = ITEMS.registerItem("watering_can",
@@ -165,10 +254,46 @@ public final class PalaBotanist {
     public static final DeferredItem<GuitarItem> GUITAR = ITEMS.registerItem("guitar",
             GuitarItem::new, properties -> properties.durability(32));
 
-    public static final List<DeferredItem<? extends Item>> ORDERED = List.of(
-            AMETHYST_SEED, TITANE_SEED, PALADIUM_SEED, GREEN_PALADIUM_SEED,
-            FINDIUM_SEED, TRIXIUM_SEED, INVOKER_SEED, ENDIUM_SEED, ORGANIC_ENDIUM,
-            POT_ITEM, WATERING_CAN, GUITAR, IRONWHEAT_SEED, MOONFROST_SEED, SAND_CORAL_SEED);
+    // -- Le laboratoire (lot 2b) --------------------------------------------------------
+
+    /** Le filet : huit nibblers, 32 utilisations, sans reparation (JobsReborn). */
+    public static final DeferredItem<NetItem> NET = ITEMS.registerItem("net", NetItem::new,
+            properties -> properties.durability(32));
+    /** La mutation inconnue, et le dechet d'un scan sans plante a reveler. */
+    public static final DeferredItem<UnknownMutationItem> UNKNOWN_MUTATION = ITEMS.registerItem("unknown_mutation",
+            UnknownMutationItem::new);
+    public static final DeferredItem<Item> MUTATION_WASTE = ITEMS.registerItem("mutation_waste",
+            properties -> new BotanistItem("tooltip.palamod.mutation_waste.use", properties));
+
+    /** Le scanner de Genis : deux blocs de haut, du metal, se casse a la pioche comme une machine. */
+    public static final DeferredBlock<GeneScannerBlock> GENE_SCANNER = BLOCKS.registerBlock("gene_scanner",
+            GeneScannerBlock::new, properties -> properties
+                    .strength(3.5f)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.METAL)
+                    .mapColor(MapColor.METAL)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.BLOCK));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GeneScannerBlockEntity>> GENE_SCANNER_TYPE =
+            TYPES.register("gene_scanner",
+                    () -> new BlockEntityType<>(GeneScannerBlockEntity::new, Set.<Block>of(GENE_SCANNER.get())));
+    public static final DeferredItem<BlockItem> GENE_SCANNER_ITEM = ITEMS.registerItem("gene_scanner",
+            properties -> new BotanistBlockItem(GENE_SCANNER.get(), properties.useBlockDescriptionPrefix(),
+                    "tooltip.palamod.gene_scanner.use", "tooltip.palamod.gene_scanner.fuel"));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> GENE_SCANNER_MENU =
+            MENUS.register("gene_scanner", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(PalaBotanist.GENE_SCANNER_MENU.get(), containerId,
+                            inventory, MachineLayout.GENE_SCANNER),
+                    FeatureFlags.VANILLA_SET));
+
+    /** Le nibbler : 0,4 de large, 0,3 de haut (JobsReborn). */
+    public static final DeferredHolder<EntityType<?>, EntityType<Nibbler>> NIBBLER = ENTITIES.register("nibbler",
+            key -> EntityType.Builder.<Nibbler>of(Nibbler::new, MobCategory.CREATURE)
+                    .sized(0.4f, 0.3f)
+                    .clientTrackingRange(8)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
+
+    public static final List<DeferredItem<? extends Item>> ORDERED = ordered();
 
     private PalaBotanist() {
     }
@@ -197,12 +322,44 @@ public final class PalaBotanist {
         return ITEMS.registerItem(name, properties -> new MutationSeedItem(properties, mutation));
     }
 
-    private static <T> Map<Mutation, T> bymutation(List<T> ordered) {
-        Map<Mutation, T> map = new EnumMap<>(Mutation.class);
+    /** Les graines par plante, d'apres la plante de chaque graine (et non leur ordre dans la liste). */
+    private static Map<Mutation, DeferredItem<MutationSeedItem>> bymutation(
+            List<DeferredItem<MutationSeedItem>> seeds) {
+        Map<Mutation, DeferredItem<MutationSeedItem>> map = new EnumMap<>(Mutation.class);
         for (Mutation mutation : Mutation.values()) {
-            map.put(mutation, ordered.get(mutation.ordinal()));
+            for (DeferredItem<MutationSeedItem> seed : seeds) {
+                if (seed.getId().getPath().equals(mutation.seedName())) {
+                    map.put(mutation, seed);
+                }
+            }
+        }
+        if (map.size() != Mutation.values().length) {
+            throw new IllegalStateException("Graine de mutation manquante : " + map.keySet());
         }
         return Map.copyOf(map);
+    }
+
+    /** L'ordre de l'onglet : graines minerales, pot et outils, graines du laboratoire par rarete, scanner. */
+    private static List<DeferredItem<? extends Item>> ordered() {
+        List<DeferredItem<? extends Item>> list = new java.util.ArrayList<>(List.of(
+                AMETHYST_SEED, TITANE_SEED, PALADIUM_SEED, GREEN_PALADIUM_SEED,
+                FINDIUM_SEED, TRIXIUM_SEED, INVOKER_SEED, ENDIUM_SEED, ORGANIC_ENDIUM,
+                POT_ITEM, WATERING_CAN, GUITAR, NET, GENE_SCANNER_ITEM));
+        for (Rarity rarity : Rarity.values()) {
+            for (Mutation mutation : Mutation.values()) {
+                if (mutation.rarity() == rarity) {
+                    list.add(MUTATION_SEEDS.get(mutation));
+                }
+            }
+        }
+        list.add(UNKNOWN_MUTATION);
+        list.add(MUTATION_WASTE);
+        return List.copyOf(list);
+    }
+
+    private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
+        return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(
+                Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, name)));
     }
 
     private static <T> Map<MineralSeed, T> byseed(List<T> ordered) {
@@ -219,5 +376,13 @@ public final class PalaBotanist {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         TYPES.register(modBus);
+        ENTITIES.register(modBus);
+        SOUNDS.register(modBus);
+        MENUS.register(modBus);
+        modBus.addListener(PalaBotanist::onAttributes);
+    }
+
+    private static void onAttributes(EntityAttributeCreationEvent event) {
+        event.put(NIBBLER.get(), Nibbler.createAttributes().build());
     }
 }
