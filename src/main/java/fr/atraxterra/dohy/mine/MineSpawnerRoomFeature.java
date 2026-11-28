@@ -7,6 +7,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -370,9 +371,10 @@ public class MineSpawnerRoomFeature extends Feature<NoneFeatureConfiguration> {
 
     /** Mouton : une bergerie de bouleau, des balles de laine et de foin, un abreuvoir. */
     private static void fold(MinerRuinFeature.Site site) {
-        site.set(-HALF, 0, HALF, Blocks.WHITE_WOOL.defaultBlockState());
-        site.set(-HALF + 1, 0, HALF, Blocks.WHITE_WOOL.defaultBlockState());
-        site.set(-HALF, 1, HALF, Blocks.LIGHT_GRAY_WOOL.defaultBlockState());
+        BlockState white = Blocks.WOOL.pick(DyeColor.WHITE).defaultBlockState();
+        site.set(-HALF, 0, HALF, white);
+        site.set(-HALF + 1, 0, HALF, white);
+        site.set(-HALF, 1, HALF, Blocks.WOOL.pick(DyeColor.LIGHT_GRAY).defaultBlockState());
         site.set(-HALF, 0, HALF - 1, Blocks.HAY_BLOCK.defaultBlockState());
         site.set(HALF, 0, -HALF, Blocks.HAY_BLOCK.defaultBlockState());
         site.set(HALF, 0, HALF, trough());
