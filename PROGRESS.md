@@ -195,6 +195,12 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — la palette d'armement au style des coffres du kit
+
+- `PaletteScreen` : fenêtre et en-tête du kit (icône, nom, croix), groupe et compte par famille
+  dans la bande du haut, cases, flèches et glissière du kit. Vérifié en captures (une palette, un
+  groupe de 3 × 3 avec défilement).
+
 ### 2026-11-27 — meule, table de forgeron et tailleur de pierre au style du kit
 
 - **`KitStations`** gagne la meule, la table de forgeron (armure sur son support, silhouettes et
