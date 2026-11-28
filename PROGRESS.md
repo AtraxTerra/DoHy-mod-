@@ -215,10 +215,13 @@ l'Aventurier de JobsReborn.
   lignes « Donjon … réussi » et « Palier … conquis » de l'onglet XP des métiers, la fiche « Les
   donjons ». Chiffres : `PALAMOD.md` § 51, `BALANCE.md` § 6 novotrigesies.
 
-**Vérifié** : compilation CI, contrôles locaux (encyclopédie, initialisations statiques, verrous
-de métier).
+**Vérifié** : compilation CI, contrôles locaux ; captures d'un palier 13 de Talikus réussi pour
+la première fois (« Sac livré : 6 piles. +1400 XP de Fermier. », « Note S : +25 % d'XP de
+métier. », « Palier 13 conquis, première victoire : +1120 XP de Fermier en plus. »), puis rejoué
+(réussi, plus conquis), et de l'écran des paliers avant et après (« CONQUIS 12 / 100 », puis 13).
 
-**Non vérifié en jeu** : un palier réussi de bout en bout (la conquête et la note dans le chat).
+**Non vérifié en jeu** : le titre « Palier 13 conquis ! » (la capture tombe pendant le retour au
+spawn).
 
 ### 2026-11-28 — le laboratoire du botaniste, lot 2c : centrifugeuse, réserve, centre de contrôle
 
