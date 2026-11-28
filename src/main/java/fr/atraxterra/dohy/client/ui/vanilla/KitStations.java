@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.client.ui.vanilla;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import fr.atraxterra.dohy.client.ui.Anim;
 import fr.atraxterra.dohy.client.ui.Buttons;
@@ -13,16 +14,25 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screens.inventory.CartographyTableScreen;
 import net.minecraft.client.gui.screens.inventory.CyclingSlotBackground;
 import net.minecraft.client.gui.screens.inventory.EnchantmentNames;
 import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.StonecutterScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.model.object.banner.BannerFlagModel;
 import net.minecraft.client.model.object.book.BookModel;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.state.ArmorStandRenderState;
+import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
@@ -31,19 +41,28 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.BrewingStandMenu;
+import net.minecraft.world.inventory.CartographyTableMenu;
 import net.minecraft.world.inventory.EnchantmentMenu;
 import net.minecraft.world.inventory.GrindstoneMenu;
+import net.minecraft.world.inventory.LoomMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.inventory.StonecutterMenu;
+import net.minecraft.world.item.BannerItem;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.crafting.SelectableRecipe;
 import net.minecraft.world.item.crafting.StonecutterRecipe;
 import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.joml.Matrix3x2fStack;
@@ -51,13 +70,14 @@ import org.joml.Quaternionfc;
 import org.joml.Vector3fc;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * La table d'enchantement, l'enclume et l'alambic au style du kit (les trois ecrans du
- * jeu que PalaVanillaGui, de Paladium, redessinait), puis la meule, la table de forgeron et
- * le tailleur de pierre, en plus de ceux que le kit avait deja (etabli, fours, coffres,
- * entonnoir, distributeur).
+ * jeu que PalaVanillaGui, de Paladium, redessinait), puis la meule, la table de forgeron,
+ * le tailleur de pierre, le metier a tisser et la table de cartographie, en plus de ceux que
+ * le kit avait deja (etabli, fours, coffres, entonnoir, distributeur).
  *
  * <p>Les cases sont celles du jeu ({@code Slot.x} et {@code Slot.y} sont finals) ; les
  * clics, les bulles, le champ du nom et le livre anime restent ceux du jeu. Ces trois
@@ -762,6 +782,346 @@ public final class KitStations {
             UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
             if (menu.slots.size() > 2) {
                 ContainerStyle.inventoryLabel(g, menu.slots.get(2));
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == 0 && ContainerStyle.overClose(event.x() - leftPos, event.y() - topPos, imageWidth)) {
+                onClose();
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        @Override
+        protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+            return super.hasClickedOutside(mouseX, mouseY, left, top)
+                    && !ContainerStyle.inHeader(mouseX, mouseY, left, top, imageWidth);
+        }
+    }
+
+    // -- Metier a tisser -------------------------------------------------------------------
+
+    /**
+     * Le metier a tisser : la banniere, la teinture et le motif a gauche (leurs silhouettes du
+     * jeu dans les cases vides) ; au milieu la grille des motifs, quatre par rangee aux places du
+     * jeu, le choisi en rouge, curseur main et bulle du jeu (le motif dans la couleur de la
+     * teinture) au survol, et sa barre de defilement ; a droite la banniere telle qu'elle sortira
+     * (l'apercu du jeu) au-dessus du resultat cercle. Une croix rouge sur le resultat quand la
+     * banniere porte deja tous ses motifs. Clics, molette et barre tiree restent ceux du jeu.
+     */
+    public static final class Loom extends LoomScreen {
+        private static final Field FLAG = field(LoomScreen.class, "flag");
+        private static final Field RESULT = field(LoomScreen.class, "resultBannerPatterns");
+        private static final Field FULL = field(LoomScreen.class, "hasMaxPatterns");
+        private static final Field SHOWN = field(LoomScreen.class, "displayPatterns");
+        private static final Field SCROLL = field(LoomScreen.class, "scrollOffs");
+        private static final Field SCROLLING = field(LoomScreen.class, "scrolling");
+        private static final Field START = field(LoomScreen.class, "startRow");
+        private static final Field DYE = field(LoomScreen.class, "dyeStack");
+        private static final Identifier BANNER_SLOT = Identifier.withDefaultNamespace("container/slot/banner");
+        private static final Identifier DYE_SLOT = Identifier.withDefaultNamespace("container/slot/dye");
+        private static final Identifier PATTERN_SLOT = Identifier.withDefaultNamespace("container/slot/banner_pattern");
+        /** La grille du jeu : 4 x 4 motifs de 14, en (60, 13) ; la barre en (119, 13), 56 de haut. */
+        private static final int COLUMNS = 4;
+        private static final int VISIBLE = 16;
+        private static final float CELL = 14.0f;
+        private final ItemStack icon = new ItemStack(Items.LOOM);
+
+        public Loom(LoomMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+        }
+
+        @Override
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            Object flag = read(FLAG, this);
+            Object full = read(FULL, this);
+            Object shown = read(SHOWN, this);
+            Object scroll = read(SCROLL, this);
+            Object scrolling = read(SCROLLING, this);
+            Object start = read(START, this);
+            Object dye = read(DYE, this);
+            if (!(flag instanceof BannerFlagModel model) || !(full instanceof Boolean max)
+                    || !(shown instanceof Boolean display) || !(scroll instanceof Float offset)
+                    || !(scrolling instanceof Boolean dragging) || !(start instanceof Integer row)
+                    || !(dye instanceof ItemStack dyeStack) || RESULT == null) {
+                super.extractBackground(graphics, mouseX, mouseY, partialTick);
+                return;
+            }
+            Object layers = read(RESULT, this);
+            ContainerStyle.veil(graphics, width, height);
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            Paint p = g.paint();
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(leftPos, topPos);
+            double mx = mouseX - leftPos;
+            double my = mouseY - topPos;
+            frame(g, p, icon, headerTitle(title, "container.loom", Blocks.LOOM), imageWidth, imageHeight, mx, my);
+            // Trois encarts : ce qu'on tisse, les motifs, ce qui sort (le resultat descend plus bas).
+            ContainerStyle.inset(p, 8, 9, 46, 66);
+            ContainerStyle.inset(p, 56, 9, 79, 66);
+            ContainerStyle.inset(p, 137, 9, 31, 70);
+            Slot result = menu.getResultSlot();
+            for (Slot slot : menu.slots) {
+                if (slot == result) {
+                    ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+                } else {
+                    ContainerStyle.slot(p, slot);
+                }
+            }
+
+            // La grille des motifs, dans son creux.
+            p.framed(58.5f, 11.5f, 59.0f, 59.0f, 3.5f, 0xFF101113, 0xFF24262A, 1);
+            List<Holder<BannerPattern>> patterns = menu.getSelectablePatterns();
+            int selected = menu.getSelectedBannerPatternIndex();
+            Holder<BannerPattern> hovered = null;
+            if (display) {
+                for (int place = 0; place < VISIBLE; place++) {
+                    int index = (row + place / COLUMNS) * COLUMNS + place % COLUMNS;
+                    if (index >= patterns.size()) {
+                        break;
+                    }
+                    float x = 60.0f + place % COLUMNS * CELL;
+                    float y = 13.0f + place / COLUMNS * CELL;
+                    boolean over = mx >= x && my >= y && mx < x + CELL && my < y + CELL;
+                    boolean chosen = index == selected;
+                    int fill = chosen ? Paint.mix(0xFF1A1B1E, Ui.Theme.RED, 0.3f) : over ? 0xFF2A2C31 : 0xFF1C1D21;
+                    int edge = chosen ? Ui.Theme.RED : over ? 0xFF5A5D65 : 0xFF2A2C31;
+                    p.framed(x + 0.5f, y + 0.5f, CELL - 1.0f, CELL - 1.0f, 2.5f, fill, edge, 1);
+                    if (over && !chosen) {
+                        hovered = patterns.get(index);
+                    }
+                }
+            } else {
+                g.wrapped(Ui.BODY, "Pose une banniere et une teinture : ses motifs viennent ici.", 62.0f, 30.0f,
+                        4.6f, 52.0f, 6.6f, Ui.Theme.MUTED, 4);
+            }
+
+            // La barre de defilement : le jeu la tire et la fait rouler, on la dessine.
+            boolean active = display && patterns.size() > VISIBLE;
+            p.round(121.0f, 13.0f, 8.0f, 56.0f, 4.0f, 0xFF16171A);
+            boolean overBar = mx >= 119.0f && my >= 13.0f && mx < 131.0f && my < 69.0f;
+            float thumbY = 13.0f + (int) (41.0f * offset);
+            p.round(121.0f, thumbY, 8.0f, 15.0f, 4.0f,
+                    !active ? 0xFF2A2C31 : overBar || dragging ? 0xFF8C8F97 : 0xFF5A5D65);
+            if (overBar) {
+                graphics.requestCursor(!active ? CursorTypes.NOT_ALLOWED
+                        : dragging ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);
+            }
+
+            // L'apercu dans son creux ; la croix quand la banniere est pleine.
+            p.framed(139.5f, 10.5f, 23.0f, 39.0f, 3.0f, 0xFF101113, 0xFF24262A, 1);
+            if (max) {
+                p.glow(result.x + 8.0f, result.y + 8.0f, 11.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+                p.cross(result.x + 8.0f, result.y + 8.0f, 12.0f, Ui.Theme.RED_LIGHT);
+            }
+            pose.popMatrix();
+
+            // Les silhouettes des cases vides, comme le jeu.
+            silhouette(graphics, menu.getBannerSlot(), BANNER_SLOT);
+            silhouette(graphics, menu.getDyeSlot(), DYE_SLOT);
+            silhouette(graphics, menu.getPatternSlot(), PATTERN_SLOT);
+            // Les motifs en petites bannieres, comme le jeu les pose.
+            if (display) {
+                for (int place = 0; place < VISIBLE; place++) {
+                    int index = (row + place / COLUMNS) * COLUMNS + place % COLUMNS;
+                    if (index >= patterns.size()) {
+                        break;
+                    }
+                    TextureAtlasSprite sprite = graphics.getSprite(Sheets.getBannerSprite(patterns.get(index)));
+                    bannerOnButton(graphics, leftPos + 60 + place % COLUMNS * 14, topPos + 13 + place / COLUMNS * 14,
+                            sprite);
+                }
+            }
+            if (hovered != null) {
+                DyeColor color = dyeStack.getOrDefault(DataComponents.DYE, DyeColor.WHITE);
+                graphics.setTooltipForNextFrame(
+                        Component.translatable(hovered.value().translationKey() + "." + color.getName()), mouseX, mouseY);
+                graphics.requestCursor(CursorTypes.POINTING_HAND);
+            }
+            // La banniere qui sortira : l'apercu du jeu, un peu plus petit, dans son creux.
+            if (layers instanceof BannerPatternLayers pattern && !max
+                    && result.getItem().getItem() instanceof BannerItem banner) {
+                graphics.bannerPattern(model, banner.getColor(), pattern, leftPos + 142, topPos + 12, leftPos + 160,
+                        topPos + 48);
+            }
+            minecraft.gameRenderer.lighting().setupFor(Lighting.Entry.ITEMS_3D);
+        }
+
+        private void silhouette(GuiGraphicsExtractor graphics, Slot slot, Identifier sprite) {
+            if (!slot.hasItem()) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, leftPos + slot.x, topPos + slot.y, 16, 16);
+            }
+        }
+
+        /** Le motif sur une petite banniere grise de 5 x 10, au centre de sa case (le dessin du jeu). */
+        private static void bannerOnButton(GuiGraphicsExtractor graphics, int x, int y, TextureAtlasSprite sprite) {
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(x + 4, y + 2);
+            float u0 = sprite.getU0();
+            float u1 = u0 + (sprite.getU1() - sprite.getU0()) * 21.0f / 64.0f;
+            float height = sprite.getV1() - sprite.getV0();
+            float v0 = sprite.getV0() + height / 64.0f;
+            float v1 = v0 + height * 40.0f / 64.0f;
+            graphics.fill(0, 0, 5, 10, DyeColor.GRAY.getTextureDiffuseColor());
+            graphics.blit(sprite.atlasLocation(), 0, 0, 5, 10, u0, u1, v0, v1);
+            pose.popMatrix();
+        }
+
+        @Override
+        protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            if (menu.slots.size() > 4) {
+                ContainerStyle.inventoryLabel(g, menu.slots.get(4));
+            }
+        }
+
+        @Override
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() == 0 && ContainerStyle.overClose(event.x() - leftPos, event.y() - topPos, imageWidth)) {
+                onClose();
+                return true;
+            }
+            return super.mouseClicked(event, doubleClick);
+        }
+
+        @Override
+        protected boolean hasClickedOutside(double mouseX, double mouseY, int left, int top) {
+            return super.hasClickedOutside(mouseX, mouseY, left, top)
+                    && !ContainerStyle.inHeader(mouseX, mouseY, left, top, imageWidth);
+        }
+    }
+
+    // -- Table de cartographie ---------------------------------------------------------------
+
+    /**
+     * La table de cartographie : la carte et ce qu'on lui ajoute a gauche (papier pour l'agrandir,
+     * carte vierge pour la copier, vitre pour la verrouiller), la fleche, l'apercu au milieu, le
+     * resultat cercle a droite. L'apercu est celui du jeu, a ses places, un peu reduit pour tenir
+     * dans son creux : la carte agrandie, ses deux exemplaires, ou son cadenas. Une croix rouge sur
+     * la fleche quand l'ajout ne se peut pas (carte verrouillee, ou deja a sa plus grande taille).
+     * Sans carte, l'apercu dit ce que fait chaque ajout.
+     */
+    public static final class Cartography extends CartographyTableScreen {
+        private static final Identifier SCALED = Identifier.withDefaultNamespace("container/cartography_table/scaled_map");
+        private static final Identifier DUPLICATED =
+                Identifier.withDefaultNamespace("container/cartography_table/duplicated_map");
+        private static final Identifier SHEET = Identifier.withDefaultNamespace("container/cartography_table/map");
+        private static final Identifier LOCKED = Identifier.withDefaultNamespace("container/cartography_table/locked");
+        /** L'apercu du jeu tient dans (67, 13) - (133, 79) : on le reduit autour de son centre. */
+        private static final float PREVIEW_SCALE = 0.86f;
+        private final MapRenderState preview = new MapRenderState();
+        private final ItemStack icon = new ItemStack(Items.CARTOGRAPHY_TABLE);
+
+        public Cartography(CartographyTableMenu menu, Inventory inventory, Component title) {
+            super(menu, inventory, title);
+        }
+
+        @Override
+        public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            ItemStack extra = menu.getSlot(CartographyTableMenu.ADDITIONAL_SLOT).getItem();
+            boolean copy = extra.is(Items.MAP);
+            boolean zoom = extra.is(Items.PAPER);
+            boolean lock = extra.is(Items.GLASS_PANE);
+            ItemStack map = menu.getSlot(CartographyTableMenu.MAP_SLOT).getItem();
+            MapId id = map.get(DataComponents.MAP_ID);
+            MapItemSavedData data = id == null || minecraft.level == null ? null : MapItem.getSavedData(id, minecraft.level);
+            // Les deux refus du jeu : une carte verrouillee ne change plus, une carte a l'echelle 4 ne grandit plus.
+            boolean blocked = data != null && (data.locked || zoom && data.scale >= 4);
+            boolean failed = data != null && (data.locked && (zoom || lock) || zoom && data.scale >= 4);
+
+            ContainerStyle.veil(graphics, width, height);
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            Paint p = g.paint();
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(leftPos, topPos);
+            frame(g, p, icon, headerTitle(title, "container.cartography_table", Blocks.CARTOGRAPHY_TABLE),
+                    imageWidth, imageHeight, mouseX - leftPos, mouseY - topPos);
+            ContainerStyle.inset(p, 8, 9, imageWidth - 16, 66);
+            Slot result = menu.getSlot(CartographyTableMenu.RESULT_SLOT);
+            for (int index = 0; index < menu.slots.size(); index++) {
+                Slot slot = menu.slots.get(index);
+                if (index == CartographyTableMenu.RESULT_SLOT) {
+                    ContainerStyle.bigSlot(p, slot, Ui.Theme.GREEN);
+                } else {
+                    ContainerStyle.slot(p, slot);
+                }
+            }
+            // La carte, plus ce qu'on lui ajoute, puis la fleche vers l'apercu.
+            Slot first = menu.getSlot(CartographyTableMenu.MAP_SLOT);
+            Slot second = menu.getSlot(CartographyTableMenu.ADDITIONAL_SLOT);
+            float plusX = first.x + 8.0f;
+            float plusY = (first.y + 16 + second.y) / 2.0f;
+            int plus = second.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42;
+            p.rect(plusX - 3.5f, plusY - 0.65f, 7.0f, 1.3f, plus);
+            p.rect(plusX - 0.65f, plusY - 3.5f, 1.3f, 7.0f, plus);
+            p.arrow(39.0f, 37.5f, 20.0f, 9.0f, failed ? 0xFF4A2A2A : result.hasItem() ? Ui.Theme.TEXT2 : 0xFF3A3C42);
+            if (failed) {
+                p.glow(49.0f, 42.0f, 11.0f, Paint.alpha(Ui.Theme.RED, 0.35f));
+                p.cross(49.0f, 42.0f, 12.0f, Ui.Theme.RED_LIGHT);
+            }
+            // L'apercu dans son creux.
+            p.framed(63.5f, 11.5f, 73.0f, 61.0f, 3.5f, 0xFF101113, 0xFF24262A, 1);
+            if (map.isEmpty()) {
+                g.wrapped(Ui.BODY, "Pose une carte, puis du papier pour l'agrandir, une carte vierge pour la copier "
+                        + "ou une vitre pour la verrouiller.", 68.0f, 21.0f, 4.6f, 64.0f, 6.6f, Ui.Theme.MUTED, 6);
+            }
+            pose.popMatrix();
+
+            if (!map.isEmpty()) {
+                pose.pushMatrix();
+                pose.translate(leftPos + 100.0f, topPos + 42.0f);
+                pose.scale(PREVIEW_SCALE, PREVIEW_SCALE);
+                pose.translate(-100.0f, -46.0f);
+                resulting(graphics, id, data, copy, zoom, lock, blocked);
+                pose.popMatrix();
+            }
+        }
+
+        /** L'apercu du jeu, a ses places (dans le repere de la fenetre). */
+        private void resulting(GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, boolean copy,
+                               boolean zoom, boolean lock, boolean blocked) {
+            if (zoom && !blocked) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SCALED, 67, 13, 66, 66);
+                drawMap(graphics, id, data, 85, 31, 0.226f);
+            } else if (copy) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DUPLICATED, 83, 13, 50, 66);
+                drawMap(graphics, id, data, 86, 16, 0.34f);
+                graphics.nextStratum();
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DUPLICATED, 67, 29, 50, 66);
+                drawMap(graphics, id, data, 70, 32, 0.34f);
+            } else if (lock) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SHEET, 67, 13, 66, 66);
+                drawMap(graphics, id, data, 71, 17, 0.45f);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, LOCKED, 118, 60, 10, 14);
+            } else {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SHEET, 67, 13, 66, 66);
+                drawMap(graphics, id, data, 71, 17, 0.45f);
+            }
+        }
+
+        private void drawMap(GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, int x, int y, float scale) {
+            if (id == null || data == null) {
+                return;
+            }
+            Matrix3x2fStack pose = graphics.pose();
+            pose.pushMatrix();
+            pose.translate(x, y);
+            pose.scale(scale, scale);
+            minecraft.getMapRenderer().extractRenderState(id, data, preview);
+            graphics.map(preview);
+            pose.popMatrix();
+        }
+
+        @Override
+        protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+            UiGraphics g = ContainerStyle.begin(graphics, font, mouseX, mouseY);
+            if (menu.slots.size() > 3) {
+                ContainerStyle.inventoryLabel(g, menu.slots.get(3));
             }
         }
 
