@@ -63,6 +63,12 @@ public final class BotanistEvents {
             catchUp(player, Set.of("palamod:gene_scanner", "palamod:net"), "message.palamod.botanist_lab2.catch_up",
                     "Scanner et filet du botaniste");
         }
+        // Le lot 2c (reserve et centre de controle au Fermier 10, centrifugeuse au 25) : meme regle.
+        if (!player.getData(PalaBotanist.LAB3_CAUGHT_UP.get())) {
+            player.setData(PalaBotanist.LAB3_CAUGHT_UP.get(), Boolean.TRUE);
+            catchUp(player, Set.of("palamod:seed_reserve", "palamod:lab_control", "palamod:mutation_centrifuge"),
+                    "message.palamod.botanist_lab3.catch_up", "Laboratoire du botaniste, lot 2c");
+        }
     }
 
     /** Verse les recompenses de Fermier deja franchies dont l'objet est dans {@code ids}. */

@@ -198,10 +198,28 @@
       "label": "Scanner de Genis"
     },
     {
+      "id": "palamod:seed_reserve",
+      "job": "farmer",
+      "level": 10,
+      "label": "Reserve de graines"
+    },
+    {
+      "id": "palamod:lab_control",
+      "job": "farmer",
+      "level": 10,
+      "label": "Centre de controle"
+    },
+    {
       "id": "palamod:net",
       "job": "farmer",
       "level": 25,
       "label": "Filet"
+    },
+    {
+      "id": "palamod:mutation_centrifuge",
+      "job": "farmer",
+      "level": 25,
+      "label": "Centrifugeuse"
     },
     {
       "id": "palamod:glowbloom_seed",
@@ -1228,6 +1246,20 @@
     },
     {
       "job": "farmer",
+      "level": 10,
+      "id": "palamod:seed_reserve",
+      "count": 1,
+      "label": "Reserve de graines"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:lab_control",
+      "count": 1,
+      "label": "Centre de controle"
+    },
+    {
+      "job": "farmer",
       "level": 15,
       "id": "palamod:paladium_ingot",
       "count": 15,
@@ -1281,6 +1313,13 @@
       "id": "palamod:net",
       "count": 1,
       "label": "Filet"
+    },
+    {
+      "job": "farmer",
+      "level": 25,
+      "id": "palamod:mutation_centrifuge",
+      "count": 1,
+      "label": "Centrifugeuse"
     },
     {
       "job": "farmer",

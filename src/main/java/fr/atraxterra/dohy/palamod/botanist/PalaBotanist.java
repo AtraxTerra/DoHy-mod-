@@ -18,6 +18,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -130,6 +131,34 @@ public final class PalaBotanist {
                     .copyOnDeath()
                     .build());
 
+    /** Et pour le lot 2c : la reserve, la centrifugeuse et le centre de controle. */
+    public static final Supplier<AttachmentType<Boolean>> LAB3_CAUGHT_UP = ATTACHMENTS.register(
+            "botanist_lab3_caught_up", () -> AttachmentType.builder(() -> Boolean.FALSE)
+                    .serialize(Codec.BOOL.fieldOf("done"))
+                    .copyOnDeath()
+                    .build());
+
+    /** La reserve de graines du joueur ({@link SeedReserve}) : plante -> graines rangees. */
+    public static final Supplier<AttachmentType<Map<String, Integer>>> SEED_RESERVE = ATTACHMENTS.register(
+            "botanist_seed_reserve", () -> AttachmentType.<Map<String, Integer>>builder(() -> Map.of())
+                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("seeds"))
+                    .copyOnDeath()
+                    .build());
+
+    /** Les plantes dont la premiere graine rangee a deja rapporte son XP. */
+    public static final Supplier<AttachmentType<List<String>>> SEED_RESERVE_REWARDS = ATTACHMENTS.register(
+            "botanist_seed_reserve_rewards", () -> AttachmentType.<List<String>>builder(() -> List.of())
+                    .serialize(Codec.STRING.listOf().fieldOf("rewarded"))
+                    .copyOnDeath()
+                    .build());
+
+    /** Le laboratoire du joueur ({@link BotanistLab}) : modules, boosts, constructions, pots suivis. */
+    public static final Supplier<AttachmentType<BotanistLab.Data>> LAB = ATTACHMENTS.register(
+            "botanist_lab", () -> AttachmentType.builder(() -> BotanistLab.Data.EMPTY)
+                    .serialize(BotanistLab.Data.CODEC.fieldOf("lab"))
+                    .copyOnDeath()
+                    .build());
+
     // -- Les sons du lot 2b (ceux de JobsReborn) ----------------------------------------------
 
     public static final DeferredHolder<SoundEvent, SoundEvent> NIBBLER_IDLE = sound("botanist.nibbler.idle");
@@ -146,6 +175,24 @@ public final class PalaBotanist {
     public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_BUD = sound("botanist.plant.bud");
     public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_BLOOMING = sound("botanist.plant.blooming");
     public static final DeferredHolder<SoundEvent, SoundEvent> PLANT_WILTED = sound("botanist.plant.wilted");
+
+    // -- Les sons du lot 2c (ceux de JobsReborn) ----------------------------------------------
+
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_IDLE = sound("botanist.centrifuge.idle");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_DIRECT_MUTATION =
+            sound("botanist.centrifuge.direct_mutation");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_BOOSTED_SEED =
+            sound("botanist.centrifuge.boosted_seed");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_FINISHED = sound("botanist.centrifuge.finished");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_FINISHED_MUTATED =
+            sound("botanist.centrifuge.finished_mutated");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_FINISHED_BOOSTED =
+            sound("botanist.centrifuge.finished_boosted");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CENTRIFUGE_FINISHED_BOOSTED_MUTATED =
+            sound("botanist.centrifuge.finished_boosted_mutated");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CONTROL_ALERT = sound("botanist.control_center.alert");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CONTROL_CONSTRUCTION =
+            sound("botanist.control_center.construction");
 
     // -- Les plants -------------------------------------------------------------
 
@@ -286,6 +333,49 @@ public final class PalaBotanist {
                             inventory, MachineLayout.GENE_SCANNER),
                     FeatureFlags.VANILLA_SET));
 
+    // -- Le laboratoire (lot 2c) --------------------------------------------------------
+
+    /** La centrifugeuse : deux blocs de haut, du metal. */
+    public static final DeferredBlock<CentrifugeBlock> MUTATION_CENTRIFUGE = BLOCKS.registerBlock("mutation_centrifuge",
+            CentrifugeBlock::new, PalaBotanist::machineProperties);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CentrifugeBlockEntity>> CENTRIFUGE_TYPE =
+            TYPES.register("mutation_centrifuge",
+                    () -> new BlockEntityType<>(CentrifugeBlockEntity::new, Set.<Block>of(MUTATION_CENTRIFUGE.get())));
+    public static final DeferredItem<BlockItem> MUTATION_CENTRIFUGE_ITEM = ITEMS.registerItem("mutation_centrifuge",
+            properties -> new BotanistBlockItem(MUTATION_CENTRIFUGE.get(), properties.useBlockDescriptionPrefix(),
+                    "tooltip.palamod.mutation_centrifuge.use", "tooltip.palamod.mutation_centrifuge.items"));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> CENTRIFUGE_MENU =
+            MENUS.register("mutation_centrifuge", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(PalaBotanist.CENTRIFUGE_MENU.get(), containerId,
+                            inventory, MachineLayout.CENTRIFUGE),
+                    FeatureFlags.VANILLA_SET));
+
+    /** La reserve de graines : deux blocs de large et deux de haut. */
+    public static final DeferredBlock<SeedReserveBlock> SEED_RESERVE_BLOCK = BLOCKS.registerBlock("seed_reserve",
+            SeedReserveBlock::new, PalaBotanist::machineProperties);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SeedReserveBlockEntity>> SEED_RESERVE_TYPE =
+            TYPES.register("seed_reserve",
+                    () -> new BlockEntityType<>(SeedReserveBlockEntity::new, Set.<Block>of(SEED_RESERVE_BLOCK.get())));
+    public static final DeferredItem<BlockItem> SEED_RESERVE_ITEM = ITEMS.registerItem("seed_reserve",
+            properties -> new BotanistBlockItem(SEED_RESERVE_BLOCK.get(), properties.useBlockDescriptionPrefix(),
+                    "tooltip.palamod.seed_reserve.use", "tooltip.palamod.seed_reserve.reward"));
+    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> SEED_RESERVE_MENU =
+            MENUS.register("seed_reserve", () -> new MenuType<>(
+                    (containerId, inventory) -> new MachineMenu(PalaBotanist.SEED_RESERVE_MENU.get(), containerId,
+                            inventory, SeedReserve.Storage.client(), new net.minecraft.world.inventory.SimpleContainerData(
+                            MachineMenu.DATA_COUNT), MachineLayout.SEED_RESERVE),
+                    FeatureFlags.VANILLA_SET));
+
+    /** Le centre de controle : deux blocs de large et deux de haut. */
+    public static final DeferredBlock<LabControlBlock> LAB_CONTROL = BLOCKS.registerBlock("lab_control",
+            LabControlBlock::new, PalaBotanist::machineProperties);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LabControlBlockEntity>> LAB_CONTROL_TYPE =
+            TYPES.register("lab_control",
+                    () -> new BlockEntityType<>(LabControlBlockEntity::new, Set.<Block>of(LAB_CONTROL.get())));
+    public static final DeferredItem<BlockItem> LAB_CONTROL_ITEM = ITEMS.registerItem("lab_control",
+            properties -> new BotanistBlockItem(LAB_CONTROL.get(), properties.useBlockDescriptionPrefix(),
+                    "tooltip.palamod.lab_control.use", "tooltip.palamod.lab_control.boost"));
+
     /** Le nibbler : 0,4 de large, 0,3 de haut (JobsReborn). */
     public static final DeferredHolder<EntityType<?>, EntityType<Nibbler>> NIBBLER = ENTITIES.register("nibbler",
             key -> EntityType.Builder.<Nibbler>of(Nibbler::new, MobCategory.CREATURE)
@@ -296,6 +386,17 @@ public final class PalaBotanist {
     public static final List<DeferredItem<? extends Item>> ORDERED = ordered();
 
     private PalaBotanist() {
+    }
+
+    /** Les machines du laboratoire : du metal, a la pioche, poussees par rien. */
+    private static BlockBehaviour.Properties machineProperties(BlockBehaviour.Properties properties) {
+        return properties
+                .strength(3.5f)
+                .requiresCorrectToolForDrops()
+                .sound(SoundType.METAL)
+                .mapColor(MapColor.METAL)
+                .noOcclusion()
+                .pushReaction(PushReaction.BLOCK);
     }
 
     /**
@@ -344,7 +445,8 @@ public final class PalaBotanist {
         List<DeferredItem<? extends Item>> list = new java.util.ArrayList<>(List.of(
                 AMETHYST_SEED, TITANE_SEED, PALADIUM_SEED, GREEN_PALADIUM_SEED,
                 FINDIUM_SEED, TRIXIUM_SEED, INVOKER_SEED, ENDIUM_SEED, ORGANIC_ENDIUM,
-                POT_ITEM, WATERING_CAN, GUITAR, NET, GENE_SCANNER_ITEM));
+                POT_ITEM, WATERING_CAN, GUITAR, NET, GENE_SCANNER_ITEM, MUTATION_CENTRIFUGE_ITEM, SEED_RESERVE_ITEM,
+                LAB_CONTROL_ITEM));
         for (Rarity rarity : Rarity.values()) {
             for (Mutation mutation : Mutation.values()) {
                 if (mutation.rarity() == rarity) {

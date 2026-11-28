@@ -92,6 +92,8 @@ public class BotanistPotBlockEntity extends BlockEntity {
     private boolean active;
     /** L'heure du jeu a l'envoi (lue par le client). */
     private long syncedAt;
+    /** Le reste d'une pousse acceleree (ameliorations, boost du centre de controle), pour ne rien perdre. */
+    private float carry;
     private long uprootArmedUntil;
     private int passes;
     /** Cote client, pour le rendu : le dernier stade vu, celui d'avant, et quand il a change. */
@@ -196,6 +198,10 @@ public class BotanistPotBlockEntity extends BlockEntity {
     }
 
     // -- Le maitre ---------------------------------------------------------------------------------
+
+    public UUID ownerId() {
+        return owner;
+    }
 
     void setOwner(ServerPlayer player) {
         owner = player.getUUID();
@@ -311,7 +317,16 @@ public class BotanistPotBlockEntity extends BlockEntity {
         if (!near) {
             return;
         }
-        progress += PASS;
+        // Le centre de controle : ameliorations et boost du module de ce climat accelerent la pousse
+        // (pas les fleurs qui fanent, ni le temps laisse pour repondre a un besoin).
+        if (stage.growing()) {
+            float step = (float) (PASS * BotanistLab.growth(player, mutation.climate())) + carry;
+            int whole = (int) step;
+            carry = step - whole;
+            progress += whole;
+        } else {
+            progress += PASS;
+        }
         boolean changed = false;
         if (need != null) {
             needLeft -= PASS;
@@ -362,7 +377,9 @@ public class BotanistPotBlockEntity extends BlockEntity {
                 needAt = -1;
                 server.playSound(null, worldPosition, PalaBotanist.PLANT_BLOOMING.get(), SoundSource.BLOCKS, 1.0f,
                         1.0f);
-                mutated = !targets(player).isEmpty() && server.getRandom().nextDouble() < mutation.mutationChance();
+                // Le boost du module ajoute ses points de chance ({@code getMutationBoost}).
+                double chance = mutation.mutationChance() + BotanistLab.mutationBonus(player, mutation.climate());
+                mutated = !targets(player).isEmpty() && server.getRandom().nextDouble() < chance;
                 if (mutated) {
                     server.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS,
                             1.0f, 0.8f);
@@ -782,6 +799,33 @@ public class BotanistPotBlockEntity extends BlockEntity {
         if (level != null && !level.isClientSide()) {
             BlockState state = getBlockState();
             level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_CLIENTS);
+            if (level instanceof ServerLevel server) {
+                track(server);
+            }
+        }
+    }
+
+    /** Le centre de controle de son maitre apprend ou en est le pot (s'il est en ligne). */
+    private void track(ServerLevel server) {
+        ServerPlayer player = ownerOnline(server);
+        if (player == null) {
+            return;
+        }
+        BotanistLab.Pot snapshot = stage == PotStage.EMPTY || mutation == null ? null
+                : new BotanistLab.Pot(mutation.id(), stage.getSerializedName(), need == null ? "" : needText().getString(),
+                mutated, length <= 0 ? 0 : (int) Math.min(1000L, progress * 1000L / length));
+        BotanistLab.track(player, server, worldPosition, snapshot);
+    }
+
+    /** Casse, le pot n'est plus suivi par le centre de controle de son maitre. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level instanceof ServerLevel server) {
+            ServerPlayer player = ownerOnline(server);
+            if (player != null) {
+                BotanistLab.track(player, server, worldPosition, null);
+            }
         }
     }
 

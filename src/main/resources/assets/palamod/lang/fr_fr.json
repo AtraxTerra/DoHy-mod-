@@ -1430,5 +1430,17 @@
   "item.palamod.net": "Filet",
   "item.palamod.unknown_mutation": "Mutation inconnue",
   "item.palamod.mutation_waste": "Dechet de mutation",
-  "entity.palamod.nibbler": "Nibbler"
+  "entity.palamod.nibbler": "Nibbler",
+  "tooltip.palamod.mutation_centrifuge.use": "Change une graine de mutation en mutation inconnue.",
+  "tooltip.palamod.mutation_centrifuge.items": "Les objets poses autour de la graine donnent la chance.",
+  "container.palamod.mutation_centrifuge": "Centrifugeuse",
+  "tooltip.palamod.seed_reserve.use": "Ta reserve : dix graines par plante, la meme partout.",
+  "tooltip.palamod.seed_reserve.reward": "La premiere graine rangee d'une plante rapporte de l'XP.",
+  "container.palamod.seed_reserve": "Reserve",
+  "tooltip.palamod.lab_control.use": "Suit tes pots par climat, ce qu'ils reclament et ou ils sont.",
+  "tooltip.palamod.lab_control.boost": "Booste et ameliore la pousse de chaque module.",
+  "message.palamod.botanist_lab3.catch_up": "Machines du laboratoire, pour tes niveaux de Fermier :",
+  "block.palamod.mutation_centrifuge": "Centrifugeuse",
+  "block.palamod.seed_reserve": "Reserve de graines",
+  "block.palamod.lab_control": "Centre de controle"
 }

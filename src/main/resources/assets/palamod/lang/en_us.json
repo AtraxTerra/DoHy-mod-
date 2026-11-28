@@ -1430,5 +1430,17 @@
   "item.palamod.net": "Net",
   "item.palamod.unknown_mutation": "Unknown Mutation",
   "item.palamod.mutation_waste": "Mutation Waste",
-  "entity.palamod.nibbler": "Nibbler"
+  "entity.palamod.nibbler": "Nibbler",
+  "tooltip.palamod.mutation_centrifuge.use": "Turns a mutation seed into an unknown mutation.",
+  "tooltip.palamod.mutation_centrifuge.items": "Items placed around the seed give the chance.",
+  "container.palamod.mutation_centrifuge": "Centrifuge",
+  "tooltip.palamod.seed_reserve.use": "Your reserve: ten seeds per plant, the same everywhere.",
+  "tooltip.palamod.seed_reserve.reward": "The first stored seed of a plant gives XP.",
+  "container.palamod.seed_reserve": "Reserve",
+  "tooltip.palamod.lab_control.use": "Tracks your pots by climate, what they need and where they are.",
+  "tooltip.palamod.lab_control.boost": "Boosts and upgrades each module's growth.",
+  "message.palamod.botanist_lab3.catch_up": "Lab machines, for your Farmer levels:",
+  "block.palamod.mutation_centrifuge": "Centrifuge",
+  "block.palamod.seed_reserve": "Seed Reserve",
+  "block.palamod.lab_control": "Control Center"
 }

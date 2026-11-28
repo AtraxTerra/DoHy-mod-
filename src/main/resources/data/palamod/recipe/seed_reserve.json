@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BIB",
+    "BCB",
+    "PPP"
+  ],
+  "key": {
+    "B": "minecraft:glass_bottle",
+    "I": "minecraft:packed_ice",
+    "C": "minecraft:chest",
+    "P": "minecraft:iron_ingot"
+  },
+  "result": {
+    "id": "palamod:seed_reserve",
+    "count": 1
+  }
+}

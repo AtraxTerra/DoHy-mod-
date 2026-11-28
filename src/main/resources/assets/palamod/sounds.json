@@ -274,5 +274,50 @@
       "palamod:botanist/plant/common/wilted2",
       "palamod:botanist/plant/common/wilted3"
     ]
+  },
+  "botanist.centrifuge.idle": {
+    "sounds": [
+      "palamod:botanist/centrifuge/idle"
+    ]
+  },
+  "botanist.centrifuge.direct_mutation": {
+    "sounds": [
+      "palamod:botanist/centrifuge/direct_mutation"
+    ]
+  },
+  "botanist.centrifuge.boosted_seed": {
+    "sounds": [
+      "palamod:botanist/centrifuge/boosted_seed"
+    ]
+  },
+  "botanist.centrifuge.finished": {
+    "sounds": [
+      "palamod:botanist/centrifuge/finished"
+    ]
+  },
+  "botanist.centrifuge.finished_mutated": {
+    "sounds": [
+      "palamod:botanist/centrifuge/finished_mutated"
+    ]
+  },
+  "botanist.centrifuge.finished_boosted": {
+    "sounds": [
+      "palamod:botanist/centrifuge/finished_boosted"
+    ]
+  },
+  "botanist.centrifuge.finished_boosted_mutated": {
+    "sounds": [
+      "palamod:botanist/centrifuge/finished_boosted_mutated"
+    ]
+  },
+  "botanist.control_center.alert": {
+    "sounds": [
+      "palamod:botanist/control_center/alert"
+    ]
+  },
+  "botanist.control_center.construction": {
+    "sounds": [
+      "palamod:botanist/control_center/construction"
+    ]
   }
 }

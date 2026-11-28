@@ -116,6 +116,32 @@ public record MachineLayout(List<SlotPos> slots) {
             new SlotPos(40, 112, true),
             new SlotPos(206, 64, false)));
 
+    /**
+     * La centrifugeuse : la graine au centre, les six objets de centrifugation en hexagone autour
+     * (« Ajoute des objets autour de la graine »), le resultat a droite ({@code CentrifugeScreen}).
+     */
+    public static final MachineLayout CENTRIFUGE = new MachineLayout(List.of(
+            new SlotPos(70, 80, true),
+            new SlotPos(70, 50, true),
+            new SlotPos(96, 65, true),
+            new SlotPos(96, 95, true),
+            new SlotPos(70, 110, true),
+            new SlotPos(44, 95, true),
+            new SlotPos(44, 65, true),
+            new SlotPos(206, 80, false)));
+
+    /**
+     * La reserve de graines : une case par plante, trois rangees de cinq, une par climat (normal,
+     * glacial, desertique), comme les quinze bocaux de son modele ({@code SeedReserveScreen}).
+     */
+    public static final MachineLayout SEED_RESERVE = new MachineLayout(List.of(
+            new SlotPos(67, 48, true), new SlotPos(95, 48, true), new SlotPos(123, 48, true),
+            new SlotPos(151, 48, true), new SlotPos(179, 48, true),
+            new SlotPos(67, 78, true), new SlotPos(95, 78, true), new SlotPos(123, 78, true),
+            new SlotPos(151, 78, true), new SlotPos(179, 78, true),
+            new SlotPos(67, 108, true), new SlotPos(95, 108, true), new SlotPos(123, 108, true),
+            new SlotPos(151, 108, true), new SlotPos(179, 108, true)));
+
     /** Le controleur de spawners : quatre ameliorations en carre, les deux du bas verrouillees. */
     public static final MachineLayout SPAWNER_CONTROLLER = new MachineLayout(List.of(
             new SlotPos(40, 60, true),
