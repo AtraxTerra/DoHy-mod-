@@ -195,6 +195,17 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — meule, table de forgeron et tailleur de pierre au style du kit
+
+- **`KitStations`** gagne la meule, la table de forgeron (armure sur son support, silhouettes et
+  bulles d'aide du jeu) et le tailleur de pierre (grille des coupes, barre de défilement). Quelques
+  champs privés lus par leur nom ; à défaut, l'écran du jeu. Restent au jeu : métier à tisser et
+  table de cartographie. `INTERFACES.md`, « L'épuration des écrans ».
+
+**Vérifié** : captures des trois écrans (désenchantement, erreur de la meule, amélioration en
+netherite et son aperçu, coupes de la pierre avec une coupe choisie, liste longue avec barre) et de
+l'écran du jeu sur le même menu.
+
 ### 2026-11-27 — table d'enchantement, enclume et alambic au style du kit
 
 **Demande** : suite de l'épuration des écrans, sans rien retirer.
