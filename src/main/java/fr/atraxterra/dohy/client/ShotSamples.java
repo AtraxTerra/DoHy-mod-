@@ -1,22 +1,24 @@
 package fr.atraxterra.dohy.client;
 
 import com.mojang.logging.LogUtils;
-import fr.atraxterra.dohy.client.atlas.AtlasScreen;
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
-import fr.atraxterra.dohy.client.ui.vanilla.KitPauseScreen;
-import fr.atraxterra.dohy.economy.Economy;
-import fr.atraxterra.dohy.ui.view.UiNet;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import org.slf4j.Logger;
 
-/** Temporaire : le tour des ecrans, avant leur epuration. */
+/** Temporaire : les notifications du jeu au style du kit. */
 final class ShotSamples {
     private static final Logger LOG = LogUtils.getLogger();
+
+    private static TutorialToast tutorial;
 
     private ShotSamples() {
     }
@@ -53,17 +55,14 @@ final class ShotSamples {
         server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
     }
 
-    /** Une commande tapee par le joueur lui-meme. */
-    private static void as(ServerPlayer player, String command) {
-        MinecraftServer server = player.level().getServer();
-        server.getCommands().performPrefixedCommand(player.createCommandSourceStack(), command);
+    /** Une pause sans action : la notification precedente repart avant la suivante. */
+    private static void pause(int index) {
+        ShotHarness.SHOTS.add(client("p" + index + "_pause", 90, () -> {
+        }));
     }
 
-    private static void typed(String name, String command) {
-        ShotHarness.SHOTS.add(server(name, 30, player -> {
-            UiNet.close(player);
-            as(player, command);
-        }));
+    private static ToastManager toasts() {
+        return Minecraft.getInstance().getToastManager();
     }
 
     static void register() {
@@ -71,39 +70,53 @@ final class ShotSamples {
             command(player, "time set noon");
             command(player, "weather clear");
             command(player, "difficulty peaceful");
-            command(player, "gamerule doDaylightCycle false");
-            command(player, "kill @e[type=minecraft:slime]");
             player.setGameMode(GameType.SURVIVAL);
-            Economy.set(player, 125_000L);
         }));
-        ShotHarness.SHOTS.add(client("b1_pause", 20, () -> Minecraft.getInstance().gui.setScreen(new KitPauseScreen())));
-        ShotHarness.SHOTS.add(client("b2_inventaire", 20,
-                () -> Minecraft.getInstance().gui.setScreen(new KitInventoryScreen(Minecraft.getInstance().player))));
-        ShotHarness.SHOTS.add(client("b3_atlas", 60, () -> Minecraft.getInstance().gui.setScreen(new AtlasScreen())));
-        ShotHarness.SHOTS.add(client("b4_ferme", 10, () -> Minecraft.getInstance().gui.setScreen(null)));
-        typed("c01_pet", "pet");
-        typed("c02_profil", "profil");
-        typed("c03_luckypass", "luckypass");
-        typed("c04_pass", "pass");
-        typed("c05_rapport", "rapport");
-        typed("c06_clicker", "clicker");
-        typed("c07_casino", "casino");
-        typed("c08_calendrier", "calendrier");
-        typed("c09_bank", "bank");
-        typed("c10_museum", "museum");
-        typed("c11_collections", "collections");
-        typed("c12_contracts", "contracts");
-        typed("c13_trixium", "trixium");
-        typed("c14_faction", "f");
-        typed("c15_entreprises", "entreprises");
-        typed("c16_mines", "mines");
-        typed("c17_bots", "bots");
-        typed("c18_kit", "kit");
-        typed("c19_boutique", "boutique");
-        typed("c20_hdv", "hdv");
-        typed("c21_unesco", "unesco");
-        typed("c22_quetes", "quetes");
-        typed("c23_donjon", "donjon");
-        typed("c24_techno", "techno");
+        ShotHarness.SHOTS.add(server("t1_progres", 40,
+                player -> command(player, "advancement grant @a only minecraft:story/mine_stone")));
+        pause(1);
+        ShotHarness.SHOTS.add(server("t2_objectif", 40,
+                player -> command(player, "advancement grant @a only minecraft:end/respawn_dragon")));
+        pause(2);
+        ShotHarness.SHOTS.add(server("t3_defi", 40,
+                player -> command(player, "advancement grant @a only minecraft:adventure/adventuring_time")));
+        pause(3);
+        ShotHarness.SHOTS.add(server("t4_recette", 40,
+                player -> command(player, "recipe give @a minecraft:diamond_pickaxe")));
+        pause(4);
+        ShotHarness.SHOTS.add(client("t5_tutoriel", 40, () -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            tutorial = new TutorialToast(minecraft.font, TutorialToast.Icons.MOVEMENT_KEYS,
+                    Component.translatable("tutorial.move.title", Component.literal("Z"), Component.literal("Q"),
+                            Component.literal("S"), Component.literal("D")),
+                    Component.translatable("tutorial.move.description", Component.literal("Espace")), true);
+            toasts().addToast(tutorial);
+            tutorial.updateProgress(0.45f);
+        }));
+        pause(5);
+        ShotHarness.SHOTS.add(client("t6_systeme", 40, () -> {
+            tutorial.hide();
+            SystemToast.add(toasts(), SystemToast.SystemToastId.WORLD_BACKUP,
+                    Component.translatable("selectWorld.edit.backupCreated", "shots"),
+                    Component.translatable("selectWorld.edit.backupSize", 12));
+        }));
+        pause(6);
+        ShotHarness.SHOTS.add(client("t7_echec", 40, () -> SystemToast.add(toasts(),
+                SystemToast.SystemToastId.PACK_LOAD_FAILURE,
+                Component.translatable("resourcePack.load_fail"),
+                Component.literal("Le pack exemple n'a pas pu etre charge."))));
+        pause(7);
+        ShotHarness.SHOTS.add(server("t8_pile", 60, player -> {
+            command(player, "advancement grant @a only minecraft:story/smelt_iron");
+            command(player, "recipe give @a minecraft:golden_apple");
+            command(player, "advancement grant @a only minecraft:story/enter_the_nether");
+        }));
+        pause(8);
+        ShotHarness.SHOTS.add(client("t9_sur_inventaire", 40, () -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            minecraft.gui.setScreen(new KitInventoryScreen(minecraft.player));
+        }));
+        ShotHarness.SHOTS.add(server("t10_sur_inventaire_progres", 40,
+                player -> command(player, "advancement grant @a only minecraft:story/iron_tools")));
     }
 }
