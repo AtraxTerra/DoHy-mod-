@@ -1641,7 +1641,8 @@ MINE_MOD_ORES = ["create:zinc_ore", "create:striated_ores_overworld"] + [
 
 
 def mine():
-    """La Mine (`dohy:mine`) : un monde tout en roche, sans surface, un seul biome, aucun monstre.
+    """La Mine (`dohy:mine`) : un monde tout en roche, sans surface, un seul biome, aucun monstre hors
+    de ses salles a spawner.
 
     Demande du joueur (2026-11-13) : « uniquement sous terre, pas de surface ». Le terrain est plein
     du fond au plafond (densite constante) : pierre, ardoise des abimes sous y = 0 a 8, bedrock au
@@ -1728,7 +1729,8 @@ def mine():
             [],
             ["minecraft:lake_lava_underground"],
             ["minecraft:amethyst_geode"],
-            [],
+            # Les salles a spawner (MineSpawnerRoomFeature), au rang des structures souterraines.
+            ["%s:mine/spawner_room" % NS],
             [],
             [],
             MINE_ORES,
@@ -1743,6 +1745,21 @@ def mine():
         "spawners": {kind: [] for kind in ("ambient", "axolotls", "creature", "misc", "monster",
                                            "underground_water_creature", "water_ambient", "water_creature")},
         "temperature": 0.8,
+    })
+    # Les salles a spawner (demande du 2026-11-28) : des monstres et des betes des metiers de
+    # Chasseur et d'Alchimiste. Un essai par chunk a une chance sur six, que la roche valide presque
+    # toujours (mesure : 142 salles sur 29 x 29 chunks, une tous les six chunks).
+    write("data/%s/worldgen/configured_feature/mine_spawner_room.json" % NS,
+          {"type": "%s:mine_spawner_room" % NS, "config": {}})
+    write("data/%s/worldgen/placed_feature/mine/spawner_room.json" % NS, {
+        "feature": "%s:mine_spawner_room" % NS,
+        "placement": [
+            {"type": "minecraft:rarity_filter", "chance": 6},
+            {"type": "minecraft:in_square"},
+            {"type": "minecraft:height_range", "height": {
+                "type": "minecraft:uniform", "min_inclusive": {"absolute": -48}, "max_inclusive": {"absolute": 112}}},
+            {"type": "minecraft:biome"},
+        ],
     })
     write("data/%s/tags/worldgen/placed_feature/mine_mod_ores.json" % NS, {
         "values": [{"id": feature, "required": False} for feature in MINE_MOD_ORES],

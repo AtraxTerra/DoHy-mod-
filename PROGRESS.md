@@ -195,6 +195,31 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-28 — métier à tisser et table de cartographie au style du kit
+
+**Demande** : finir l'épuration des écrans (avec le Botaniste, lot 2b, ensuite).
+
+- **`KitStations`** gagne le métier à tisser (grille des motifs, aperçu de la bannière, croix sur
+  une bannière pleine) et la table de cartographie (aperçu de la carte du jeu, croix sur la
+  flèche quand l'ajout ne se peut pas). Plus aucun conteneur du jeu ne garde l'écran gris.
+  `INTERFACES.md`, « L'épuration des écrans ».
+
+**Vérifié** : captures du métier vide, avec ses motifs, un motif choisi, la grille déroulée, un
+motif d'objet (fleur), une bannière pleine ; de la table vide, avec une carte, l'agrandissement,
+la copie, le verrou et le refus (carte à l'échelle 4) ; et de l'écran du jeu sur le même menu.
+
+### 2026-11-28 — les salles à spawner de la Mine
+
+- `MineSpawnerRoomFeature` : des salles closes de 7 × 7 dans la roche de la Mine, une chance sur six
+  par chunk (mesuré en jeu : 142 salles sur 29 × 29 chunks, une tous les six chunks), treize
+  créatures des métiers de Chasseur et d'Alchimiste tirées au poids, chacune dans son décor. Les
+  monstres de spawner, leur cavalier et les petits du cube de magma sont admis à la Mine ; les
+  autres monstres restent refusés. Voir `docs/CONTENU_DOHY.md`, « Les salles à spawner ».
+- Vérifié en captures : treize salles visitées, créatures nées dans chacune. Sauf l'araignée
+  venimeuse : son `finalizeSpawn` n'appelle pas celui de `Mob`, où NeoForge note le type
+  d'apparition. `world/SpawnerBirth` marque désormais toute créature de spawner à la fin de son
+  apparition ; le Chasseur, qui la payait plein tarif, n'en donne plus que le quarantième.
+
 ### 2026-11-27 — les cartouches du HUD en cartes du kit
 
 - Le cartouche des finders et la barre du réceptacle à wither passent aux cartes et barres du HUD
