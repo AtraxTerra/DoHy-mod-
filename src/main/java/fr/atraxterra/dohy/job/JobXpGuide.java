@@ -379,7 +379,7 @@ public final class JobXpGuide {
                 conquestLow = Math.min(conquestLow, DungeonManager.conquestXp(1, mode));
                 conquestHigh = Math.max(conquestHigh, DungeonManager.conquestXp(DungeonManager.MAX_PALIER, mode));
             }
-            section.add(new ItemStack(Items.RED_BANNER), "Palier " + dungeon.display() + " conquis",
+            section.add(new ItemStack(Items.NETHER_STAR), "Palier " + dungeon.display() + " conquis",
                     "+" + MoneyFormat.exact(conquestLow) + " a " + MoneyFormat.exact(conquestHigh) + " XP",
                     "en plus", 0, 5.5d,
                     "Premiere victoire d'un palier, tous modes confondus",
