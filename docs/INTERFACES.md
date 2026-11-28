@@ -113,6 +113,24 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   vingt et un familiers et la légende des raretés.
 - Le **profil RPG**, le **clicker** et le **Lucky Pass** reprennent des écrans de Paladium
   (capture du joueur, PalaClicker, machine à sous de PalaMod) : ils restent tels quels.
+- **Table d'enchantement, enclume, alambic** (`KitStations`) : les trois écrans du jeu que
+  PalaVanillaGui redessinait passent au kit, comme l'établi, les fours et les coffres avant eux
+  (remplacés à l'ouverture par `InventoryClient`). Table : le livre animé du jeu sur les runes de
+  PalaVanillaGui, les deux cases, le niveau du joueur au losange XP ; les trois offres en cartes
+  (le lapis demandé dans sa tuile, le nom en runes tiré de la même graine que le jeu, le coût en
+  niveaux ; grisées si le lapis ou les niveaux manquent, curseur main au survol). Enclume : le
+  champ du nom du jeu sur un champ du kit, les deux objets, le plus, la flèche, le résultat
+  cerclé (vert, ou rouge si les niveaux manquent), une croix rouge quand rien ne sort, le coût en
+  pastille sous le résultat (« TROP CHER ! » à 40 niveaux). Alambic : la poudre de blaze et sa
+  jauge (vingt distillations), l'ingrédient entre les bulles et la flèche de PalaVanillaGui, le
+  tracé qui descend vers les trois fioles, le temps qui reste. Clics, bulles, champ et livre
+  restent ceux du jeu ; ces trois écrans calculant leurs zones depuis le centre de l'écran, la
+  fenêtre garde la place du jeu et l'en-tête passe au-dessus. Images reprises du jar
+  PalaVanillaGui 6.6.1 (`tools/palavanillagui_assets.py`, crédit au README).
+- **En-tête des conteneurs** : un titre long (« Coffre de l'End en paladium ») laisse de l'air
+  avant la croix au lieu de la toucher.
+- Restent à l'écran du jeu : la meule, la table de forgeron, le tailleur de pierre, le métier à
+  tisser et la table de cartographie (absents de Paladium, sans modèle à suivre).
 
 ### Polices
 
