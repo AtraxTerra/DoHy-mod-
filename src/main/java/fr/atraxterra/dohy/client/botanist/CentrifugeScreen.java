@@ -210,7 +210,8 @@ public final class CentrifugeScreen extends UiContainerScreen<MachineMenu> {
         float y = 104;
         if (output.getItem() instanceof UnknownMutationItem) {
             g.text(Ui.BOLD, "Reussite", x, y, 6.0f, GREEN);
-            g.wrapped(Ui.BODY, "Une mutation inconnue : au scanner !", x, y + 9, 4.6f, 54, 6.2f, Ui.Theme.TEXT2, 3);
+            g.wrapped(Ui.BODY, "Une mutation inconnue, a reveler au scanner.", x, y + 9, 4.6f, 54, 6.2f,
+                    Ui.Theme.TEXT2, 3);
         } else if (!output.isEmpty()) {
             boolean waste = output.getItem() == fr.atraxterra.dohy.palamod.botanist.PalaBotanist.MUTATION_WASTE.get();
             g.text(Ui.BOLD, "Echec", x, y, 6.0f, WARN);

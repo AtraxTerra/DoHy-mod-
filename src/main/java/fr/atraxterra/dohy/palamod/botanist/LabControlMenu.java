@@ -173,8 +173,12 @@ public final class LabControlMenu extends MenuController {
         if (progress >= 0) {
             card = card.progress(progress, 1000);
         }
+        if (BotanistLab.boosted(player, module)) {
+            // En cours : la coche verte du kit, pas le cadenas d'une action refusee.
+            return card.state(MenuView.DONE);
+        }
         if (missing != null) {
-            if (!lines.contains(missing) && !missing.equals("Boost actif")) {
+            if (!lines.contains(missing)) {
                 card = card.tooltip(withLine(card.tooltip(), missing));
             }
             return card.state(MenuView.DISABLED);
