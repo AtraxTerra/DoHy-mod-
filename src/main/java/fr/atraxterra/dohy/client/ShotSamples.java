@@ -223,6 +223,9 @@ final class ShotSamples {
         // L'etiquette du pot vise : la fleur mutee du ble de fer.
         ShotHarness.SHOTS.add(server("b5_etiquette_mutee", 40, player -> look(player, X + 0.5, Y, Z - 4.5, 0.0f,
                 14.0f)));
+        // L'etiquette d'une grande plante : l'orchidee de braise, vue de cote.
+        ShotHarness.SHOTS.add(server("b6_etiquette_haute", 30, player -> look(player, X + 16.5, Y, Z + 6.5, 90.0f,
+                10.0f)));
         // Un besoin de nibblers : l'icone, et les nibblers poses autour.
         ShotHarness.SHOTS.add(server("c1_besoin_nibblers", 60, player -> {
             try {
