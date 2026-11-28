@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.BlastFurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screens.inventory.CartographyTableScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.client.gui.screens.inventory.DispenserScreen;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.screens.inventory.FurnaceScreen;
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.client.gui.screens.inventory.HopperScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.gui.screens.inventory.LoomScreen;
 import net.minecraft.client.gui.screens.inventory.ShulkerBoxScreen;
 import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.client.gui.screens.inventory.SmokerScreen;
@@ -37,8 +39,8 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
  * ({@link KitTitleScreen}), le menu pause ({@link KitPauseScreen}), l'inventaire
  * ({@link KitInventoryScreen}), les coffres, la boite de shulker, l'entonnoir et le
  * distributeur ({@link KitChests}), l'etabli et les fours ({@link KitWorkstations}), la
- * table d'enchantement, l'enclume, l'alambic, la meule, la table de forgeron et le tailleur
- * de pierre ({@link KitStations}).
+ * table d'enchantement, l'enclume, l'alambic, la meule, la table de forgeron, le tailleur
+ * de pierre, le metier a tisser et la table de cartographie ({@link KitStations}).
  *
  * <p>Le remplacement se fait a l'ouverture, donc pour toutes les facons d'ouvrir
  * l'ecran (touche, bloc, autre mod) ; le menu reste celui que le jeu a cree. On ne
@@ -131,6 +133,13 @@ public final class InventoryClient {
         }
         if (type == StonecutterScreen.class) {
             return new KitStations.Stonecutter(((StonecutterScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == LoomScreen.class) {
+            return new KitStations.Loom(((LoomScreen) screen).getMenu(), inventory, screen.getTitle());
+        }
+        if (type == CartographyTableScreen.class) {
+            return new KitStations.Cartography(((CartographyTableScreen) screen).getMenu(), inventory,
+                    screen.getTitle());
         }
         return null;
     }
