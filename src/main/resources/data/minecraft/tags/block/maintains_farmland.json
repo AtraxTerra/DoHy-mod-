@@ -27,6 +27,14 @@
     "palamod:colored_grass_seeds_orange",
     "palamod:colored_grass_seeds_pink",
     "palamod:colored_grass_seeds_green",
-    "palamod:root_seeds_block"
+    "palamod:root_seeds_block",
+    "palamod:amethyst_crop",
+    "palamod:titane_crop",
+    "palamod:paladium_crop",
+    "palamod:green_paladium_crop",
+    "palamod:findium_crop",
+    "palamod:trixium_crop",
+    "palamod:invoker_crop",
+    "palamod:endium_crop"
   ]
 }

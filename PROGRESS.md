@@ -121,6 +121,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 23b | **Pass et marché noir** : pass du mois réel (35 niveaux, 3 quêtes du jour et 6 du mois au thème du mois, une relique exclusive au dernier niveau, bascule le 1er à 5 h), marché noir du receleur sous le pont du spawn (marchandise volée avec grief, contrebande, lot sans étiquette, rachat de ce que le shop refuse), objectifs de contrat PLAYTIME et TRAVEL — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 23c | **Boss de métier et donjons V12** : modes Facile/Normal/Difficile (progression Normal inchangée), boss Dark aux paliers en 0 du Difficile, salles d'élite, de piège et de survie, douze élites, six capacités de boss ; autel des offrandes sur le parvis du spawn, quatre gardiens qui arrivent une heure après l'offrande et attendent dans une salle de boss au décor de leur donjon, dix niveaux ; gardiens et élites aux modèles des donjons de Paladium. Livrés avec : clicker joueur déconnecté, Clic Shop sans attente, pousses des arbres PalaMod — voir [docs/CONTENU_DOHY.md](docs/CONTENU_DOHY.md) | fait (en validation) |
 | 25 | **Objets de déblocage qui manquaient** : rituel d'endium (totem, 4 autels, 40 poudres, 25 zombies, pépite d'endium), étiquette en endium, knocker infernal, bateau en bambou, 5 boussoles de chasseur, table d'alchimiste (3 potions d'imprégnation, potion de maladie, 4 flèches, effet Givre), herbes colorées (10 couleurs) et racinier refaits aux textures de PalaJobs ; **JEI** pour la palamachine et la table — sans la cage à familier (familiers) — voir § 44 | fait (en validation) |
+| 26 | **Botaniste de JobsReborn, lot 1** : huit graines minérales (améthyste, titane, paladium, paladium vert, findium, trixium, invoker, endium) et leurs plants à quatre stades, vitesse et pousse hors ligne tirées à la récolte, endium organique ; au Fermier (verrous, récompenses, XP), rattrapage des graines à la connexion — voir § 47 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -192,6 +193,26 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-27 — le Botaniste de JobsReborn : les graines minérales
+
+**Demande** : le joueur a fourni les mods de Paladium (dossier « Modif ») et laissé le choix dans
+la liste des manques ; commencé par le point 4, le Botaniste de **JobsReborn 1.92.0**.
+
+- **Huit graines minérales** et leurs plants (terre labourée, quatre stades, scintillent mûrs) :
+  améthyste, titane, paladium, paladium vert, findium, trixium, invoker, endium.
+- **Caractères** de JobsReborn : vitesse (lente, moyenne, rapide) et pousse hors ligne, tirés à
+  neuf au niveau de Fermier pour chaque graine récoltée ; un plant non mûr rend sa graine.
+- **Récolte** : 2 à 4 tirages selon le Fermier (minerai, graine ou rien) ; l'endium sort en
+  **endium organique**, changé en pépite d'endium à l'établi.
+- **Fermier** : verrous (20 à 100), graines en récompense de niveau (74 en tout), XP de récolte ;
+  rattrapage à la connexion pour les niveaux déjà franchis.
+- Temps et quantités **calibrés** (la configuration du serveur de Paladium n'est pas dans le jar) :
+  `PALAMOD.md` § 47, `BALANCE.md` § 6 quinquatrigesies ; textures de JobsReborn, reprises du jar
+  avec crédit dans le README (`tools/botanist_assets.py --import`).
+
+**Non vérifié en jeu** : la pousse chunk déchargé et serveur arrêté (graines hors ligne), le
+rattrapage sur une sauvegarde existante.
 
 ### 2026-11-26 — le patrimoine mondial (UNESCO et merveilles)
 

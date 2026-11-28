@@ -162,6 +162,12 @@
       "label": "Seedplanter en amethyste"
     },
     {
+      "id": "palamod:amethyst_crop",
+      "job": "farmer",
+      "level": 20,
+      "label": "Plant d'amethyste"
+    },
+    {
       "id": "palamod:titane_radius_hoe",
       "job": "farmer",
       "level": 25,
@@ -180,6 +186,12 @@
       "label": "Culture d'aubergines"
     },
     {
+      "id": "palamod:titane_crop",
+      "job": "farmer",
+      "level": 35,
+      "label": "Plant de titane"
+    },
+    {
       "id": "palamod:crusher",
       "job": "farmer",
       "level": 40,
@@ -190,6 +202,12 @@
       "job": "farmer",
       "level": 45,
       "label": "Graines d'herbe coloree"
+    },
+    {
+      "id": "palamod:paladium_crop",
+      "job": "farmer",
+      "level": 50,
+      "label": "Plant de paladium"
     },
     {
       "id": "palamod:root_seeds_block",
@@ -210,10 +228,22 @@
       "label": "Culture de cerfeuil"
     },
     {
+      "id": "palamod:green_paladium_crop",
+      "job": "farmer",
+      "level": 60,
+      "label": "Plant de paladium vert"
+    },
+    {
       "id": "palamod:paladium_radius_hoe",
       "job": "farmer",
       "level": 65,
       "label": "Houe en paladium"
+    },
+    {
+      "id": "palamod:findium_crop",
+      "job": "farmer",
+      "level": 70,
+      "label": "Plant de findium"
     },
     {
       "id": "palamod:totem_of_fertility",
@@ -234,6 +264,12 @@
       "label": "Culture de kiwanos"
     },
     {
+      "id": "palamod:trixium_crop",
+      "job": "farmer",
+      "level": 80,
+      "label": "Plant de trixium"
+    },
+    {
       "id": "palamod:green_paladium_radius_hoe",
       "job": "farmer",
       "level": 85,
@@ -244,6 +280,12 @@
       "job": "farmer",
       "level": 90,
       "label": "Seedplanter en paladium vert"
+    },
+    {
+      "id": "palamod:invoker_crop",
+      "job": "farmer",
+      "level": 90,
+      "label": "Plant d'invoker"
     },
     {
       "id": "palamod:farmer_throne",
@@ -268,6 +310,12 @@
       "job": "farmer",
       "level": 100,
       "label": "Houe en endium"
+    },
+    {
+      "id": "palamod:endium_crop",
+      "job": "farmer",
+      "level": 100,
+      "label": "Plant d'endium"
     },
     {
       "id": "palamod:endium_seedplanter",
@@ -1060,6 +1108,13 @@
     },
     {
       "job": "farmer",
+      "level": 20,
+      "id": "palamod:amethyst_seed",
+      "count": 16,
+      "label": "Graines d'amethyste"
+    },
+    {
+      "job": "farmer",
       "level": 25,
       "id": "palamod:paladium_ingot",
       "count": 25,
@@ -1130,6 +1185,13 @@
     },
     {
       "job": "farmer",
+      "level": 35,
+      "id": "palamod:titane_seed",
+      "count": 16,
+      "label": "Graines de titane"
+    },
+    {
+      "job": "farmer",
       "level": 40,
       "id": "palamod:paladium_ingot",
       "count": 40,
@@ -1176,6 +1238,13 @@
       "id": "palamod:trixium",
       "count": 50,
       "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 50,
+      "id": "palamod:paladium_seed",
+      "count": 16,
+      "label": "Graines de paladium"
     },
     {
       "job": "farmer",
@@ -1235,6 +1304,13 @@
     },
     {
       "job": "farmer",
+      "level": 60,
+      "id": "palamod:green_paladium_seed",
+      "count": 8,
+      "label": "Graines de paladium vert"
+    },
+    {
+      "job": "farmer",
       "level": 65,
       "id": "palamod:paladium_ingot",
       "count": 65,
@@ -1267,6 +1343,13 @@
       "id": "palamod:trixium",
       "count": 70,
       "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 70,
+      "id": "palamod:findium_seed",
+      "count": 8,
+      "label": "Graines de findium"
     },
     {
       "job": "farmer",
@@ -1305,6 +1388,13 @@
     },
     {
       "job": "farmer",
+      "level": 80,
+      "id": "palamod:trixium_seed",
+      "count": 4,
+      "label": "Graines de trixium"
+    },
+    {
+      "job": "farmer",
       "level": 85,
       "id": "palamod:paladium_ingot",
       "count": 85,
@@ -1337,6 +1427,13 @@
       "id": "palamod:trixium",
       "count": 90,
       "label": "Trixium"
+    },
+    {
+      "job": "farmer",
+      "level": 90,
+      "id": "palamod:invoker_seed",
+      "count": 4,
+      "label": "Graines d'invoker"
     },
     {
       "job": "farmer",
@@ -1386,6 +1483,13 @@
       "id": "palamod:endium_nugget",
       "count": 1,
       "label": "Pepite d'endium"
+    },
+    {
+      "job": "farmer",
+      "level": 100,
+      "id": "palamod:endium_seed",
+      "count": 2,
+      "label": "Graines d'endium"
     },
     {
       "job": "hunter",

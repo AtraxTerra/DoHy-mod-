@@ -22,6 +22,14 @@
     "dohy:soy_crop",
     "dohy:fonio_crop",
     "dohy:sorghum_crop",
-    "dohy:kamut_crop"
+    "dohy:kamut_crop",
+    "palamod:amethyst_crop",
+    "palamod:titane_crop",
+    "palamod:paladium_crop",
+    "palamod:green_paladium_crop",
+    "palamod:findium_crop",
+    "palamod:trixium_crop",
+    "palamod:invoker_crop",
+    "palamod:endium_crop"
   ]
 }

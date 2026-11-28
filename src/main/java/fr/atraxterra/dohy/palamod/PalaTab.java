@@ -123,6 +123,9 @@ public final class PalaTab {
                         // Les familiers : la cage, l'appat, la friandise, les potions et les oeufs.
                         fr.atraxterra.dohy.palamod.pet.PalaPets.ORDERED
                                 .forEach(item -> output.accept(item.get()));
+                        // Le Botaniste : les graines minerales et l'endium organique.
+                        fr.atraxterra.dohy.palamod.botanist.PalaBotanist.ORDERED
+                                .forEach(item -> output.accept(item.get()));
                         // Les potions d'XP de metier, dans leurs quatre durees.
                         fr.atraxterra.dohy.palamod.boost.PalaXpPotions.tab().forEach(output::accept);
                         // Les lucky blocks.

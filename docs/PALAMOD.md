@@ -4758,3 +4758,86 @@ R tenue, viser, relâcher).
   d'enchantement, dont le coût n'est que de 1 à 3 niveaux).
 - **Le serpent et l'escargot vivent dans des biomes** : PalaMod ne les faisait apparaître qu'aux
   œufs et aux événements.
+
+## 47. Le Botaniste, lot 1 : les graines minérales (2026-11-27)
+
+Choisi le 2026-11-27 dans la liste des mods de Paladium fournis par le joueur (point 4, « le
+Botaniste : cultures de minerais »). Source : **JobsReborn 1.92.0** (`JobsReborn-1.92.0.pala`), le
+mod des métiers de la nouvelle génération de Paladium, au bytecode : `ItemBotanistMineralSeed`,
+`BlockBotanistMineralSeed`, `BotanistMineralSeedBlockData`, `BotanistMineralSeedManager`,
+`BotanistMineralSeedSpeed`, `BotanistMineralSeedConfig`, `BotanistDropConfig`,
+`BotanistSeedStatsConfig`, `ItemBotanistOrganicEndium`, `JobsBotanistRecipes`, et les textes de
+`BotanistMineralSeedTooltipNode`.
+
+JobsReborn compte trois métiers (Mineur, Botaniste, Aventurier). Le Botaniste n'est pas un métier
+de plus ici : ses graines se débloquent et rapportent au **Fermier**, le métier de l'agriculture.
+Ce lot porte les graines minérales ; le laboratoire (pots, besoins des plantes, mutations, scanner,
+centrifugeuse, centre de contrôle, réserve, arrosoir, guitare, filet) est le lot suivant.
+
+### Ce qui vient du jar
+
+- **Huit graines** et leurs plants, aux noms de JobsReborn : `amethyst_seed`, `titane_seed`,
+  `paladium_seed`, `green_paladium_seed`, `findium_seed`, `trixium_seed`, `invoker_seed`,
+  `endium_seed` ; `amethyst_crop` à `endium_crop`.
+- **Le plant** : un buisson (`BlockBush`) à **quatre stades**, sans collision, cassé d'un coup, son
+  d'herbe, qui ne se pose que sur **terre labourée** (`canPlaceBlockOn` : `Blocks.farmland`) et
+  scintille une fois mûr.
+- **Les caractères d'une graine** (NBT `speed` et `offline`, recopiés dans le bloc) : la **vitesse**
+  (« Lente », « Moyenne », « Rapide ») et la **pousse hors ligne** (« Oui » / « Non »).
+- **Le temps qui compte** (`elapse`, `update`) : hors ligne, le temps réel depuis la plantation en
+  ticks de 50 ms ; sinon, le temps du monde écoulé pendant que le plant est chargé, le premier
+  passage après un chargement repartant de zéro. Stade = `min(3, écoulé × 3 / pousse)`.
+- **La casse** (`harvestBlock`, `getDrops`) : avant maturité, la graine revient telle quelle ; mûre,
+  la récolte tire `dropCount` fois dans une liste pondérée où figurent le minerai et la graine,
+  dont les caractères sont **tirés à neuf** au niveau du joueur (ils ne s'héritent pas).
+- **L'endium organique** (`organic_endium_nugget`) : la récolte de la graine d'endium ; « Se change
+  en pépite d'endium à l'établi », une pour une (`JobsBotanistRecipes`).
+
+### Ce qui est calibré
+
+Les temps de pousse, les quantités, les poids et le nombre de tirages sont des **expressions de la
+configuration du serveur** de Paladium (`growth`, `dropCount`, `drops`, `stats`), absentes du jar
+client. Valeurs retenues (`MineralSeed`, `SeedSpeed`, `SeedTraits`) :
+
+| Graine | Pousse (moyenne) | Minerai par tirage | Poids minerai / graine / rien | Fermier | Graines données |
+|---|---|---|---|---|---|
+| Améthyste | 30 min | 2 à 3 lingots | 75 / 25 / 0 | 20 | 16 |
+| Titane | 45 min | 2 à 3 lingots | 75 / 25 / 0 | 35 | 16 |
+| Paladium | 1 h | 1 à 2 lingots | 75 / 25 / 0 | 50 | 16 |
+| Paladium vert | 1 h 30 | 1 lingot | 70 / 25 / 5 | 60 | 8 |
+| Findium | 1 h 30 | 1 findium | 70 / 25 / 5 | 70 | 8 |
+| Trixium | 3 h | 1 trixium | 60 / 25 / 15 | 80 | 4 |
+| Invoker | 3 h | 1 Pierre d'Invocation | 60 / 25 / 15 | 90 | 4 |
+| Endium | 6 h | 1 endium organique | 10 / 20 / 70 | 100 | 2 |
+
+- **Vitesse** : lente × 2, rapide × 0,5. À la récolte, une graine sort rapide à 10 % (Fermier 0)
+  jusqu'à 30 % (Fermier 100), lente de 30 % à 10 %, moyenne le reste ; hors ligne de 5 % à 15 %.
+- **Tirages par récolte** : 2, puis 3 au Fermier 50 et 4 au Fermier 100 (les expressions de
+  Paladium suivent le niveau, `level`).
+- **XP de Fermier** à la récolte mûre (`job_progression.json`) : 60, 90, 120, 200, 200, 400, 400
+  et 800, dans l'ordre du tableau.
+- Chiffres et revenus : `BALANCE.md` § 6 quinquatrigesies.
+
+### Code
+
+- `palamod/botanist/` : `PalaBotanist` (registres), `MineralSeed`, `SeedSpeed`, `SeedTraits`
+  (composant `palamod:mineral_seed_traits`), `MineralSeedItem`, `MineralCropBlock`,
+  `MineralCropBlockEntity`, `BotanistItem`, `BotanistEvents`.
+- Données : verrous et récompenses dans `data/jobs.json`, XP dans `data/job_progression.json`, les
+  plants dans `#dohy:crops` (sans quoi un plant posé ne rapporterait rien) et
+  `#minecraft:maintains_farmland`.
+- Assets : `tools/botanist_assets.py` (`--check` en CI) — les textures de JobsReborn (stades des
+  plants, graines, endium organique), copiées telles quelles depuis le jar par `--import` ; crédit
+  dans le README.
+
+### Écarts
+
+- **Pas de métier Botaniste** : le Fermier (voir plus haut).
+- **Les textures** sont celles de JobsReborn (Paladium Games), reprises à la demande du joueur le
+  2026-11-27 (la première version avait des dessins propres au mod).
+- **« En faction »** : l'info-bulle de Paladium réserve les graines au serveur faction ; il n'y a
+  qu'un serveur ici.
+- **Rattrapage** : à la première connexion, un joueur reçoit les graines des niveaux de Fermier
+  déjà franchis ; elles sont ensuite données en montant de niveau, comme toute récompense.
+- **Ni poudre d'os, ni totem de fertilité, ni bot de farming** : le plant suit le temps, et le bot
+  ne récolte que les cultures vanilla et assimilées (`CropBlock`). La récolte se fait à la main.
