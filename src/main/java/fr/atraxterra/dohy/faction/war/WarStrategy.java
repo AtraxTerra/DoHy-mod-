@@ -614,8 +614,7 @@ public final class WarStrategy {
                     + " place forte : reviens " + when(relation.defeated + BEATEN_MS, now);
         }
         if (relation.stance == WarData.Stance.TREVE && !relation.holds()) {
-            return "Treve avec " + traits.the() + " (fin " + when(relation.truce, now)
-                    + ") : tu ne la romps que pour reprendre ce qu'elle t'a pris";
+            return "Treve avec " + traits.the() + " (fin " + when(relation.truce, now) + ")";
         }
         return null;
     }
@@ -659,9 +658,8 @@ public final class WarStrategy {
                 .append(button("[Choisir l'heure de sa riposte]", "/guerre", ChatFormatting.GOLD))
                 .append(Component.literal(" Entre " + when(now + WINDOW_OPEN_MS, now) + " et "
                         + when(relation.deadline, now) + ".").withStyle(ChatFormatting.GRAY)));
-        player.sendSystemMessage(Component.literal("   Sa place forte se dresse a 1 200 - 2 000 blocs : rase-la, ou "
-                + "entre dans sa salle forte. Si elle tombe : " + spoilsLine(player, relation) + ".")
-                .withStyle(ChatFormatting.GOLD));
+        player.sendSystemMessage(Component.literal("   Si sa place forte tombe : " + spoilsLine(player, relation)
+                + ".").withStyle(ChatFormatting.GOLD));
         stakeLine(player, relation);
         rally(player, data, relation, now);
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
@@ -922,9 +920,7 @@ public final class WarStrategy {
         }
         player.sendSystemMessage(Component.literal("   ")
                 .append(button("[La coalition]", "/guerre", ChatFormatting.GOLD))
-                .append(Component.literal(" Alliees, elles se soutiennent et attaquent ensemble. Sous "
-                        + Math.round(DISSOLVE_AT) + " de puissance, la coalition se defait.")
-                        .withStyle(ChatFormatting.GRAY)));
+                .append(Component.literal(" Elles attaquent ensemble.").withStyle(ChatFormatting.GRAY)));
         player.level().playSound(null, player.blockPosition(), SoundEvents.RAID_HORN.value(), SoundSource.HOSTILE,
                 0.6f, 1.7f);
         String faction = FactionApi.data(player).name();

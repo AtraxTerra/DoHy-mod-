@@ -203,7 +203,7 @@ public final class Hydration {
                 case 1 -> player.sendSystemMessage(Component.literal("La soif vient : garde de l'eau sur toi.")
                         .withStyle(ChatFormatting.GOLD), true);
                 case 2 -> player.sendSystemMessage(Component.literal(
-                        "Tu as soif : bois une gorgee (gourde, piege a vent, borne EAU d'Arrakeen).")
+                        "Tu as soif.")
                         .withStyle(ChatFormatting.GOLD));
                 case 3 -> player.sendSystemMessage(Component.literal(
                         "Tu te desseches : bois vite, ou rentre a Arrakeen !").withStyle(ChatFormatting.RED));

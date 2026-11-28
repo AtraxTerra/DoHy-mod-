@@ -231,8 +231,7 @@ public final class GoldReserves {
         Level level = player.level();
         Cube cube = find(level, pos);
         if (cube == null) {
-            FactionApi.tell(player, "Ce coffre-fort n'appartient a aucune reserve complete : un cube de 5, 6 ou 7 "
-                    + "de cote, flancs vitres, coeur d'or liquide (voir /f reserve).", ChatFormatting.RED);
+            FactionApi.tell(player, "Reserve incomplete (/f reserve).", ChatFormatting.RED);
             ReserveMenu.INSTANCE.open(player);
             return;
         }
@@ -289,7 +288,7 @@ public final class GoldReserves {
     public static String invest(ServerPlayer player, long wanted, Term term) {
         GoldReserve reserve = of(player);
         if (!reserve.exists()) {
-            return "Tu n'as pas de reserve d'or : bats-en une, puis clic droit mains nues sur un coffre-fort";
+            return "Tu n'as pas de reserve d'or.";
         }
         int gold = survey(player, reserve);
         if (gold == UNLOADED) {
@@ -388,8 +387,7 @@ public final class GoldReserves {
         if (!reserve.investments().isEmpty()
                 && reserve.contains(FactionApi.dimension(player.level()), event.getPos())) {
             event.setCanceled(true);
-            FactionApi.tell(player, "Ta reserve porte des placements : recolte-les ou retire-les avant de la "
-                    + "demonter.", ChatFormatting.RED);
+            FactionApi.tell(player, "Recolte ou retire d'abord les placements.", ChatFormatting.RED);
         }
     }
 

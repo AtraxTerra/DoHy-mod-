@@ -128,8 +128,7 @@ public final class GradeTools {
         boolean moved = data.homes().containsKey(name);
         int max = Grades.homes(player);
         if (!moved && data.homes().size() >= max) {
-            player.sendSystemMessage(Component.literal("Tu as deja " + data.homes().size() + " homes sur " + max
-                    + " : /delhome pour en liberer un, ou un grade pour en avoir plus. ")
+            player.sendSystemMessage(Component.literal("Homes : " + data.homes().size() + " / " + max + ". ")
                     .withStyle(ChatFormatting.RED).append(Grades.link("[Voir les grades]")));
             return;
         }
@@ -208,7 +207,7 @@ public final class GradeTools {
         }
         GradeTeleports.schedule(player, "au hasard", () -> {
             if (!randomTeleport(player)) {
-                tell(player, "Aucun endroit sur n'a ete trouve : reessaie, ce /rtp n'est pas compte.",
+                tell(player, "Aucun endroit sur : reessaie (non compte).",
                         ChatFormatting.RED);
                 return;
             }
@@ -408,7 +407,7 @@ public final class GradeTools {
             kinds++;
         }
         if (kinds == 0) {
-            tell(player, "Rien a condenser : il faut neuf exemplaires d'un objet qui se compresse"
+            tell(player, "Rien a condenser"
                             + " (lingots, minerais...).",
                     ChatFormatting.GRAY);
             return;

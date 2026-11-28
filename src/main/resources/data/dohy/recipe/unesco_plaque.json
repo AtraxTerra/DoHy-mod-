@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " B ",
+    "GQG",
+    "QQQ"
+  ],
+  "key": {
+    "B": "minecraft:book",
+    "G": "minecraft:gold_ingot",
+    "Q": "minecraft:quartz_block"
+  },
+  "result": {
+    "id": "dohy:unesco_plaque",
+    "count": 1
+  }
+}

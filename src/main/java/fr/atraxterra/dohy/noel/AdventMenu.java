@@ -68,16 +68,11 @@ public final class AdventMenu extends MenuController {
                     .accent(GREEN).state(MenuView.DONE).tooltip(contents(gift));
             case READY -> {
                 Card card = Card.of(closed, title, List.of("La case du jour !",
-                        atSpawn ? "Clique pour l'ouvrir" : "A ouvrir au spawn")).badge(badge).accent(RED);
-                yield card.action("door:" + door + "|ouvrir la case")
-                        .tooltip(List.of("Une surprise t'attend.", atSpawn ? "Garde de la place dans ton sac."
-                                : "Le Pere Noel t'attend sur le parvis du spawn."));
+                        atSpawn ? "Clic : ouvrir" : "Au spawn")).badge(badge).accent(RED);
+                yield card.action("door:" + door + "|ouvrir la case");
             }
             case MISSED -> {
                 List<String> tooltip = contents(gift);
-                tooltip.add("");
-                tooltip.add("Son jour est passe : elle se rattrape pour " + MoneyFormat.exact(
-                        AdventCalendar.catchUpPrice()) + " $, au spawn, jusqu'au 6 janvier.");
                 yield Card.of(gift.iconStack(), title, List.of("Manquee : " + gift.name(),
                         "Rattraper : " + MoneyFormat.exact(AdventCalendar.catchUpPrice()) + " $")).badge(badge)
                         .accent(GOLD).action("door:" + door + "|rattraper la case")
@@ -90,7 +85,7 @@ public final class AdventMenu extends MenuController {
                 String when = AdventCalendar.dayIndex() == 0 ? "Des le 1er decembre"
                         : wait == 1 ? "Demain" : "Dans " + wait + " jours";
                 yield Card.of(closed, title, List.of("Surprise", when)).badge(badge).accent(GRAY)
-                        .state(MenuView.DISABLED).tooltip(List.of("Patience : elle s'ouvre le " + title + "."));
+                        .state(MenuView.DISABLED);
             }
         };
     }
@@ -109,10 +104,9 @@ public final class AdventMenu extends MenuController {
         return switch (state) {
             case OPENED -> card.accent(GREEN).state(MenuView.DONE);
             case READY -> card.accent(RED).action("door:" + AdventCalendar.BONUS + "|ouvrir le grand cadeau")
-                    .tooltip(withLine(contents(gift), atSpawn ? "Joyeux Noel !" : "A ouvrir au spawn."));
+                    .tooltip(withLine(contents(gift), atSpawn ? "Joyeux Noel !" : "Au spawn"));
             default -> card.accent(GOLD).state(MenuView.DISABLED)
-                    .tooltip(withLine(contents(gift), "Les vingt-quatre cases ouvertes (rattrapees comprises),"
-                            + " du 25 decembre au 6 janvier."));
+                    .tooltip(withLine(contents(gift), "Les 24 cases, du 25 decembre au 6 janvier"));
         };
     }
 
@@ -139,23 +133,12 @@ public final class AdventMenu extends MenuController {
                 new MenuView.Stat("AUJOURD'HUI", today, index == 0 ? 0xFFFFFFFF : RED),
                 new MenuView.Stat("OUVERTES", opened + " / " + AdventCalendar.DOORS, opened > 0 ? GREEN : 0xFFFFFFFF),
                 new MenuView.Stat("MANQUEES", String.valueOf(missed), missed > 0 ? GOLD : 0xFFFFFFFF));
-        List<Card> rules = List.of(
-                Card.of(item("palamod:christmas_tree"), "Une case par jour", List.of("Du 1er au 24 decembre",
-                        "Au spawn, chez le Pere Noel")).accent(GREEN)
-                        .tooltip(List.of("Le jour change a 5 h, comme les contrats.",
-                                "/calendrier montre le calendrier de partout.")),
-                Card.of(item("palamod:crate_key_amethyst"), "Une case manquee", List.of("Se rattrape : "
-                        + MoneyFormat.exact(AdventCalendar.catchUpPrice()) + " $", "Jusqu'au 6 janvier"))
-                        .accent(GOLD).tooltip(List.of("Son contenu se voit une fois son jour passe.")),
-                Card.of(item("palamod:present_bag"), "Le cadeau entier", List.of("Ou rien", "Garde de la place"))
-                        .accent(RED).tooltip(List.of("Un sac trop plein laisse la case fermee,",
-                                "rien ne tombe par terre.")));
         String subtitle = index == 0 ? "De retour le 1er decembre"
-                : atSpawn ? "Une case par jour, du 1er au 24 decembre" : "Les cases s'ouvrent au spawn";
+                : atSpawn ? "Une case par jour" : "Les cases s'ouvrent au spawn";
         return new MenuView(id(), "Calendrier de l'Avent", subtitle, stats, List.of(
                 new MenuView.Section("LE CALENDRIER", "resources", MenuView.GRID, doors),
-                new MenuView.Section("LE GRAND CADEAU", "upgrade", MenuView.GRID, List.of(bonus(player, atSpawn))),
-                new MenuView.Section("REGLES", "upgrade", MenuView.GRID, rules)), false);
+                new MenuView.Section("LE GRAND CADEAU", "upgrade", MenuView.GRID, List.of(bonus(player, atSpawn)))),
+                false);
     }
 
     @Override

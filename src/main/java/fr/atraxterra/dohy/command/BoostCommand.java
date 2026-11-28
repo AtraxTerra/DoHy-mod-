@@ -166,7 +166,7 @@ public final class BoostCommand {
         }
         BlockPos pos = data.autosellPos();
         source.sendSuccess(() -> Component.literal(pos == null
-                        ? "Autosell debloque, aucun coffre lie. Place-toi pres d'un coffre et fais /autosell link ~ ~ ~"
+                        ? "Aucun coffre lie (/autosell link)."
                         : "Coffre lie en " + pos.getX() + " " + pos.getY() + " " + pos.getZ()
                                 + " — passage toutes les " + Autosell.INTERVAL_MINUTES + " min de jeu")
                 .withStyle(ChatFormatting.GREEN), false);

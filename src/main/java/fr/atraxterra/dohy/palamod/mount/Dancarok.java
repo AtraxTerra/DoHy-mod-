@@ -69,6 +69,9 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
             SynchedEntityData.defineId(Dancarok.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> STRIKE =
             SynchedEntityData.defineId(Dancarok.class, EntityDataSerializers.INT);
+    /** Le niveau de la monture invoquee, pour ce que le client simule (la course sur l'eau). */
+    private static final EntityDataAccessor<Integer> LEVEL =
+            SynchedEntityData.defineId(Dancarok.class, EntityDataSerializers.INT);
 
     public final AnimationState idleAnimation = new AnimationState();
     public final AnimationState specialAnimation = new AnimationState();
@@ -79,6 +82,9 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
     private float pendingJump;
     private boolean jumping;
     private int steps;
+    /** Les touches de saut et de course du cavalier, posees par le client qui simule la monture. */
+    protected boolean riderJump;
+    protected boolean riderSprint;
 
     public Dancarok(EntityType<? extends Dancarok> type, Level level) {
         super(type, level);
@@ -94,8 +100,8 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
     }
 
     /** Sur un sol ou un animal peut apparaitre, et a la lumiere ({@code EntityAnimal.getCanSpawnHere}). */
-    public static boolean checkSpawnRules(EntityType<Dancarok> type, ServerLevelAccessor level, EntitySpawnReason reason,
-                                          BlockPos pos, RandomSource random) {
+    public static <T extends Mob> boolean checkSpawnRules(EntityType<T> type, ServerLevelAccessor level,
+                                                         EntitySpawnReason reason, BlockPos pos, RandomSource random) {
         return level.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) && level.getRawBrightness(pos, 0) > 8;
     }
 
@@ -105,6 +111,7 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
         builder.define(TAMED, false);
         builder.define(HORN, 0);
         builder.define(STRIKE, 0);
+        builder.define(LEVEL, 0);
     }
 
     /** {@code EntityAIWatchClosest(EntityPlayer, 6)} et {@code EntityAILookIdle} : rien d'autre. */
@@ -122,6 +129,11 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
                 return !isVehicle() && super.canUse();
             }
         });
+    }
+
+    /** L'espece : le Dancarok ici, le Ravirok et le Tedarok dans leurs classes. */
+    public MountSpecies species() {
+        return MountSpecies.DANCAROK;
     }
 
     // -- Proprietaire --------------------------------------------------------------
@@ -142,6 +154,20 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
     /** 0 sans corne, 1 a 3 selon le palier : choisit la texture. */
     public int hornType() {
         return entityData.get(HORN);
+    }
+
+    /** Le niveau de la monture invoquee (0 pour un sauvage). */
+    public int mountLevel() {
+        return entityData.get(LEVEL);
+    }
+
+    /**
+     * Les touches du cavalier ({@code CSMountMovement} 1 et 2 : saut, course).
+     * Posees chaque tick par le client qui conduit, la ou la monture est simulee.
+     */
+    public void setRiderKeys(boolean jump, boolean sprint) {
+        this.riderJump = jump;
+        this.riderSprint = sprint;
     }
 
     /** Un coup de corne vient d'etre donne : l'animation {@code special} repart. */
@@ -200,8 +226,10 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
             getAttribute(Attributes.MAX_HEALTH).setBaseValue(max);
         }
         setHealth(Math.max(0.5f, max - data.damage()));
-        MountHornItem.Tier tier = MountHornItem.tierOf(data.horn());
+        MountHornItem.Tier tier = species().hasHorn() ? MountHornItem.tierOf(data.horn()) : null;
         entityData.set(HORN, tier == null ? 0 : tier.id());
+        entityData.set(LEVEL, data.level());
+        ridingTick(player, data);
 
         // EntityMount.onLivingUpdate : un point de nourriture par bloc parcouru
         // sous son maitre.
@@ -289,7 +317,16 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
 
     @Override
     protected float getRiddenSpeed(Player player) {
-        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
+        return (float) (getAttributeValue(Attributes.MOVEMENT_SPEED) * speedFactor(player));
+    }
+
+    /** {@code Mount.speed}, et ce que l'espece y change (la course du Tedarok). */
+    protected double speedFactor(Player player) {
+        return species().speed();
+    }
+
+    /** Chaque tick serveur d'une monture invoquee, son maitre en ligne. */
+    protected void ridingTick(ServerPlayer player, MountData data) {
     }
 
     /**
@@ -297,7 +334,8 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
      * saut, et un elan de 0,4 x puissance vers l'avant si l'on avance.
      */
     private void executeJump(float power, Vec3 input) {
-        double up = getAttributeValue(Attributes.JUMP_STRENGTH) * power / 1.5d + getJumpBoostPower();
+        double up = getAttributeValue(Attributes.JUMP_STRENGTH) * power * species().jump() / 1.5d
+                + getJumpBoostPower();
         Vec3 motion = getDeltaMovement();
         setDeltaMovement(motion.x, up, motion.z);
         jumping = true;
@@ -368,8 +406,8 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
     /** {@code fall} : pas de degats de chute, un son a l'atterrissage au-dela d'un bloc. */
     @Override
     public boolean causeFallDamage(double distance, float multiplier, DamageSource source) {
-        if (distance > 1.0d) {
-            playSound(PalaMount.DANCAROK_JUMP.get(), 0.4f, 1.0f);
+        if (distance > 1.0d && jumpSound() != null) {
+            playSound(jumpSound(), 0.4f, 1.0f);
         }
         return false;
     }
@@ -403,6 +441,11 @@ public class Dancarok extends PathfinderMob implements PlayerRideableJumping, Ha
     @Override
     protected SoundEvent getAmbientSound() {
         return PalaMount.DANCAROK_IDLE.get();
+    }
+
+    /** {@code fall} : le son d'atterrissage de l'espece. */
+    protected SoundEvent jumpSound() {
+        return PalaMount.DANCAROK_JUMP.get();
     }
 
     @Override

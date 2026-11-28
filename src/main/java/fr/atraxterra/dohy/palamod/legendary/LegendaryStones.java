@@ -71,7 +71,8 @@ public final class LegendaryStones {
                 return false;
             }
         }
-        long left = lastUse + cooldown - now;
+        // Le familier : « Expert legendaire », la recharge raccourcie.
+        long left = lastUse + fr.atraxterra.dohy.palamod.unlock.PetHooks.legendaryCooldown(player, cooldown) - now;
         if (left > 0L) {
             tell(player, Component.translatable("message.palamod.legendary.wait", duration(left)));
             return false;

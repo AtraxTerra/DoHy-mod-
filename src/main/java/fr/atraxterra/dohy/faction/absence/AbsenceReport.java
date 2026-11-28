@@ -166,8 +166,7 @@ public final class AbsenceReport {
             ServerPlayer player = context.getSource().getPlayerOrException();
             AbsenceData data = player.getData(Factions.ABSENCE.get());
             if (!data.last().exists()) {
-                player.sendSystemMessage(Component.literal("Pas encore de rapport : il s'ecrit quand tu reviens apres "
-                        + "plus d'une demi-heure d'absence.").withStyle(ChatFormatting.GRAY));
+                player.sendSystemMessage(Component.literal("Pas encore de rapport.").withStyle(ChatFormatting.GRAY));
                 return 0;
             }
             AbsenceMenu.INSTANCE.open(player);
@@ -198,29 +197,21 @@ public final class AbsenceReport {
     private static int status(ServerPlayer player) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            FactionApi.tell(player, "Fonde d'abord ta nation : tes claims tourneront sans toi.", ChatFormatting.RED);
+            FactionApi.tell(player, "Il faut une nation.", ChatFormatting.RED);
             return 0;
         }
         KeptBases.Base base = KeptBases.refresh(player);
         if (base == null) {
-            FactionApi.tell(player, "Aucun claim : revendique des chunks, ils tourneront sans toi.",
-                    ChatFormatting.GRAY);
+            FactionApi.tell(player, "Aucun claim.", ChatFormatting.GRAY);
             return 0;
         }
         if (!base.enabled()) {
-            FactionApi.tell(player, "Ta base est eteinte : rien ne tourne sans toi. /f charge on pour la rallumer.",
-                    ChatFormatting.GOLD);
+            FactionApi.tell(player, "Base eteinte (/f charge on).", ChatFormatting.GOLD);
             return 1;
         }
         int claims = base.spots().size();
-        FactionApi.tell(player, "Ta base tourne sans toi : " + base.kept() + " chunk(s) tenus sur " + claims
-                + " claim(s), " + base.boxes() + " machines et coffres.", ChatFormatting.GREEN);
-        if (claims > KeptBases.CAP) {
-            FactionApi.tell(player, "Au-dela de " + KeptBases.CAP + " chunks, ceux qui ont le plus de machines et de "
-                    + "coffres.", ChatFormatting.GRAY);
-        }
-        FactionApi.tell(player, "/f charge off pour l'eteindre, /rapport pour le dernier rapport d'absence.",
-                ChatFormatting.GRAY);
+        FactionApi.tell(player, "Base allumee : " + base.kept() + " / " + claims + " chunk(s), " + base.boxes()
+                + " machines et coffres (/f charge off).", ChatFormatting.GREEN);
         return 1;
     }
 

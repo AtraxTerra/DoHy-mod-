@@ -7,6 +7,7 @@ import fr.atraxterra.dohy.economy.Economy;
 import fr.atraxterra.dohy.economy.market.DynamicPrice;
 import fr.atraxterra.dohy.economy.price.PriceEntry;
 import fr.atraxterra.dohy.economy.price.Prices;
+import fr.atraxterra.dohy.shop.DrawerSale;
 import fr.atraxterra.dohy.shop.ShopCategory;
 import fr.atraxterra.dohy.shop.ShopController;
 import fr.atraxterra.dohy.util.MoneyFormat;
@@ -29,7 +30,8 @@ import java.util.Map;
 
 /**
  * {@code /shop} pour ouvrir le shop, et {@code /sellall} pour vider son
- * inventaire d'une categorie entiere.
+ * inventaire d'une categorie entiere. Les tiroirs de Storage Drawers du sac sont
+ * vides de ce qui se vend et restent dans le sac ({@link DrawerSale}).
  */
 @EventBusSubscriber
 public final class ShopCommand {
@@ -93,8 +95,22 @@ public final class ShopCommand {
         // integrale sur la quantite, et cinq piles du meme item tarifees
         // separement partiraient toutes au prix d'avant-vente.
         Map<Item, Integer> batch = new LinkedHashMap<>();
-        for (ItemStack stack : items) {
+        int drawers = 0;
+        for (int slot = 0; slot < items.size(); slot++) {
+            ItemStack stack = items.get(slot);
             if (stack.isEmpty()) {
+                continue;
+            }
+            DrawerSale.Plan drawer = DrawerSale.plan(player, stack,
+                    item -> only == null || Prices.book().entry(item)
+                            .map(price -> only.key().equalsIgnoreCase(price.category())).orElse(false),
+                    item -> Integer.MAX_VALUE - batch.getOrDefault(item, 0)).orElse(null);
+            if (drawer != null) {
+                if (!drawer.sold().isEmpty()) {
+                    drawer.sold().forEach((item, amount) -> batch.merge(item, amount, Integer::sum));
+                    player.getInventory().setItem(slot, drawer.apply());
+                    drawers++;
+                }
                 continue;
             }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
@@ -148,6 +164,12 @@ public final class ShopCommand {
                 .append(Component.literal(MoneyFormat.exact(finalPayout)).withStyle(ChatFormatting.GOLD))
                 .append(Component.literal(" · solde " + MoneyFormat.shortForm(balance))
                         .withStyle(ChatFormatting.DARK_GRAY)), false);
+        if (drawers > 0) {
+            int finalDrawers = drawers;
+            source.sendSuccess(() -> Component.literal(finalDrawers > 1
+                    ? "Dont le contenu de " + finalDrawers + " tiroirs, toujours dans ton sac."
+                    : "Dont le contenu d'un tiroir, toujours dans ton sac.").withStyle(ChatFormatting.GRAY), false);
+        }
         return finalSold;
     }
 }

@@ -136,8 +136,7 @@ public final class FarmBots {
                     + " $ en liquide.";
         }
         give(player, new net.minecraft.world.item.ItemStack(DoHyFarmBots.BOT_REMOTE.get()));
-        player.sendSystemMessage(Component.literal("Telecommande achetee : clic droit sur ton bot pour la relier a"
-                + " lui.").withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.literal("Telecommande achetee.").withStyle(ChatFormatting.GREEN));
         return null;
     }
 

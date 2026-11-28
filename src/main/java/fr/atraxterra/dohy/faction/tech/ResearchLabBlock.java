@@ -106,7 +106,7 @@ public class ResearchLabBlock extends BaseEntityBlock {
     public static String refusal(ServerPlayer player, ServerLevel level, BlockPos pos) {
         FactionData data = FactionApi.data(player);
         if (!data.exists()) {
-            return "Il te faut une nation pour poser un laboratoire de recherche (/f create).";
+            return "Il faut une nation (/f create).";
         }
         boolean creative = player.getAbilities().instabuild;
         if (!creative && !FactionApi.claimAt(level, pos).ownedBy(player.getUUID())) {

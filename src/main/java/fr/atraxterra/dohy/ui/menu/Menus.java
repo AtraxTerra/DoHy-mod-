@@ -9,7 +9,6 @@ import fr.atraxterra.dohy.palamod.achievement.AchievementMenu;
 import fr.atraxterra.dohy.palamod.alchemist.MysticEnchantMenu;
 import fr.atraxterra.dohy.palamod.dimminer.DimMinerMenus;
 import fr.atraxterra.dohy.palamod.dungeon.DungeonMenus;
-import fr.atraxterra.dohy.palamod.dungeon.RpgMenu;
 import fr.atraxterra.dohy.palamod.golem.GolemMenus;
 import fr.atraxterra.dohy.palamod.mount.MountMenus;
 import fr.atraxterra.dohy.palamod.pillage.ChestExplorerMenu;
@@ -28,7 +27,7 @@ public final class Menus {
                 UpgradesController.INSTANCE, BoutiqueController.INSTANCE, CollectionsController.INSTANCE,
                 MuseumController.INSTANCE,
                 DungeonMenus.Paliers.INSTANCE, DungeonMenus.BoostAltar.INSTANCE, DungeonMenus.Merchant.INSTANCE,
-                DungeonMenus.Bag.INSTANCE, RpgMenu.INSTANCE,
+                DungeonMenus.Bag.INSTANCE,
                 MountMenus.Home.INSTANCE, MountMenus.Barn.INSTANCE, MountMenus.Heal.INSTANCE,
                 GolemMenus.Main.INSTANCE, GolemMenus.Tree.INSTANCE, GolemMenus.Choices.INSTANCE,
                 DimMinerMenus.Entry.INSTANCE, DimMinerMenus.Summary.INSTANCE, MysticEnchantMenu.INSTANCE,
@@ -39,6 +38,7 @@ public final class Menus {
                 EnemyBaseMenu.INSTANCE, ReserveMenu.INSTANCE, FactionEventMenu.INSTANCE,
                 fr.atraxterra.dohy.earth.NationMenu.INSTANCE,
                 fr.atraxterra.dohy.faction.war.WarMenu.INSTANCE,
+                fr.atraxterra.dohy.faction.garrison.GarrisonMenu.INSTANCE,
                 fr.atraxterra.dohy.faction.org.OrgMenus.Org.INSTANCE,
                 fr.atraxterra.dohy.faction.org.OrgMenus.CadrePage.INSTANCE,
                 fr.atraxterra.dohy.faction.org.DiplomacyMenus.Hub.INSTANCE,
@@ -65,6 +65,10 @@ public final class Menus {
                 fr.atraxterra.dohy.auction.AuctionController.INSTANCE,
                 fr.atraxterra.dohy.shop.SellController.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnDaily.INSTANCE,
+                fr.atraxterra.dohy.casino.CasinoMenus.Book.INSTANCE,
+                fr.atraxterra.dohy.casino.CasinoMenus.Machine.INSTANCE,
+                fr.atraxterra.dohy.casino.LotteryMenu.INSTANCE,
+                fr.atraxterra.dohy.faction.unesco.UnescoMenu.INSTANCE,
                 fr.atraxterra.dohy.kits.PlayerKitsMenu.INSTANCE,
                 fr.atraxterra.dohy.noel.AdventMenu.INSTANCE,
                 fr.atraxterra.dohy.spawn.SpawnPortals.INSTANCE,

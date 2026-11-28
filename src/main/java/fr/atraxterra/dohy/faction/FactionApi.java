@@ -213,7 +213,7 @@ public final class FactionApi {
             return "Tu n'as pas de nation";
         }
         if (!FactionPerks.of(data).customBanner()) {
-            return "Le blason personnalise se debloque a l'etape Globale 4 (Gouvernement, /f techno)";
+            return "Blason personnalise : etape Globale 4 (/f techno)";
         }
         if (stack.isEmpty()) {
             data.bannerItem = ItemStack.EMPTY;
@@ -419,7 +419,7 @@ public final class FactionApi {
             return "La banque nationale est vide";
         }
         if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
-            return "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut";
+            return "Assaut en cours : banque sous scelle";
         }
         long taken = Math.min(amount, data.bank);
         data.bank -= taken;
@@ -447,7 +447,7 @@ public final class FactionApi {
             return false;
         }
         if (fr.atraxterra.dohy.faction.war.Sieges.besieged(player.getUUID())) {
-            tell(player, "Ta base est assiegee : rien ne sort de ta banque tant que dure l'assaut",
+            tell(player, "Assaut en cours : banque sous scelle",
                     ChatFormatting.RED);
             return false;
         }
@@ -485,6 +485,22 @@ public final class FactionApi {
         if (after != before) {
             tell(player, "Ta nation monte en ligue " + after.label() + " !", ChatFormatting.AQUA);
         }
+    }
+
+    /**
+     * Retire de l'ELO (un BCC pille, lot 25) ; jamais sous zero. La ligue atteinte
+     * reste : elle ne se perd qu'au classement du lundi, comme pour une defaite.
+     */
+    public static void removeElo(ServerPlayer player, long amount, String source) {
+        FactionData data = data(player);
+        if (!data.exists() || amount <= 0) {
+            return;
+        }
+        FactionData.Ranking ranking = data.ranking;
+        long elo = Math.max(0L, ranking.elo() - amount);
+        data.ranking = new FactionData.Ranking(elo, Math.max(0L, ranking.weekElo() - amount), ranking.weekWins(),
+                ranking.league(), ranking.lastMonday());
+        tell(player, "-" + MoneyFormat.exact(amount) + " ELO (" + source + ")", ChatFormatting.RED);
     }
 
     // -- Stats de l'arbre --------------------------------------------------------

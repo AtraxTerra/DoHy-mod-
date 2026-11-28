@@ -35,8 +35,7 @@ public class FarmBotItem extends Item {
         }
         int placed = FarmBots.of(player).size();
         if (placed >= BotRegistry.MAX_PER_PLAYER) {
-            player.sendSystemMessage(Component.literal("Tu as deja " + placed + " bots poses, le maximum. Range-en un"
-                    + " (son menu, Ranger le bot) pour poser celui-ci. /bots dit ou ils sont.")
+            player.sendSystemMessage(Component.literal("Maximum atteint (" + placed + " bots, /bots).")
                     .withStyle(ChatFormatting.RED));
             return InteractionResult.FAIL;
         }
@@ -62,11 +61,9 @@ public class FarmBotItem extends Item {
             text = "Bot pose : il reprend sa zone (" + bot.zone().label() + ")"
                     + (chests == 0 ? "." : chests == 1 ? " et son coffre." : " et ses " + chests + " coffres.");
         } else if (piloted) {
-            text = "Bot pose, ta telecommande le pilote : clic droit sur deux coins de ton champ, puis accroupi"
-                    + " + clic droit sur un coffre.";
+            text = "Bot pose.";
         } else {
-            text = "Bot pose. Telecommande en main : clic droit sur lui, puis sur deux coins de ton champ, puis"
-                    + " accroupi + clic droit sur un coffre.";
+            text = "Bot pose (telecommande : clic droit dessus).";
         }
         player.sendSystemMessage(Component.literal(text).withStyle(ChatFormatting.GREEN));
         if (!player.getAbilities().instabuild) {

@@ -139,6 +139,9 @@ public class MachineMenu extends AbstractContainerMenu {
                 // Les succes : ce que le crusher a broye, les particules du cobblebreaker.
                 if (machine instanceof CrusherBlockEntity && machineIndex == CrusherBlockEntity.SLOT_OUTPUT) {
                     fr.atraxterra.dohy.palamod.achievement.Achievements.count(server, "crusher:" + id, stack.getCount());
+                    // Le familier : « Broyeur acere », un lingot de plus avec sa chance.
+                    fr.atraxterra.dohy.palamod.unlock.PetHooks.machineTaken(server,
+                            fr.atraxterra.dohy.palamod.pet.PetSkill.SHARP_CRUSHER, stack);
                 }
                 if (machine instanceof CobblebreakerBlockEntity && machineIndex >= CobblebreakerBlockEntity.SLOT_FIRST_OUTPUT
                         && id.endsWith("_particle")) {
@@ -146,6 +149,15 @@ public class MachineMenu extends AbstractContainerMenu {
                             stack.getCount());
                     // L'XP de Mineur des particules, prises a la main (wiki, niveau 5 soit 25 ici).
                     fr.atraxterra.dohy.palamod.miner.MinerXpEvents.particlesTaken(server, stack);
+                    // Le familier : « Geologie », des particules en plus.
+                    fr.atraxterra.dohy.palamod.unlock.PetHooks.machineTaken(server,
+                            fr.atraxterra.dohy.palamod.pet.PetSkill.GEOLOGY, stack);
+                }
+                // Le familier : « Artisan de la croquette », des croquettes en plus.
+                if (machine instanceof fr.atraxterra.dohy.palamod.golem.FoodMachineBlockEntity
+                        && stack.is(fr.atraxterra.dohy.palamod.golem.PalaGolem.CROQUETTE.get())) {
+                    fr.atraxterra.dohy.palamod.unlock.PetHooks.machineTaken(server,
+                            fr.atraxterra.dohy.palamod.pet.PetSkill.CROQUETTE_MAKER, stack);
                 }
                 // Le palafurnace : l'XP de cuisson des metiers, comme a la case de resultat d'un four.
                 if (machine instanceof PalafurnaceBlockEntity && machineIndex == PalafurnaceBlockEntity.SLOT_OUTPUT) {

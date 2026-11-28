@@ -59,17 +59,19 @@ public final class FarmlandMap {
     /** Les coins de la carte, ce qu'on y voit et ce qui y apparait. */
     public enum Zone {
         HUB("Le camp", "L'arrivee : rien n'y apparait"),
-        FOREST("La foret", "Zombies, squelettes, araignees, creepers, sorcieres ; loups et lapins"),
-        MEADOW("La prairie", "Vaches, moutons, poules, chevaux, anes, lapins"),
+        FOREST("La foret", "Zombies, squelettes, araignees, creepers, sorcieres ; loups, lapins, Tedarok"),
+        MEADOW("La prairie", "Vaches, moutons, poules, cochons, lapins ; chevaux, anes, Dancarok"),
         HAMLET("Le hameau", "Villageois"),
         MUSHROOM("Les champignons", "Champimeuh"),
-        HILLS("Les collines", "Chevres ; araignees venimeuses dans la grotte"),
+        HILLS("Les collines",
+                "Chevres, Ravirok ; grotte : araignees venimeuses, chauves-souris, cubes de soufre"),
         JUNGLE("La jungle", "Pandas, perroquets, elephants"),
-        LAKE("Le lac", "Dauphins"),
+        LAKE("Le lac", "Dauphins, gardiens"),
         BEACH("La plage", "Tortues"),
-        SWAMP("Le marais", "Slimes, sorcieres"),
-        NETHER("Le coin du Nether", "Piglins zombifies, cubes de magma, squelettes wither, ghasts"),
-        END("Le coin de l'End", "Endermen"),
+        SWAMP("Le marais", "Sorcieres, slimes"),
+        NETHER("Le coin du Nether",
+                "Squelettes wither, blazes, cubes de magma ; piglins zombifies, brutes piglins, ghasts"),
+        END("Le coin de l'End", "Endermen, shulkers"),
         RIM("Les falaises", ""),
         VOID("Le vide", "");
 

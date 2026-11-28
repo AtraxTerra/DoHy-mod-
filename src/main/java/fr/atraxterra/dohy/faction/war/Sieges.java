@@ -78,6 +78,16 @@ public final class Sieges {
         return siege != null && siege.sealing();
     }
 
+    /**
+     * Le coffre que vise l'assaut en cours contre ce joueur, du camp a la fuite du tresorier : la
+     * garnison en garde s'y poste. {@code null} sans assaut.
+     */
+    public static net.minecraft.core.GlobalPos defendedVault(UUID player) {
+        Siege siege = of(player);
+        return siege == null || !siege.sealing() ? null
+                : net.minecraft.core.GlobalPos.of(siege.level.dimension(), siege.vault);
+    }
+
     /** Pour le menu : une ligne sur le siege en cours, ou {@code null}. */
     public static String status(UUID player) {
         Siege siege = of(player);

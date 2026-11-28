@@ -47,7 +47,7 @@ public final class ArrakisCommand {
                     }
                     if (!ArrakisPort.prepare(level)) {
                         context.getSource().sendSuccess(() -> Component.literal(
-                                "L'astroport se construit : relance la commande dans quelques secondes."), false);
+                                "Astroport en construction : reessaie."), false);
                         return 0;
                     }
                     ArrakisPort.arrive(player, level);
@@ -68,7 +68,7 @@ public final class ArrakisCommand {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     if (!SpiceBlows.trigger(player)) {
                         context.getSource().sendFailure(Component.literal(
-                                "Pas d'eruption ici : il faut etre sur Arrakis, hors de la cuvette, pres du sable."));
+                                "Pas d'eruption ici."));
                         return 0;
                     }
                     context.getSource().sendSuccess(() -> Component.literal("Eruption d'epice en approche."), false);
@@ -79,7 +79,7 @@ public final class ArrakisCommand {
                     if (!(player.level() instanceof ServerLevel level) || !DoHyArrakis.onArrakis(player)
                             || !SandWorm.dispatch(level, WormNoise.summon(player))) {
                         context.getSource().sendFailure(Component.literal(
-                                "Pas de ver ici : il faut etre sur Arrakis, dans l'erg, loin de la roche."));
+                                "Pas de ver ici."));
                         return 0;
                     }
                     context.getSource().sendSuccess(() -> Component.literal("Un ver vient vers toi."), false);

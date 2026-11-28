@@ -169,7 +169,10 @@ public class ExtractorBlockEntity extends BlockEntity {
         FlaskSap filled = new FlaskSap(type, sap == null ? 1 : sap.level() + 1);
         FlaskItem.setSap(flask, filled);
         modified = true;
-        uses--;
+        // Le familier : « Extracteur miraculeux », une usure evitee de temps en temps.
+        if (!fr.atraxterra.dohy.palamod.unlock.PetHooks.spareExtractorUse(level, worldPosition)) {
+            uses--;
+        }
         setChanged();
         setEnabled(!filled.isFull() && left > 0);
         if (uses <= 0) {

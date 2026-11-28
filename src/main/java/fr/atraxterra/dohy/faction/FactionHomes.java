@@ -37,13 +37,16 @@ public final class FactionHomes {
         }
         int homes = FactionPerks.of(data).homes();
         if (homes <= 0) {
-            return "Les F homes se debloquent a l'etape Globale 5 (Gouvernement, /f techno)";
+            return "F homes : etape Globale 5 (/f techno)";
         }
         if (index < 0 || index >= homes) {
             return "Tu as " + homes + " home(s) : choisis entre 1 et " + homes;
         }
         if (!FactionApi.claimAt(player.level(), player.blockPosition()).ownedBy(player.getUUID())) {
             return "Un home se pose dans un de tes claims";
+        }
+        if (fr.atraxterra.dohy.faction.unesco.Unesco.inMonument(player.level(), player.blockPosition()) != null) {
+            return "Pas de F home dans un monument UNESCO";
         }
         FactionData.Home home = new FactionData.Home(FactionApi.dimension(player.level()), player.getX(),
                 player.getY(), player.getZ(), player.getYRot());

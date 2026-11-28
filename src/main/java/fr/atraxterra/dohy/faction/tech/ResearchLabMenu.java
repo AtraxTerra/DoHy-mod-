@@ -84,18 +84,12 @@ public final class ResearchLabMenu extends MenuController {
                         MoneyFormat.exact(stored) + " / " + MoneyFormat.exact(config.energyCapacity()) + " FE",
                         "Consomme " + cost + " FE par tick en marche"))
                 .accent(GOLD).progress(stored, config.energyCapacity())
-                .tooltip(List.of("Tout cable d'energie FE l'alimente, par toutes ses faces",
-                        "NTM NEXT : " + (cost * 5L) + " HE par tick (5 HE = 1 FE)",
-                        "Les technologies de l'Energie baissent sa consommation",
-                        "Reserve pleine : " + (config.energyCapacity() / Math.max(1, cost) / 20) + " s d'autonomie")));
+                .tooltip(List.of("FE, ou " + (cost * 5L) + " HE par tick (NTM)")));
         machine.add(Card.of(new ItemStack(Items.COAL), "Combustible", List.of(
                         lab.fuel() > 0 ? lab.fuel() / 20 + " s de combustion" : "Aucun",
-                        "Clic droit avec du charbon, du bois..."))
+                        "Clic droit : charbon, bois"))
                 .accent(0xFFFF8A3D).progress(lab.fuel(), config.fuelMaxTicks())
-                .tooltip(List.of("Faute d'electricite, il brule son combustible",
-                        "Chaque tick de combustion rend " + config.fuelPerTick() + " FE : il tourne a mi-regime",
-                        "Un clic droit prend la pile, jusqu'a ce qu'il en ait assez",
-                        "Il en garde " + config.fuelMaxTicks() / 1600 + " charbons au plus")));
+                .tooltip(List.of("Sans electricite : mi-regime")));
         long perHour = Math.round(config.pointsPerHour() * multiplier);
         machine.add(Card.of(new ItemStack(Items.ENCHANTED_BOOK), "Production", List.of(
                         MoneyFormat.exact(perHour) + " points par heure en marche",
@@ -106,9 +100,7 @@ public final class ResearchLabMenu extends MenuController {
                         MoneyFormat.exact(lab.buffer()) + " / " + MoneyFormat.exact(config.bufferPoints()) + " points",
                         MoneyFormat.exact(lab.produced()) + " produits en tout"))
                 .accent(0xFF9B6BFF).progress(lab.buffer(), config.bufferPoints())
-                .tooltip(List.of("Les points passent aux recherches de la nation chaque seconde,",
-                        "quand son proprietaire est la. Sans recherche, la reserve se remplit,",
-                        "puis le laboratoire s'arrete.")));
+                .tooltip(List.of("Pleine : le laboratoire s'arrete")));
 
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("LABORATOIRE", "resources", MenuView.GRID, machine));
@@ -143,11 +135,7 @@ public final class ResearchLabMenu extends MenuController {
                                     FactionData data) {
         List<Card> cards = new ArrayList<>();
         int carried = carried(player.getInventory());
-        List<String> hint = new ArrayList<>(List.of(
-                "Une recherche prend ses pieces sur toi, puis dans les laboratoires",
-                "charges de ta nation. Un entonnoir, un convoyeur ou un tuyau",
-                "d'objets en livre aussi ; il ne prend que ce que demandent les paliers,",
-                "et rien ne le vide. Casse, il rend tout."));
+        List<String> hint = new ArrayList<>(List.of("Entonnoir, convoyeur ou tuyau : ok"));
         List<String> needs = needs(player, data);
         if (!needs.isEmpty()) {
             hint.add("");
@@ -260,22 +248,18 @@ public final class ResearchLabMenu extends MenuController {
     private static List<String> production(ServerPlayer player, boolean mine, FactionData data, double multiplier) {
         List<String> lines = new ArrayList<>();
         if (!mine || !data.exists()) {
-            lines.add("Bonus de la nation lus a la derniere visite de son proprietaire");
+            lines.add("Bonus de la nation");
             return lines;
         }
         TechPerks perks = TechPerks.of(data);
-        lines.add("Vitesse de recherche : +" + perks.research() + " % (Industrie, Nucleaire, Espace)");
+        lines.add("Recherche : +" + perks.research() + " %");
         int countries = Tech.countries(player, perks);
         if (fr.atraxterra.dohy.earth.EarthNations.active()) {
             ResearchLabConfig.Config config = ResearchLabConfig.config();
-            lines.add("Pays tenus : +" + countries + " % (" + config.countryPercent() + " % par pays, "
-                    + config.capitalPercent() + " % la capitale, " + config.countryCap() + " % au plus"
-                    + (perks.value("research_per_country") > 0 ? ", +" + perks.value("research_per_country")
-                    + " % au Gouvernement V)" : ")"));
+            lines.add("Pays : +" + countries + " %");
         } else {
-            lines.add("Pas de carte de la Terre : pas d'apport des pays");
         }
-        lines.add("Les points se partagent a parts egales entre les recherches en cours");
+        lines.add("Partage entre les recherches");
         return lines;
     }
 
@@ -296,7 +280,7 @@ public final class ResearchLabMenu extends MenuController {
         }
         if (cards.isEmpty()) {
             cards.add(Card.of(new ItemStack(Items.BOOK), "Aucune recherche en cours", List.of(
-                            "Lance-en une dans les technologies", "Le laboratoire garde ses points en attendant"))
+                            "", ""))
                     .accent(CYAN).action("tree|ouvrir les technologies"));
         }
         return cards;
@@ -315,7 +299,7 @@ public final class ResearchLabMenu extends MenuController {
             String state = !allowed ? "En surnombre : le Gouvernement en permet " + cap
                     : rate == null ? "Chunk decharge : a l'arret"
                     : rate > 0.0d ? "En marche · " + MoneyFormat.exact(Math.round(rate)) + " points bruts par heure"
-                    : "A l'arret : energie, combustible ou reserve pleine";
+                    : "A l'arret";
             Card card = Card.of(new ItemStack(DoHyResearch.LAB_ITEM.get()), (key.equals(here) ? "Ici · " : "")
                             + where, List.of(dimension.replace("minecraft:", ""), state))
                     .accent(!allowed ? RED : rate != null && rate > 0.0d ? GREEN : 0xFF55545C);
@@ -324,7 +308,7 @@ public final class ResearchLabMenu extends MenuController {
         }
         if (cards.isEmpty()) {
             cards.add(Card.of(new ItemStack(DoHyResearch.LAB_ITEM.get()), "Aucun laboratoire inscrit", List.of(
-                    "Il s'inscrit tout seul a la prochaine seconde", "Ton Gouvernement en permet " + cap)));
+                    "", "Ton Gouvernement en permet " + cap)));
         }
         return cards;
     }

@@ -86,12 +86,10 @@ abstract class MachineMenu extends MenuController {
         }
         Card load = Card.of(new ItemStack(Items.HOPPER), "Charger la machine", List.of(
                         "Depose ce qu'elle accepte", loadable + " objets dans ton sac"))
-                .accent(GOLD).tooltip(List.of("La machine travaille seule tant qu'elle a",
-                        "de quoi faire et de l'energie",
-                        "Entonnoir dessus ou sur un cote : entree", "Entonnoir dessous : sortie"));
+                .accent(GOLD).tooltip(List.of("Entonnoir : entree dessus, sortie dessous"));
         cards.add(loadable > 0 ? load.action("load|charger la machine") : load.state(MenuView.DISABLED));
         Card unload = Card.of(new ItemStack(Items.CHEST), "Tout reprendre", List.of(
-                "Rend tout ce qu'elle contient", held + " objets dans la machine"));
+                "", held + " objets dans la machine"));
         cards.add(held > 0 ? unload.action("unload|tout reprendre") : unload.state(MenuView.DISABLED));
         if (machine != null) {
             for (int slot = 0; slot < machine.getContainerSize(); slot++) {

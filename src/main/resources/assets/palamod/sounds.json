@@ -19,6 +19,36 @@
       "palamod:dancarok/destroy"
     ]
   },
+  "ravirok.idle": {
+    "sounds": [
+      "palamod:ravirok/idle"
+    ]
+  },
+  "ravirok.jump": {
+    "sounds": [
+      "palamod:ravirok/jump"
+    ]
+  },
+  "ravirok.flap": {
+    "sounds": [
+      "palamod:ravirok/flap"
+    ]
+  },
+  "tedarok.idle": {
+    "sounds": [
+      "palamod:tedarok/idle"
+    ]
+  },
+  "tedarok.jump": {
+    "sounds": [
+      "palamod:tedarok/jump"
+    ]
+  },
+  "tedarok.walk": {
+    "sounds": [
+      "palamod:tedarok/walk"
+    ]
+  },
   "mount.summon": {
     "sounds": [
       "palamod:mount/summon"
@@ -42,6 +72,24 @@
   "funny_wither.invoke": {
     "sounds": [
       "palamod:funny_wither/invoke"
+    ]
+  },
+  "snake.living": {
+    "subtitle": "subtitles.palamod.snake.living",
+    "sounds": [
+      "palamod:mob/snake/snake_living"
+    ]
+  },
+  "snake.hurt": {
+    "subtitle": "subtitles.palamod.snake.hurt",
+    "sounds": [
+      "palamod:mob/snake/snake_hurt"
+    ]
+  },
+  "snake.death": {
+    "subtitle": "subtitles.palamod.snake.death",
+    "sounds": [
+      "palamod:mob/snake/snake_death"
     ]
   }
 }

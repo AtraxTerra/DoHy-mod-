@@ -14,6 +14,12 @@ import fr.atraxterra.dohy.client.hunter.ElephantRenderer;
 import fr.atraxterra.dohy.client.mount.DancarokGeometry;
 import fr.atraxterra.dohy.client.mount.DancarokModel;
 import fr.atraxterra.dohy.client.mount.DancarokRenderer;
+import fr.atraxterra.dohy.client.mount.RavirokGeometry;
+import fr.atraxterra.dohy.client.mount.RavirokModel;
+import fr.atraxterra.dohy.client.mount.RavirokRenderer;
+import fr.atraxterra.dohy.client.mount.TedarokGeometry;
+import fr.atraxterra.dohy.client.mount.TedarokModel;
+import fr.atraxterra.dohy.client.mount.TedarokRenderer;
 import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
@@ -109,7 +115,14 @@ public final class DoHyClient {
         // Les soldats des nations rivales (lot 22l) : corps humain, textures originales, equipement de leur role.
         event.registerEntityRenderer(fr.atraxterra.dohy.faction.war.DoHyWar.SOLDIER.get(),
                 fr.atraxterra.dohy.client.war.SoldierRenderer::new);
+        // Les soldats de ta garnison (lot 22n) : les memes corps, a tes couleurs.
+        event.registerEntityRenderer(fr.atraxterra.dohy.faction.garrison.DoHyGarrison.SOLDIER.get(),
+                fr.atraxterra.dohy.client.war.GarrisonSoldierRenderer::new);
         event.registerEntityRenderer(PalaMount.DANCAROK.get(), DancarokRenderer::new);
+        event.registerEntityRenderer(PalaMount.RAVIROK.get(), RavirokRenderer::new);
+        event.registerEntityRenderer(PalaMount.TEDAROK.get(), TedarokRenderer::new);
+        event.registerEntityRenderer(fr.atraxterra.dohy.palamod.dimminer.PalaDimMiner.MINER_BOSS.get(),
+                fr.atraxterra.dohy.client.miner.MinerBossRenderer::new);
         event.registerEntityRenderer(PalaHunter.ELEPHANT.get(), ElephantRenderer::new);
         event.registerEntityRenderer(DoHyAgri.TRACTOR.get(), TractorRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.farmbot.DoHyFarmBots.FARM_BOT.get(),
@@ -131,6 +144,11 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.throne.ThroneRenderer::new);
         event.registerEntityRenderer(fr.atraxterra.dohy.palamod.throne.PalaThrones.SEAT.get(),
                 net.minecraft.client.renderer.entity.NoopRenderer::new);
+        // L'imprimerie : la presse et ses rouleaux, la table d'ecriture et ses plaques.
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palamod.press.PalaPress.PRINT_PRESS_TYPE.get(),
+                fr.atraxterra.dohy.client.press.PrintPressRenderer::new);
+        event.registerBlockEntityRenderer(fr.atraxterra.dohy.palamod.press.PalaPress.TYPE_MACHINE_TYPE.get(),
+                fr.atraxterra.dohy.client.press.TypeMachineRenderer::new);
         // Le clone dans la cuve de la chambre cryogenique.
         event.registerBlockEntityRenderer(fr.atraxterra.dohy.cryo.DoHyCryo.CHAMBER_TYPE.get(),
                 fr.atraxterra.dohy.client.cryo.CryoChamberRenderer::new);
@@ -165,8 +183,24 @@ public final class DoHyClient {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DancarokModel.LAYER, DancarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(RavirokModel.LAYER, RavirokGeometry::createBodyLayer);
+        event.registerLayerDefinition(TedarokModel.LAYER, TedarokGeometry::createBodyLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.miner.MinerBossModel.LAYER,
+                fr.atraxterra.dohy.client.miner.MinerBossGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.throne.ThroneGeometry.LAYER,
                 fr.atraxterra.dohy.client.throne.ThroneGeometry::createLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.PRESS,
+                fr.atraxterra.dohy.client.press.PressGeometry::createPressLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.INK_PLATE,
+                fr.atraxterra.dohy.client.press.PressGeometry::createInkPlateLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.PRESS_BOOKS,
+                fr.atraxterra.dohy.client.press.PressGeometry::createPressBooksLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET_BASE,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetBaseLayer);
+        event.registerLayerDefinition(fr.atraxterra.dohy.client.press.PressGeometry.TYPESET_BOOK,
+                fr.atraxterra.dohy.client.press.PressGeometry::createTypesetBookLayer);
         event.registerLayerDefinition(ElephantModel.CHILD, ElephantGeometry::createBoneLayer);
         event.registerLayerDefinition(ElephantModel.TEEN, ElephantGeometry::createBoneALayer);
         event.registerLayerDefinition(ElephantModel.ADULT, ElephantGeometry::createBoneBLayer);
@@ -240,6 +274,10 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.unlock.UnlockClient.ALCHEMY_CREATOR);
         machine(event, fr.atraxterra.dohy.palamod.hunter.PalaHunter.SPAWNER_CONTROLLER_MENU.get(),
                 MachineDesigns.SPAWNER_CONTROLLER);
+        machine(event, fr.atraxterra.dohy.palamod.press.PalaPress.PRINT_PRESS_MENU.get(),
+                fr.atraxterra.dohy.client.press.PressClient.PRINT_PRESS);
+        machine(event, fr.atraxterra.dohy.palamod.press.PalaPress.TYPE_MACHINE_MENU.get(),
+                fr.atraxterra.dohy.client.press.PressClient.TYPE_MACHINE);
         event.<MachineMenu, fr.atraxterra.dohy.client.cryo.CryoChamberScreen>register(
                 fr.atraxterra.dohy.cryo.DoHyCryo.MENU.get(), fr.atraxterra.dohy.client.cryo.CryoChamberScreen::new);
         for (KitMenus.Use use : KitMenus.Use.values()) {

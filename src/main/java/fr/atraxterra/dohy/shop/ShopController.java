@@ -157,6 +157,14 @@ public final class ShopController {
     }
 
     static void sell(ServerPlayer player, Identifier id, Item item, PriceEntry entry, int wanted) {
+        sell(player, id, item, entry, wanted, false);
+    }
+
+    /**
+     * Vend {@code wanted} exemplaires pris dans le sac ; avec {@code drawers}, la suite dans les
+     * tiroirs de Storage Drawers du sac, qui y restent ({@link DrawerSale}).
+     */
+    static void sell(ServerPlayer player, Identifier id, Item item, PriceEntry entry, int wanted, boolean drawers) {
         if (!entry.sellable()) {
             refuse(player, "Cet item est en achat seul.");
             return;
@@ -176,6 +184,15 @@ public final class ShopController {
             int take = Math.min(stack.getCount(), wanted - removed);
             stack.shrink(take);
             removed += take;
+        }
+        for (int slot = 0; drawers && slot < items.size() && removed < wanted; slot++) {
+            int room = wanted - removed;
+            DrawerSale.Plan plan = DrawerSale.plan(player, items.get(slot), candidate -> candidate == item,
+                    candidate -> room).orElse(null);
+            if (plan != null && !plan.sold().isEmpty()) {
+                removed += plan.sold().getOrDefault(item, 0);
+                player.getInventory().setItem(slot, plan.apply());
+            }
         }
         if (removed == 0) {
             refuse(player, "Tu n'en as pas.");

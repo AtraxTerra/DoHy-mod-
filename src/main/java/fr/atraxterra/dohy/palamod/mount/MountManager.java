@@ -165,7 +165,7 @@ public final class MountManager {
             old.discard();
         }
         ServerLevel level = (ServerLevel) player.level();
-        Dancarok mount = PalaMount.DANCAROK.get().create(level, EntitySpawnReason.MOB_SUMMONED);
+        Dancarok mount = data.species().entityType().create(level, EntitySpawnReason.MOB_SUMMONED);
         if (mount == null) {
             return;
         }
@@ -217,8 +217,10 @@ public final class MountManager {
             drop(level, mount, data.inventory().get(slot));
             data.inventory().set(slot, ItemStack.EMPTY);
         }
-        drop(level, mount, data.horn());
-        data.setHorn(ItemStack.EMPTY);
+        if (data.species().hasHorn()) {
+            drop(level, mount, data.horn());
+            data.setHorn(ItemStack.EMPTY);
+        }
         MountTexts.error(player, "dead");
         unsummon(player, true);
     }

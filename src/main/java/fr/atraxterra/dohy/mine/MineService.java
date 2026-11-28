@@ -222,9 +222,8 @@ public final class MineService {
         player.fallDistance = 0.0f;
         player.teleport(new TeleportTransition(level, new Vec3(pad.getX() + 0.5d, pad.getY(), pad.getZ() + 0.5d),
                 Vec3.ZERO, 180.0f, 0.0f, TeleportTransition.DO_NOTHING));
-        tell(player, "Bienvenue a la Mine : de la roche a perte de vue, prends des torches. "
-                + "Elle sera remise a neuf a " + nextResetHour() + " h.", ChatFormatting.GOLD);
-        tell(player, "Pas de cobblestone ici, et mourir ne fait rien perdre. Sortie : la borne RETOUR ou /spawn.",
+        tell(player, "La Mine : remise a neuf a " + nextResetHour() + " h.", ChatFormatting.GOLD);
+        tell(player, "Sortie : la borne RETOUR ou /spawn.",
                 ChatFormatting.GRAY);
     }
 
@@ -314,7 +313,7 @@ public final class MineService {
             lastPeriod = period;
             warned = Integer.MAX_VALUE;
             for (ServerPlayer player : List.copyOf(level.players())) {
-                tell(player, "La Mine s'effondre : une mine neuve vous attend, le contremaitre MINE du spawn y mene.",
+                tell(player, "La Mine s'effondre : une neuve vous attend.",
                         ChatFormatting.RED);
                 leave(player);
             }

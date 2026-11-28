@@ -4,7 +4,7 @@
 > lire `PROGRESS.md`, `docs/DESIGN.md` et `docs/BALANCE.md` suffit à reprendre le travail.
 > **À mettre à jour à chaque fin de session.**
 
-Dernière mise à jour : 2026-11-24
+Dernière mise à jour : 2026-11-26
 
 ---
 
@@ -102,13 +102,13 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 11 | **Alchimiste** : 4 arbres de PalaMod (générés), sève (fiole, extracteur, tanks), chaudron multibloc, potion de foudre, fleurs et pollens, portails à sève et leurs clés, bibliothèque mystique et table de l'Alchimiste (anti chute, grass breaker) — sans table d'alchimiste, boules de glu ni trône ; le totem fleuri est venu ensuite | fait |
 | 12 | **Grinder** : multibloc, forge des têtes et des outils en paladium, modificateurs ; marteaux, broadswords, fastswords ; buisson à XP (généré) et baies ; pioche des dieux (100 niveaux, Toucher de soie, fusion automatique) | fait |
 | 13 | **Golem gardien** : golem (40 niveaux, arbre à trois voies, choix, gardien de golem), machine à croquettes, boîte à golem et mini golems, pomme en paladium — sans renommeur, cosmétiques, alerte Discord ni trône | fait |
-| 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans Ravirok, Tedarok ni palamachine ; l'éléphant est venu ensuite | fait |
-| 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension — sans boss ni ambiance client | fait |
+| 14 | **Monture** : le Dancarok (capture, gemme, niveaux, vie et énergie sur le joueur, invocation, conduite, cornes qui creusent), l'enclos (gestionnaire, fondation, barrière, couveuse, soins aux bandages), l'orbe de régénération ; les coffres manquants (paladium, paladium vert, endium, coffre de l'End en paladium, coffre en or) — sans palamachine ; l'éléphant est venu ensuite, le Ravirok et le Tedarok le 2026-11-24 | fait |
+| 15 | **Dimension du Mineur** : obsidienne wither (chargée au paladium, obtenue au piston renforcé), portail du Mineur (propriétaire, Mineur 90), dimension `palamod:miner` (sections de 5 000, 1 000 points, 3 jours, minerais ×3, nuit fixe, sans monstres ni chute), écrans d'entrée et de fin, minerai et Pierre d'Invocation ; la pépite d'endium ne naît plus que dans la dimension ; le gardien des cristaux, son boss, le 2026-11-24 — sans ambiance client | fait |
 | 16 | **Pour le PvP** : palamachine (création et réparation des sticks, anneaux et cornes, enchantements gardés), 7 sticks (effets du code, recharge par type sur le joueur), orbes de force et de saut, 6 anneaux (armure portée, colonne d'anneaux des coffres, capacités de réparation), aile et deltaplane, slimepad, spike en paladium — sans spikes des autres métaux ni modèle 3D du deltaplane | fait |
 | 17 | **Pierres légendaires** : 7 pierres (téléportation, invisibilité, fortune, pouvoir — résistance au feu 30 min —, métier, chaos, et l'aléatoire qui s'ouvre), recharge de 24 h sur la pierre et verrou de 10 min par joueur ; **gant en endium** (établi, grinder, défilement, 12 h complet, Infinity Gauntlet) ; dans les caisses rare et légendaire | fait |
 | 18 | **Donjons, cœur jouable** : 4 clés et l'écran des 100 paliers, groupe de 4, dimension `palamod:dungeon`, salles construites (combat, énigme, boost, marchande, mini-boss en 5, boss en 0), 6 types de monstres renforcés au palier, 40 boss nommés et leurs capacités, coffres individuels, sacs de donjon (9/18/27/36 piles), butin du wiki, XP de métier, mort = palier échoué ; bouteilles d'XP de métier — sans équipement, essences, notes, sorts, runes ni arbre (chapitres 19 à 21) | fait |
 | 19 | **Donjons, équipement** : 3 armures et 3 épées par donjon (basique, renforcée, légendaire ; fortes surtout en donjon, à plein dans le leur), set antique du palier 100, récompenses uniques du wiki, essences par élément et tier (réparation à l'enclume), note D à S et son coffre — textures de Palamod Recreated | fait |
-| 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 8 nœuds en écran de coffre (bouton d'inventaire, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
+| 20 | **Donjons, runes et arbre** : niveau RPG (XP des salles, 100 niveaux), points (niveau, paliers, métiers 1/5), arbre de 4 branches × 10 nœuds à l'écran de Paladium (refait le 2026-11-24, `/profil`, `/menu`), statistiques RPG en donjon seulement ; runes commune, rare, épique (coffres, palamachine, enclume, grinder) — sorts et mana sautés au choix du joueur | fait |
 | 20b | **Stuff antique** : icônes et armure portée en 3D de Palamod Recreated (modèles traduits de leur bytecode), vol et invisibilité au set complet hors donjon (patchnotes V11), bonus de donjon dedans | fait |
 | 20c | **Retours en jeu** : pierre aléatoire qui disparaissait, entonnoirs sous le cobblebreaker et le crusher (sorties seulement), entonnoir en paladium qui aspire au sol, minerais qui se rendent eux-mêmes (fonte au four et au haut fourneau) | fait |
 | 21a | **Interfaces, lot 1** : kit d'interface DoHy UI (style Paladium, polices TrueType, vues et actions réseau), écran des métiers avec les contrats du jour, fiche d'un métier à onglets, shop à la maquette de l'Admin Shop — voir [docs/INTERFACES.md](docs/INTERFACES.md) | fait |
@@ -192,6 +192,250 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-26 — le patrimoine mondial (UNESCO et merveilles)
+
+**Demande** : point 22 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, lot 28).
+
+- **Plaque UNESCO** : le jury (le mod) arpente le bâtiment et le note sur 100 (taille, détails,
+  intérieur, style, fonctions) ; inscrit à 60 : emplacements (5 par nation), subvention de 2 500 $
+  par emplacement, zone protégée des explosions et des autres joueurs, pas de F home, prestige à la
+  notation, warp et guide.
+- **Merveille du monde** : élue le 1er du mois à 21 h parmi les monuments inscrits et ceux des
+  nations rivales ; 25 000 $, +3 à la notation, halo.
+
+### 2026-11-26 — le casino et la loterie
+
+**Demande** : point 13 de « 9, 2, 5, 7, 13, 22 » (`docs/ORGANISATIONS.md`, lot 27).
+
+- **Blocs** : machine aléatoire (chance réglable de 1 à 99 %), dé de casino (lu au comparateur),
+  monnayeur et caisse des gains ; panneaux `[Casino]` (ticket, lance le jeu) et `[Casino2]` (paie
+  le gagnant), écrits comme sur NationsGlory.
+- **Clients fictifs** selon la loi du pays sur le jeu (12 par heure et par jeu, ×1,5 légal, ×0,4
+  interdit), joués par le vrai circuit quand le monnayeur est chargé ; taxes, pots-de-vin, descentes
+  de police ; `/casino` (coffre, somme jouée, distribuée, taux de redistribution).
+- **Loterie du spawn** chez l'hôtesse ou par `/loto` : tickets à 5 000 $, cagnotte de 50 000 $ +
+  80 % des tickets, joueurs fictifs, tirage le dimanche à 20 h.
+
+### 2026-11-26 — À vos marques
+
+**Demande** : point 7 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « À vos marques »).
+
+- **Manches** de 30 minutes chaque heure, de 10 h 30 à 23 h 30 : miner 1 000 blocs (la Mine, la
+  dimension du Mineur), couper 250 bûches (l'overworld, le Mineur), tuer 50 créatures ou pêcher
+  25 prises (la Farmland, le Mineur) ; une manche sur trois aux points (1 000 points, toutes les
+  actions).
+- **Barre** en haut de l'écran (objectif, compteur, compte à rebours), titre au départ et à
+  l'objectif atteint, section dans l'écran des events.
+- **7 ELO** par objectif atteint, **70 par jour** au plus. Essai : `/f event marques lancer`.
+
+### 2026-11-26 — le Base Claim Controller
+
+**Demande** : point 5 de « 9, 2, 5, 7, 13, 22 » (`docs/FACTION.md`, « Le Base Claim
+Controller »).
+
+- **Le bloc** : 75 000 $ de la banque nationale (onglet Territoire), niveau de nation > 10, posé au
+  centre d'un claim 3 × 3, indestructible, coffre de 55 cases, intrus à 200 blocs.
+- **Revenus** : 120 ELO à la pose, puis 30 de gloire et de l'ELO croissant chaque jour (plafond au
+  jour 50).
+- **Pillage** : deux minutes de clic droit sans être frappé ; explosion sans dégâts, contenu à
+  terre, ±300 ELO. Les bases rivales ont leur BCC ; sur le podium de la notation, des pillards
+  viennent pour le tien.
+
+### 2026-11-26 — les familiers
+
+**Demande** : point 2 de « 9, 2, 5, 7, 13, 22 », avec le serpent et l'escargot comme sources
+d'appât ; trois familiers originaux, pas ceux de Paladium (`docs/PALAMOD.md`, § 46).
+
+- **Serpent et escargot** de PalaMod (modèles, textures, sons, animations) : appât à 75 % et 25 %,
+  trophées rares, XP de Chasseur, biomes.
+- **Cage à familier**, appât, tirages de 5 % toutes les 2 minutes, **apprivoisement** en trois
+  paliers (mini-jeu de pêche adapté), 5 000 XP de Chasseur.
+- **Pyrolynx, Mordillon, Feu-follet** : modèles, textures et portraits propres au mod
+  (`tools/pet_assets.py`), sur l'épaule droite, visibles des autres.
+- **/pet** : niveau, bonheur, quêtes du jour, vingt emplacements ; **40 compétences** du wiki (25
+  passives branchées sur les systèmes de PalaMod, 15 actives) et la **roue** (R).
+
+### 2026-11-26 — l'imprimerie : presse à imprimer et table d'écriture
+
+**Demande** : « 9, 2, 5, 7, 13, 22 » — six points de la liste des manques, une PR chacun ; voici
+le 9 (`docs/PALAMOD.md`, § 45).
+
+- **Table d'écriture** : livre enchanté + plaque d'impression + niveaux → plaque d'impression
+  enchantée. Prix de `TileEntityTypeMachine` (rareté × niveau, plafond 50) ; bouton GRAVER ou
+  accroupi main vide.
+- **Presse à imprimer** : plaque, livres, encre de paladium (deux par livre), dix secondes par
+  livre, trois livres par plaque. Entonnoir : ne prend que les livres imprimés.
+- **Rendu d'origine** : six modèles Techne relevés boîte par boîte (`tools/press_assets.py`), plaque
+  d'encre à neuf états, livres et plaques empilés, plateau et rouleaux animés pendant
+  l'impression, reflet sur les objets enchantés, étiquettes quand on regarde le bloc.
+- Fournitures et recettes de `PRegister_Craft` : plaque d'impression, encre de paladium (×4),
+  dalle en paladium (×6, nouvelle). Fiche d'encyclopédie « L'imprimerie ».
+
+### 2026-11-25 — la farmland : plus de créatures du métier
+
+**Demande** : « Pour la dimension farmland augmente le spawn des mobs métiers »
+(`docs/ORGANISATIONS.md`, lot 24e, « Les créatures »).
+
+- Plafonds doublés ou plus pour les créatures qui rapportent de l'XP de Chasseur ou
+  d'Alchimiste (environ 53 → 145 sur la carte) ; les autres gardent leurs nombres.
+- Les sept espèces du barème qui manquaient : cochons (prairie), chauves-souris et cubes de
+  soufre (grotte), gardiens (lac), blazes et brutes piglins (Nether ; les brutes ne se changent
+  pas en piglins zombifiés), shulkers (End).
+- Six essais toutes les deux secondes par joueur au lieu de trois, tirés seulement parmi les
+  réserves qui peuvent faire apparaître quelque chose près de lui ; 200 créatures au plus.
+- Cartes du menu : des textes qui tiennent (« Blazes, wither, ghasts », « Elephants, pandas ») ;
+  les infobulles listent les espèces sur deux lignes.
+- Vérifié en CI : les 37 espèces existent en 26.2 ; chaque nouvelle réserve fait apparaître la
+  sienne (la chauve-souris vit dix minutes, comme les animaux) ; les brutes restent des brutes
+  après trente secondes ; un cube de soufre tué se divise en deux petits qui gardent la marque de
+  la farmland (ils comptent dans le plafond). Même chasse d'une minute avant et après : forêt
+  63 → 236 créatures, prairie 75 → 272, Nether 85 → 331 ; tick moyen 12 à 17 ms.
+
+### 2026-11-24 (suite) — vendre un tiroir plein, et le garder
+
+**Demande** : « avec le mod storage drawer j'aimerais vendre l'intégralité d'un drawer au /sell
+ou coffre de vente, au lieu de tout retirer du drawer et vendre, et j'aimerais récupérer le drawer
+après vente » (`docs/PALAMOD.md` § 35, « Vendre un tiroir plein »).
+
+- Le serveur tourne avec **Storage Drawers 26.2.0.1** (le portage officiel) : un tiroir cassé plein
+  garde son contenu dans ses données. `DrawerSale` les lit sans dépendre du mod : tiroirs simples,
+  compacteurs (la forme qui paie le mieux d'abord), cases retirées du bloc.
+- **Coffre de vente** : le contenu vendable rejoint la vente, le tiroir revient ; **`/sell hand`**
+  et **`/sell stack`** : le tiroir reste en main ; **onglet Vendre** et **`/sellall`** : les tiroirs
+  du sac comptent et sont vidés sans être pris. Ce qui ne se vend pas reste dedans.
+- Vidé, le tiroir redevient un tiroir neuf, qui s'empile. Refusés : le tiroir fermé par la clé d'un
+  autre, l'amélioration de distribution créative.
+- **Corrigé** : le total courant du coffre de vente ne se recalculait pas au dépôt.
+- Vérifié en CI, avec le fichier même du serveur (CurseForge, SHA-256 `411cb9e7…8e98`) : trois
+  tiroirs remplis par l'API du mod puis cassés en survie ; l'onglet Vendre compte 400 diamants dont
+  400 en tiroir ; le coffre de vente affiche « 305 531 · 2 tiroirs, rendus a la fermeture », vend
+  976 objets, rend le 1x1 neuf (pile de 64) et le 2x2 avec ses 500 terres ; `/sell hand` vend 45
+  lingots et 4 pépites du compacteur ; `/sellall` vide un 2x2 de gravier et de diamants ; une case
+  retirée vendue redevient une case vide que le mod reprend ; le 2x2 reposé garde sa terre ; le
+  tiroir d'un autre est refusé.
+
+### 2026-11-24 (suite) — le gardien des cristaux, boss de la dimension du Mineur
+
+**Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », seconde moitié — le boss de la dimension
+du Mineur (`docs/PALAMOD.md` § 18, « Le gardien des cristaux »).
+
+- **Porté du bytecode** : `EntityMinerBoss`, ses cinq attaques (`Punch`, `Turn`,
+  `LeftShockWave`, `StrikingGround`, `Repulse`) et son IA (`EntityAIMinerBossAttackOnCollide`) ;
+  le modèle (55 pièces, converti du constructeur de `MinerBossModel`), ses animations
+  (`setRotationAngles2`) et ses sept textures, une par cristal brisé.
+- **Six cristaux** : il ne se blesse qu'étourdi, après sa frappe au sol ; deux coups par cristal,
+  14 dégâts renvoyés à chaque coup ; les six brisés, 1 000 PV à abattre. Ses attaques s'annoncent
+  bras levés et tuent ; s'il tue sa cible, il se reforme.
+- **Éveil** (ajout) : la Pierre d'Invocation, accroupi + clic droit au sol, dans la dimension
+  seulement ; un seul à 128 blocs. Le filtre anti-monstres de la dimension le laisse passer.
+- **Barre de boss** : les cristaux (violette, en six), puis la vie (rouge). **Butin** : de 0 à 2
+  pépites d'endium, plus Butin.
+- Vérifié en CI : 2 × 2, insensible au feu et au recul ; une cible à 2,5 blocs tuée en moins de
+  3 s et le gardien reformé (3 cristaux brisés et 500 PV → aucun et 1 000) ; une frappe au sol hors
+  de portée l'étourdit ; le premier coup renvoie 14 dégâts (20 → 6 PV), projette le joueur et fend
+  le cristal, un coup hors étourdissement ne porte pas, le second brise le cristal ; tous brisés,
+  un coup de 20 retire 20 PV, le feu rien ; `/kill` le tue ; un joueur en survie, totem en main,
+  le voit fondre sur lui, le totem saute et le gardien se reforme ; 3 pépites pour 3 gardiens ; la
+  pierre échoue hors de la dimension, l'éveille dedans, refuse un second ; un zombie y reste
+  refusé ; les poses (annonces, coup de poing, frappe, onde de choc, toupie, étourdi) capturées.
+
+### 2026-11-24 (suite) — le Ravirok et le Tedarok rejoignent le Dancarok
+
+**Demande** : le point 5 de « Fais 1 (…), 2, 4 et 5 », première moitié — les deux autres montures
+du mod Mount 6.1.0 (`docs/PALAMOD.md` § 17, « Le Ravirok et le Tedarok »).
+
+- **Espèces** (`palamod/mount/MountSpecies`) relevées dans le jar : PV et cases au niveau 100
+  (Dancarok 400/36, Ravirok 100/9, Tedarok 200/18), vitesse, détente et compétences. La gemme et
+  la monture équipée portent l'espèce ; celles d'avant restent des Dancaroks.
+- **Ravirok** : il vole et ne marche pas — saut pour monter, course pour descendre, il plane
+  entre les deux, plafond à la couche 256, battements d'ailes.
+- **Tedarok** : marche de cinq blocs, saut d'environ cinq blocs, course × 1,9, marche sur l'eau
+  (et y court au niveau 50).
+- La corne reste au Dancarok ; sur les deux autres, on casse et pose des blocs en selle.
+- **Sauvages** : dans leurs biomes (montagnes pour le Ravirok, forêts et taïgas pour le Tedarok,
+  par `DancarokSpawner` et la règle vanilla) et un de chaque dans la farmland (prairie, collines,
+  forêt), comme chez Paladium. Capture à l'épée et à la pierre comme le Dancarok.
+- Modèles, animations, textures et sons du jar (`tools/bedrock_model.py`, qui accepte maintenant les
+  valeurs fixes sans temps). `/mount give [niveau] [espèce]`.
+- Vérifié en CI : les trois sauvages affichés, capture d'un Ravirok (« Gemme de Ravirok
+  sauvage »), Ravirok niveau 50 (50 PV, 4 cases) qui monte, avance et redescend se poser,
+  Tedarok niveau 60 (120 PV, 10 cases) qui court sur un bassin.
+
+### 2026-11-24 (suite) — moins de texte : menus, chat, infobulles et encyclopédie resserrés
+
+**Demande** : « fais une passe sur l'ensemble du mod pour enlever les textes trop "ia" ou en
+réduisant les explications au minimum ».
+
+- **Menus** : les sections d'explication retirées (lois, influence, règles du sietch, de l'eau, de
+  l'épice et de la navette d'Arrakis, modes d'emploi des mines, règles de la farmland, des kits, de
+  la récompense du jour et du calendrier) ; les sous-titres, infobulles et confirmations ramenés à
+  une ou deux lignes ; les justifications (« pour… », « ce qui… ») coupées. Environ 132 000 → 104 000
+  caractères de texte de menus. Ce qui explique un système reste dans sa fiche d'encyclopédie.
+- **Chat** : messages raccourcis (Arrakis, guerre, faction, réserve d'or, bots de farming, Mine,
+  grades…).
+- **Encyclopédie** : 106 fiches réécrites au plus court (résumé d'une phrase, puces factuelles),
+  chiffres, recettes, commandes et voisins gardés ; les recettes de NTM gardées telles quelles.
+  117 000 → 90 000 caractères.
+- **Gardé tel quel** : les textes repris de Paladium (événements des lucky blocks, succès), les
+  répliques des PNJ et des nations, les notes calculées (ce qui compte pour une entreprise).
+- L'infobulle des potions d'XP est réglée dans son générateur (`tools/xp_potion_assets.py`), que la
+  CI compare au fichier de langue.
+
+### 2026-11-24 (suite) — le profil RPG à la maquette de Paladium
+
+**Demande** : « Met a jour l'arbre de compétences du rpg avec une nouvelle interfaces (en pièces
+jointes) » — la maquette « PROFIL RPG » de Paladium (`docs/PALAMOD.md`, section RPG).
+
+- **L'écran** (`client/rpg/RpgProfileScreen`) : à gauche le nom, le niveau, la barre d'XP, les
+  onglets PERSO et GLOBAL, les statistiques avec leurs icônes (en GLOBAL, la vie, les dégâts
+  critiques et les bonus d'équipement donjon par donjon) ; à droite l'arbre sur sa croix colorée
+  (ESQUIVE en haut, ATTAQUE à gauche, CRITIQUE à droite, DÉFENSE en bas), VALIDER et RESET au
+  centre, les points restants en haut à droite. Textures de PalaRPG fournies par le joueur.
+- **L'arbre** (`palamod/dungeon/RpgTree`) : dix nœuds par branche en arborescence (un nœud s'ouvre
+  quand son parent est pris), coûts de 2 à 10 (65 points par branche), valeurs par nœud (32 %
+  d'attaque, 16 % d'esquive, 24 % de critique et de défense au total). Les choix attendent
+  VALIDER ; RESET les annule, ou remet l'arbre à zéro (25 000 $). Rendre un nœud choisi rend ceux
+  qui en descendent. L'arbre se déplace à la souris (glisser, molette) pour voir ses bouts.
+- **Reprise** : l'ancien arbre linéaire est rendu à la connexion (points restitués, un message).
+- Vérifié en CI : reprise d'un joueur niveau 30 (3 nœuds d'attaque, 2 d'esquive) → 30 points
+  libres ; choix, nœud sans parent refusé, validation (+7 % d'attaque, +2 % de défense), sous-branche
+  rendue, remise à zéro (25 000 $ débités), esquive validée. Après les captures : fond rendu opaque
+  (le HUD transparaissait) et compteur de points sur deux lignes (il couvrait un nœud d'esquive).
+
+### 2026-11-24 (suite) — la garnison : des soldats à soi, payés par la nation
+
+**Demande** : le point 4 de « Fais 1 (…), 2, 4 et 5 » — des soldats alliés recrutables (caserne,
+solde, équipement) qui gardent la base et suivent le joueur, sur le modèle des soldats des nations
+rivales. Lot 22n (`docs/FACTION.md`, « La garnison (22n) » ; équilibre : `BALANCE.md`
+§ 6 tritrigesies).
+
+- **La caserne** (`faction/garrison/`) : un bloc par joueur, dans ses propres claims, nation
+  exigée ; la pose refusée le dit en rouge (sans nation, hors claims, deuxième caserne). Niveau 1 :
+  4 soldats ; niveau 2 (100 000 $) : 8 ; niveau 3 (300 000 $) : 12. Cassée, la garnison passe en
+  congé jusqu'à la suivante.
+- **Les soldats** : fantassin (20 000 $, 2 000 $ / jour), archer (25 000 $, 2 500 $ / jour, tir de
+  côté comme les squelettes), médecin (35 000 $, 3 500 $ / jour, soigne la garnison et le joueur),
+  capitaine, un seul (80 000 $, 8 000 $ / jour, aura de Force et de Résistance). Équipement fer,
+  diamant (150 000 $) ou paladium (450 000 $) ; au fer, des pièces de cuir teintes aux couleurs
+  de la bannière.
+  Aucun tir ami ; ils ne visent pas les creepers.
+- **Les ordres** (`/garnison`, menu de la garnison) : garde (en cercle autour de la caserne, et
+  autour du coffre pendant un assaut), escorte (ils suivent, d'une dimension à l'autre), repos (à
+  la caserne, ils se soignent), congé (personne en jeu). Ils ne sont en jeu que si le joueur est
+  près de la caserne ou les emmène ; rappelés, ils gardent leur vie.
+- **La solde** se paie chaque jour joué à 5 h, sur la banque de la nation, après la fin d'un
+  assaut ; deux jours impayés, un soldat déserte chaque jour. Un soldat mort quitte la garnison.
+- **La guerre** : les soldats comptent dans la zone du siège, leurs victimes rapportent la prime
+  au joueur, et les nations en tirent la leçon (« gardiens » : plus de fantassins). Carte « Ta
+  garnison » dans l'écran de la guerre.
+- Vérifié en CI (27 captures) : refus de pose, recrues, capitaine unique, niveau 2, six soldats à
+  leurs postes, combat contre zombies et squelette, escorte jusqu'au Nether, solde de 20 500 $
+  débitée, désertion au deuxième jour impayé, équipement diamant. Un assaut de Nordheim
+  (24 soldats) mis en déroute en une minute par cinq soldats (15 tués, trois pertes).
+  **Bug trouvé et corrigé** : de retour du Nether, un ordre de garde donné dans la seconde
+  laissait les soldats là-bas ; un soldat resté dans une autre dimension est maintenant rappelé et
+  redéployé à son poste.
 
 ### 2026-11-24 (suite) — Noël au spawn : le calendrier de l'Avent et le parvis décoré
 

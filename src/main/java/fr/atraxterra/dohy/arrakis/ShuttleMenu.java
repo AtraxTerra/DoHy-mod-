@@ -37,7 +37,7 @@ public final class ShuttleMenu extends MenuController {
                     "NTM NEXT Space n'y est pas installe")).accent(SAND).state(MenuView.DISABLED);
         } else if (DoHyArrakis.onArrakis(player)) {
             trip = Card.of(new ItemStack(Items.COMPASS), "Retour au spawn", List.of("Gratuit",
-                    "Au spawn, le passeur RETOUR te ramene d'ou tu venais"))
+                    "Retour : le passeur RETOUR du spawn"))
                     .accent(0xFF22E558).action("home");
         } else {
             trip = Card.of(new ItemStack(Items.FIREWORK_ROCKET), "Arrakis", List.of("Astroport d'Arrakeen",
@@ -47,16 +47,8 @@ public final class ShuttleMenu extends MenuController {
                     : trip.state(MenuView.DISABLED).tooltip(List.of("Il te manque "
                             + MoneyFormat.exact(ArrakisPort.TICKET - balance) + " $."));
         }
-        Card about = Card.of(ItemStack.EMPTY, "La planete des sables", List.of(
-                "Un desert a perte de vue, l'air y est respirable et l'eau y est rare.",
-                "- L'erg : des dunes hautes comme des collines",
-                "- Les massifs de roche, aux falaises rayees de strates",
-                "- Les cuvettes de sel, et les calottes de glace des poles",
-                "- Arrakeen, au fond de sa cuvette, gardee par la Muraille",
-                "! On peut aussi y aller en fusee NTM : Arrakis est l'ancienne Duna."));
         return new MenuView(id(), "Navette", "Spawn — Arrakis", stats, List.of(
-                new MenuView.Section("DEPART", "resources", MenuView.GRID, List.of(trip)),
-                new MenuView.Section("ARRAKIS", "", MenuView.TEXT, List.of(about))), false);
+                new MenuView.Section("DEPART", "resources", MenuView.GRID, List.of(trip))), false);
     }
 
     @Override

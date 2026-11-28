@@ -173,6 +173,11 @@ public final class SpawnerEvents {
             if (level.getBlockState(pos).is(Blocks.SPAWNER) && level.getRandom().nextFloat() < BROKEN_SPAWNER_CHANCE) {
                 level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d,
                         new ItemStack(PalaHunter.BROKEN_SPAWNER.get())));
+                // Le familier : « Explosion benie », un second spawner casse avec sa chance.
+                if (fr.atraxterra.dohy.palamod.unlock.PetHooks.blessedExplosion(level, pos)) {
+                    level.addFreshEntity(new ItemEntity(level, pos.getX() + 0.5d, pos.getY() + 0.5d,
+                            pos.getZ() + 0.5d, new ItemStack(PalaHunter.BROKEN_SPAWNER.get())));
+                }
             }
         }
     }

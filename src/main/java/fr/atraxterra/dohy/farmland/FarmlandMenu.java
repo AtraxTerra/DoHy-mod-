@@ -45,12 +45,12 @@ public final class FarmlandMenu extends MenuController {
             case HAMLET -> "Villageois";
             case MUSHROOM -> "Champimeuh";
             case HILLS -> "Chevres, et une grotte";
-            case JUNGLE -> "Pandas, perroquets, elephants";
-            case LAKE -> "Dauphins";
+            case JUNGLE -> "Elephants, pandas";
+            case LAKE -> "Dauphins, gardiens";
             case BEACH -> "Tortues";
-            case SWAMP -> "Slimes, sorcieres";
-            case NETHER -> "Piglins, magma, wither, ghasts";
-            case END -> "Endermen";
+            case SWAMP -> "Sorcieres, slimes";
+            case NETHER -> "Blazes, wither, ghasts";
+            case END -> "Endermen, shulkers";
             default -> "";
         };
     }
@@ -102,11 +102,11 @@ public final class FarmlandMenu extends MenuController {
 
         List<Card> go = new ArrayList<>();
         if (here) {
-            go.add(Card.of(new ItemStack(Items.COMPASS), "Retour au spawn", List.of("Comme la borne RETOUR du camp",
+            go.add(Card.of(new ItemStack(Items.COMPASS), "Retour au spawn", List.of("",
                     "ou /spawn")).accent(0xFFFF5A4A).action("leave|rentrer"));
         } else {
             go.add(Card.of(new ItemStack(Items.IRON_SWORD), "Aller a la farmland", List.of(
-                            built ? "Arrivee au camp, au centre" : "Construite a ta premiere visite",
+                            built ? "Arrivee au camp, au centre" : "",
                             "Sortie : la borne RETOUR ou /spawn"))
                     .accent(0xFFFAC400).action("go|y aller"));
         }
@@ -125,7 +125,7 @@ public final class FarmlandMenu extends MenuController {
             }
             zones.add(Card.of(icon(zone), zone.label(), List.of(brief(zone),
                             count > 0 ? count + " sur place (" + cap + " au plus)" : cap + " au plus"))
-                    .accent(color(zone)).tooltip(List.of(zone.creatures())));
+                    .accent(color(zone)).tooltip(List.of(zone.creatures().split(" ; "))));
         }
 
         List<MenuView.Stat> stats = List.of(
@@ -134,16 +134,8 @@ public final class FarmlandMenu extends MenuController {
                 new MenuView.Stat("CARTE", built ? "PRETE" : "A BATIR", built ? 0xFF22E558 : 0xFFFAC400));
         List<MenuView.Section> sections = List.of(
                 new MenuView.Section(here ? "TU Y ES" : "PARTIR", "upgrade", MenuView.GRID, go),
-                new MenuView.Section("LES COINS|ce qui y apparait", "resources", MenuView.GRID, zones),
-                new MenuView.Section("LES REGLES", "", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY, "", List.of(
-                        "Une carte batie et indestructible : rien ne s'y casse ni ne s'y pose.",
-                        "Seules les creatures du Chasseur y apparaissent, chacune dans son coin.",
-                        "PvP inactif, PvE actif : on peut y mourir. La faim n'y baisse pas.",
-                        "Les commandes de faction n'y marchent pas.",
-                        "Un animal que personne n'attaque s'en va au bout de dix minutes.",
-                        "Entree : cette borne, ou /farmland au grade Heros. Sortie : la borne RETOUR du camp"
-                                + " ou /spawn.")))));
-        return new MenuView(id(), "Farmland", "La dimension du Chasseur", stats, sections, true);
+                new MenuView.Section("LES COINS", "resources", MenuView.GRID, zones));
+        return new MenuView(id(), "Farmland", "", stats, sections, true);
     }
 
     @Override

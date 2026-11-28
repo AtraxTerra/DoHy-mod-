@@ -119,21 +119,20 @@ public final class JobBossMenu extends MenuController {
         if (state == JobBossApi.State.OFFERING && JobBossApi.resting(player, selected) > 0L) {
             actions.add(Card.of(new ItemStack(Items.BED.pick(DyeColor.RED)), "Au repos", List.of(
                     "Prochaine offrande dans " + JobBossApi.when(JobBossApi.resting(player, selected)),
-                    "Huit heures apres chaque victoire")).accent(color(selected)).state(MenuView.DISABLED));
+                    "8 h apres une victoire")).accent(color(selected)).state(MenuView.DISABLED));
         } else if (state == JobBossApi.State.OFFERING) {
             Card give = Card.of(new ItemStack(Items.CHEST), "Offrir", List.of(
-                    "Deposer ce que tu as de l'offrande", "Le reste plus tard, autant de fois qu'il faut"))
+                    "Depose ce que tu as", ""))
                     .accent(color(selected));
             actions.add(here.altar() ? give.action("offer|offrir")
-                    : give.state(MenuView.DISABLED).tooltip(List.of("Seulement a l'autel du spawn :",
-                    "la pretresse AUTEL, sur le parvis")));
+                    : give.state(MenuView.DISABLED).tooltip(List.of("A l'autel du spawn")));
         } else if (state == JobBossApi.State.COMING) {
             actions.add(Card.of(new ItemStack(Items.CLOCK), "En route", List.of(
                     "Arrive dans " + JobBossApi.when(JobBossApi.remaining(player, selected)),
-                    "L'autel te previendra dans le chat")).accent(color(selected)));
+                    "")).accent(color(selected)));
         } else {
             actions.add(Card.of(new ItemStack(Items.NETHERITE_SWORD), "Combattre", List.of(
-                            "Il t'attend dans l'arene", "Une defaite ne coute rien"))
+                            "Il t'attend dans l'arene", ""))
                     .accent(0xFFFAC400).badge("PRET").action("fight:" + selected.name() + "|combattre"));
         }
 
@@ -144,8 +143,7 @@ public final class JobBossMenu extends MenuController {
                 Card.of(new ItemStack(Items.GOLD_INGOT), "Argent", List.of("Des que le gardien tombe"))
                         .badge("+" + MoneyFormat.exact(JobBossApi.moneyReward(level)) + " $"),
                 Card.of(new ItemStack(Items.ENDER_CHEST), "Coffre du gardien", List.of(
-                        "Au centre de l'arene : la reserve de " + JobBosses.arena(selected).display()
-                                + " et deux tirages de la table des boss, au palier " + JobBosses.palier(level)))
+                        "Deux tirages de la table des boss"))
                         .badge("PALIER " + JobBosses.palier(level)),
                 Card.of(new ItemStack(Items.EXPERIENCE_BOTTLE), "Niveau suivant", List.of(
                         level >= JobBosses.MAX_LEVEL ? "Niveau maximum : il reste a 10"

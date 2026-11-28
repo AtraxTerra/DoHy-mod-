@@ -42,6 +42,7 @@ public final class MountData {
 
     public static final MapCodec<MountData> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             UUIDUtil.CODEC.optionalFieldOf("equipped").forGetter(data -> data.equipped),
+            MountSpecies.CODEC.optionalFieldOf("species", MountSpecies.DANCAROK).forGetter(data -> data.species),
             Codec.STRING.optionalFieldOf("name", "").forGetter(data -> data.name),
             Codec.FLOAT.optionalFieldOf("xp", 0.0f).forGetter(data -> data.xp),
             Codec.INT.optionalFieldOf("shared_xp", DEFAULT_SHARED_XP).forGetter(data -> data.sharedXp),
@@ -53,6 +54,7 @@ public final class MountData {
     ).apply(instance, MountData::new));
 
     private Optional<UUID> equipped;
+    private MountSpecies species;
     private String name;
     private float xp;
     private int sharedXp;
@@ -64,12 +66,14 @@ public final class MountData {
     private UUID summoned;
 
     public MountData() {
-        this(Optional.empty(), "", 0.0f, DEFAULT_SHARED_XP, MAX_FOOD, 0.0f, ItemStack.EMPTY, List.of());
+        this(Optional.empty(), MountSpecies.DANCAROK, "", 0.0f, DEFAULT_SHARED_XP, MAX_FOOD, 0.0f, ItemStack.EMPTY,
+                List.of());
     }
 
-    private MountData(Optional<UUID> equipped, String name, float xp, int sharedXp, int food, float damage,
-                      ItemStack horn, List<ItemStack> stacks) {
+    private MountData(Optional<UUID> equipped, MountSpecies species, String name, float xp, int sharedXp, int food,
+                      float damage, ItemStack horn, List<ItemStack> stacks) {
         this.equipped = equipped;
+        this.species = species;
         this.name = name;
         this.xp = xp;
         this.sharedXp = sharedXp;
@@ -94,8 +98,13 @@ public final class MountData {
         return equipped;
     }
 
+    /** L'espece de la monture equipee (le Dancarok, sans monture). */
+    public MountSpecies species() {
+        return species;
+    }
+
     public String name() {
-        return name.isEmpty() ? MountGem.DEFAULT_NAME : name;
+        return name.isEmpty() ? species.label() : name;
     }
 
     public float xp() {
@@ -107,11 +116,11 @@ public final class MountData {
     }
 
     public float maxHealth() {
-        return MountLevels.maxHealth(level());
+        return MountLevels.maxHealth(species, level());
     }
 
     public int slots() {
-        return MountLevels.slots(level());
+        return MountLevels.slots(species, level());
     }
 
     public int sharedXp() {
@@ -176,6 +185,7 @@ public final class MountData {
     /** {@code equipMount} : la gemme passe dans le joueur. Objets et corne ne bougent pas. */
     public void equip(MountGem gem) {
         equipped = Optional.of(gem.mountId());
+        species = gem.species();
         name = gem.name();
         xp = gem.xp();
         sharedXp = gem.sharedXp();
@@ -189,9 +199,10 @@ public final class MountData {
      * corne restent au joueur.
      */
     public MountGem unequip(UUID owner) {
-        MountGem gem = new MountGem(equipped.orElseGet(UUID::randomUUID), Optional.of(owner), name(), xp, sharedXp,
-                food, damage, -1L, -1L, -1L);
+        MountGem gem = new MountGem(equipped.orElseGet(UUID::randomUUID), species, Optional.of(owner), name(), xp,
+                sharedXp, food, damage, -1L, -1L, -1L);
         equipped = Optional.empty();
+        species = MountSpecies.DANCAROK;
         name = "";
         xp = 0.0f;
         sharedXp = DEFAULT_SHARED_XP;

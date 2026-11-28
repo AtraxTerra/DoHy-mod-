@@ -1730,6 +1730,66 @@ ici, comme les lucky blocks (§ 6 tervicies).
 Leviers : `data/advent.json` (contenu des cases, grand cadeau, `catch_up_price`), relu au
 démarrage du monde.
 
+## 6 tritrigesies. La garnison — ce que coûte une armée (2026-11-24)
+
+Description : `docs/FACTION.md` (22n). Une dépense de milieu et de fin de partie : elle doit
+coûter assez pour qu'on la choisisse, et rendre assez (la base tenue, l'escorte) pour qu'on la
+garde. Tout passe par la banque de la nation, jamais par la bourse du joueur.
+
+| Ce qu'on achète | Prix | Par jour |
+|---|---|---|
+| Fantassin | 20 000 $ | 2 000 $ |
+| Archer | 25 000 $ | 2 500 $ |
+| Médecin | 35 000 $ | 3 500 $ |
+| Capitaine (un seul) | 80 000 $ | 8 000 $ |
+| Caserne niveau 2 (8 places) / 3 (12 places) | 100 000 $ / 300 000 $ | — |
+| Équipement diamant / paladium (toute la garnison) | 150 000 $ / 450 000 $ | — |
+
+- **Une première garde** : quatre fantassins, 80 000 $ et **8 000 $ par jour** — moins d'un tiers
+  d'une journée de contrats au niveau 0 (~27 k, § 6 novovicies).
+- **Une armée complète** (niveau 3 : un capitaine, deux médecins, quatre archers, cinq
+  fantassins, en paladium) : ~1,35 M d'installation (350 k de recrues, 400 k de caserne, 600 k
+  d'équipement) et **35 000 $ par jour** — une dizaine de minutes du revenu du milieu de partie
+  (~190 k de l'heure, § 6 sexvicies), deux minutes de celui de fin de partie (1 M, § 3).
+- **La solde ne court que joueur en ligne** : un jour d'absence ne coûte rien. En solo, c'est le
+  juste prix : la garnison ne sert que quand tu es là (un assaut ne vient jamais en ton absence).
+- **Les morts coûtent leur recrutement** : un assaut qui en tue trois coûte 60 000 à 100 000 $ ;
+  la prime des soldats ennemis qu'ils abattent (25 à 400 $) ne rembourse pas une recrue. Le
+  médecin et le repos à la caserne évitent l'essentiel des pertes.
+
+**Ce qui le borne** : douze places au plus, la solde de chaque jour joué, la désertion (deux jours
+sans solde, un soldat par jour), les morts, et la banque sous scellé pendant un assaut (ni
+recrue, ni solde, ni équipement).
+
+**Pas de boucle** : un soldat ne rapporte rien qu'un golem de fer ne rapporte (les monstres qu'il
+tue laissent leur butin, sans expérience) ; il ne mine, ne récolte ni ne vend rien.
+
+Leviers : `GarrisonRole` (prix, solde, vie, dégâts), `GarrisonTier` (multiplicateurs, prix),
+`Garrison.CAPACITY` et `LEVEL_COST`, `Garrisons.PATIENCE` (jours avant désertion), `NEAR`/`FAR`
+(rayon de déploiement), `REST_HEAL`.
+
+## 6 quatertrigesies. Le gardien des cristaux — ce que vaut un combat (2026-11-24)
+
+Description : `docs/PALAMOD.md` § 18. Le butin est celui de l'original : **de 0 à 2 pépites
+d'endium** (une en moyenne), plus de 0 à Butin (2,5 en moyenne avec Butin III), et 5 XP. Une
+pépite vaut ~40 k au catalogue (§ 6 ter).
+
+- **Ce qu'il coûte** : une Pierre d'Invocation, qui ne manque pas (un filon de minerai par chunk
+  dans la dimension, sans points de session), et l'accès à la dimension (Mineur 90).
+- **Ce qu'il prend** : douze étourdissements pour six cristaux, et l'étourdissement ne vient que
+  de la frappe au sol (15 à 25 % des attaques selon l'état), une attaque toutes les 6,5 s : ~66
+  attaques à esquiver, **~7 minutes**, puis 1 000 PV à abattre. Le temps des cristaux ne se
+  raccourcit pas avec l'équipement.
+- **Ce qu'il rend** : ~40 k par combat, ~100 k avec Butin III, soit **~280 k à 700 k de l'heure**
+  sans erreur — le revenu du milieu de partie (~190 k, § 6 sexvicies), en dessous de celui de fin
+  de partie (1 M, § 3), pour un joueur Mineur 90. Le prix dynamique de la pépite baisse à mesure
+  qu'on en vend.
+- **Ce qui le borne** : une erreur le reforme (six cristaux, pleine vie) ; un seul à la fois à
+  128 blocs ; les pierres se cassent à l'usage.
+
+Leviers : `MinerBoss.Attack` (durées, chances), `STUN_TICKS`, `THORNS`, `ATTACK_DELAY`,
+`dropCustomDeathLoot`.
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

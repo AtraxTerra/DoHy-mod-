@@ -26,6 +26,7 @@
     "palamod:titane_anvil",
     "palamod:titane_spike_obsidian",
     "palamod:wither_obsidian",
-    "palamod:wood_spike_obsidian"
+    "palamod:wood_spike_obsidian",
+    "dohy:base_claim_controller"
   ]
 }

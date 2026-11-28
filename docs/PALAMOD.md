@@ -1712,9 +1712,10 @@ s'excluent. Coûts et effets du code (les descriptions de l'original se trompaie
 ## 17. Monture : le Dancarok et l'enclos (chapitre 14)
 
 Relevé dans le mod Mount 6.1.0 (`fr.paladium.mount`), croisé avec PalaMod (capture, croquettes,
-recettes) et Lindworm (l'animation). Tout passe sous l'espace `palamod`. Seul le Dancarok est porté :
-le Ravirok et le Tedarok, les deux autres espèces, ne le sont pas. Aucun verrou de métier sur les
-objets de monture ; l'épée et la pierre de capture gardent les leurs (Chasseur 65 et 70).
+recettes) et Lindworm (l'animation). Tout passe sous l'espace `palamod`. Les trois espèces sont
+portées : le Dancarok (chapitre 14), le Ravirok et le Tedarok (lot du 2026-11-24, ci-dessous).
+Aucun verrou de métier sur les objets de monture ; l'épée et la pierre de capture gardent les leurs
+(Chasseur 65 et 70).
 
 ### Le cycle — `MountManager`, `CommandMount`
 
@@ -1827,6 +1828,44 @@ horloge s'arrête.
   (multiplicateur Trixium), les protections WorldGuard, le multi-serveur, la compétence
   Vétérinaire du mod Pet, le profil web.
 
+### Le Ravirok et le Tedarok — `RavirokMount`, `TedarokMount`, `MountType`
+
+Relevé dans les classes d'espèce (`hp`, `speed`, `nbSlots`, `jumpStrenght`, `skills`) et dans
+`EntityMount.moveEntityWithHeading`, `EntityRavirokMount` et `CSMountMovement`, croisé avec la page
+« Montures » du wiki de Paladium.
+
+| | Dancarok | Ravirok | Tedarok |
+|---|---|---|---|
+| Taille | 2,5 × 1,9 | 1,85 × 1,6 | 1,45 × 1,65 |
+| PV au niveau 100 | 400 | 100 | 200 |
+| Cases au niveau 100 | 36 (+ la corne) | 9 | 18 |
+| Vitesse (× celle de la monture) | 1 | 1,3 | 1,15 ; 1,9 en course |
+| Détente (× le saut) | 1 | 0 | 3,5 (environ cinq blocs) |
+| Compétences | `MiningSkill` (corne) | `FlySkill` | `AutoJumpSkill(5)`, `RunningSkill(1,9)`, `WaterWalkSkill(1,15)`, `WaterRunSkill(1,9)` au niveau 50 |
+
+- **La gemme porte l'espèce** (`species`, le `Type` de l'original) ; une gemme ou une monture
+  équipée d'avant n'en a pas : c'est un Dancarok. Le nom par défaut est celui de l'espèce.
+- **Le Ravirok vole** et ne marche pas : la touche de saut le fait monter (0,15 bloc par tick), la
+  touche de course descendre (0,3), il plane entre les deux, jamais au-dessus de la couche 256
+  (`onEntityUpdate`, et le correctif V11.0.4.1 de Paladium). En l'air, la vitesse est celle de la
+  monture × 1,3 avec le freinage de l'air (0,91). Il bat des ailes toutes les secondes. Le cavalier
+  qui descend en vol tombe.
+- **Le Tedarok** franchit d'un pas cinq blocs (`stepHeight = 5`), court × 1,9 à la touche de course,
+  marche sur l'eau dès le niveau 1, et y court au niveau 50. **Écart** : Mount le laissait nager à
+  la surface (une poussée de 0,1 rattrapait sa chute) ; ici il marche sur l'eau calme comme
+  l'arpenteur sur la lave, à la vitesse de la terre, et remonte s'il tombe dedans.
+- La **corne** est au Dancarok : la case est fermée sur les deux autres (la corne reste gardée), le
+  clic droit n'y donne aucun coup, et l'on peut **casser et poser des blocs** en selle (wiki).
+- Les **touches** passent du client qui conduit à la monture qu'il simule (`MountClient`) : pas de
+  paquet, la monture contrôlée se déplace côté client en 26.2.
+- **Sauvages** : aucune règle d'apparition dans les jars (Paladium les posait dans sa Farmland ; le
+  correctif V8.5.0.0 y ajoute le Ravirok). Ici : `DancarokSpawner` en pose une de chaque espèce dans
+  ses biomes (Ravirok : collines battues des vents, pics, pentes, cerisaie ; Tedarok : forêts et
+  taïgas), une à la fois par espèce à 128 blocs, et la farmland en garde une par coin (prairie,
+  collines, forêt). Modèles, animations (`idle`, `walk`, `fly` ; `walk`, `run`, `idle`), textures et
+  sons du jar, convertis par `tools/bedrock_model.py`.
+- `/mount give [niveau] [dancarok|ravirok|tedarok]` (opérateurs).
+
 ## 18. Dimension du Mineur (chapitre 15)
 
 Relevé dans `modules/miner/dimminer` de PalaMod 10.3.0, avec `BaseWorldGenerator` et
@@ -1864,8 +1903,8 @@ portail se referme si son cadre est incomplet ou sa nappe trouée. Incassable, s
   plateforme 6 × 5 d'obsidienne wither et un cadre. **Écart** : ce cadre était décoratif (le kick
   ramenait au serveur Faction) ; il porte ici le **portail de sortie**. Après onze sections sans sol
   (des océans), une plateforme au niveau de la mer.
-- **Dans la dimension** : aucun monstre hors de ceux des spawners des ruines (plus bas), pas de dégâts
-  de chute, aucun conteneur posé, l'obsidienne wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
+- **Dans la dimension** : aucun monstre hors de ceux des spawners des ruines et du gardien des
+  cristaux (plus bas), pas de dégâts de chute, aucun conteneur posé, l'obsidienne wither ne se casse pas. **Écart** : une explosion n'y casse aucun bloc — la TNT abattrait les
   minerais sans payer de points. Une barre en haut de l'écran donne les points et le temps restants
   (`UIDimMinerOverlay`). Le créatif et le spectateur échappent aux règles de pose, de casse et de
   bordure (`bypass`).
@@ -1935,12 +1974,52 @@ monstres. Ces ruines les remplacent, **fréquentes**, chacune autour d'un **spaw
 
 Dureté 5, se rend lui-même ; au four, une **Pierre d'Invocation** (1 XP). Couches du findium, filon
 de 3 : une chance sur deux par chunk dans l'overworld (0,4 à l'origine), un filon par chunk dans
-la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté.
+la dimension. La pierre ne servait qu'aux runes de donjon de PalaRPG, non porté ; ici, elle entre
+dans les clés et le sac de donjon, et éveille le gardien des cristaux.
+
+### Le gardien des cristaux — `EntityMinerBoss` (2026-11-24)
+
+Enregistré mais jamais invoqué chez Paladium, et refusé par le filtre anti-monstres de sa propre
+dimension. Porté d'après le bytecode de l'entité, de ses cinq attaques et de son IA, avec son
+modèle (55 pièces), ses animations et ses sept textures.
+
+- **L'éveil** (**ajout**) : la Pierre d'Invocation, accroupi + clic droit au sol, dans la dimension
+  du Mineur seulement. Elle se brise. Un seul gardien à 128 blocs, jamais en paisible (il y
+  disparaîtrait aussitôt), et il lui faut 2 × 2 × 2 blocs libres. Il reste là jusqu'à sa mort.
+- **Fiche** : 2 × 2 blocs, 1 000 PV, insensible au recul et au feu, lent (0,2). Pas de coup
+  ordinaire : il marche sur le joueur le plus proche qu'il voit et, à un peu plus de 4 blocs, tire
+  une attaque ; la suivante attend 130 ticks après le départ de la précédente.
+- **Six cristaux** : tant qu'il en reste, rien ne le blesse, sauf **étourdi**. Étourdi, il est
+  figé 80 ticks ; le premier coup le réveille, renvoie **14 dégâts** à ce qui l'a frappé (une
+  flèche les prend à la place du tireur) et fend un cristal ; deux coups le brisent. Le coup qui ne
+  brise pas le dernier projette le joueur. Les six brisés, il encaisse normalement et ne
+  s'étourdit plus. Sa texture perd un cristal à chaque fois.
+- **Les attaques**, annoncées bras levés, frappent au 45e tick :
+
+| Attaque | Annonce | Effet | Chances, de 0 à 6 cristaux brisés |
+|---|---|---|---|
+| Coup de poing | bras droit | à moins de 3,5 blocs, s'il voit sa cible : mort | 75, 80, 85, 35, 20, 17, 18 |
+| Toupie (dès 4) | deux bras | il tourne ; à moins de 3,5 blocs, du 45e au 60e tick : mort | —, —, —, —, 28, 33, 43 |
+| Onde de choc (dès 3) | bras gauche | il frappe le sol ; à moins de 5 blocs au 50e tick : mort | —, —, —, 40, 32, 35, 38 |
+| Frappe au sol (avant 6) | deux bras | la même, puis **étourdi** | 25, 20, 15, 25, 20, 15, — |
+
+- **S'il tue sa cible, il se reforme** : six cristaux, 1 000 PV. Dans la dimension, la mort est
+  évitée (retour à l'arrivée) ; le combat est à reprendre.
+- **Butin** : de 0 à 2 pépites d'endium, plus de 0 à Butin ; 5 XP.
+- **Écarts** :
+  - la barre de boss compte les cristaux (violette, en six), puis la vie (rouge) ; l'original
+    montrait la vie, pleine jusqu'au dernier cristal ;
+  - ses cristaux sont gardés au rechargement (l'original les oubliait) ;
+  - l'onde de choc lançait 24 blocs en huit arcs, à 4 blocs de lui : sans type, ils n'avaient
+    aucun effet, et c'étaient des blocs d'air. Il en reste une gerbe d'éclats du sol, sans effet ;
+  - une flèche tirée sur lui étourdi aurait planté l'original (il projetait la flèche comme un
+    être vivant) : elle fend son cristal, sans renvoi ni projection ;
+  - à la marche, le bras droit se balance comme le gauche (le modèle écrasait son angle, une
+    faute de frappe) ; la toupie tourne au rendu, l'orientation n'arrivant au client que tous les
+    trois ticks.
 
 ### Ce qui n'est pas porté, et ce qui change de forme
 
-- Le **boss** `EntityMinerBoss` : enregistré mais jamais invoqué dans l'original, et refusé par le
-  filtre anti-monstres de sa propre dimension.
 - L'ambiance du client : éclairs et chauves-souris aléatoires, tremblement de caméra et brouillard
   qui se resserrent avec les points, écran de transition. Il reste un ciel noir et un brouillard
   fixe.
@@ -2499,13 +2578,27 @@ Global), à droite l'arbre, dont on achète les cases puis « Valider » ; « Re
 n'est pas validé. Ici :
 - **`/profil`** et une vignette du menu `/menu` (le bouton « Profil RPG » au-dessus de l'inventaire
   est parti avec le nouvel inventaire du 2026-11-11, qui ouvre le menu principal) ;
-- un écran de coffre : une rangée par branche, **8 nœuds** à acheter dans l'ordre (coûts 2, 4, 5,
-  7, 9, 11, 12, 15 — 65 par branche) ; un clic réserve le nœud suivant, un clic sur le dernier
-  réservé le rend ; **Valider** achète, **Reset** annule les réserves ;
-- tuiles **Perso** (l'arbre seul) et **Global** (arbre, runes de l'armure portée, équipement de
-  donjon) ;
-- **ajout** : « Réinitialiser l'arbre » rend tous les points validés contre **25 000 $** (le wiki
-  ne dit pas si un choix validé se défait).
+- l'écran de Paladium (refait le 2026-11-24 d'après la capture du joueur, images de PalaRPG) : à
+  gauche le nom, le niveau, l'XP et les statistiques en lignes à icônes, onglets **Perso** (l'arbre
+  seul) et **Global** (arbre, runes de l'armure portée, vie, résistances et dégâts de l'équipement
+  de donjon par donjon) ; à droite l'arbre sur sa croix de lumière — Esquive en haut, Attaque à
+  gauche, Critique à droite, Défense en bas —, **Valider** et **Reset** au centre, le compteur des
+  points en haut à droite ; l'arbre glisse à la souris (molette ou glisser) ;
+- **dix nœuds par branche** (`RpgTree`) : une racine près du centre, puis deux bras qui
+  s'écartent ; un nœud se prend quand son parent est pris. Coûts 2, 3, 4, 4, 6, 6 et quatre à 10 :
+  65 par branche, comme avant. Ce qu'ils donnent, en points de pourcentage :
+
+  | Branche | Racine → bouts | Total |
+  |---|---|---|
+  | Attaque | 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 | 32 % |
+  | Esquive | 1, 1, 1, 1, 2, 2, 2, 2, 2, 2 | 16 % |
+  | Critique | 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 | 24 % |
+  | Défense | 2, 2, 2, 2, 2, 2, 3, 3, 3, 3 | 24 % |
+
+  Un clic choisit un nœud, un second le rend (avec ce qui en descend) ; **Valider** achète,
+  **Reset** annule les choix ; sans choix en cours, Reset remet l'arbre à zéro contre **25 000 $**
+  (ajout : le wiki ne dit pas si un choix validé se défait). L'ancien arbre (huit nœuds en ligne)
+  est rendu une fois, à la connexion : les points reviennent, un message le dit.
 
 ### Les runes
 
@@ -3436,6 +3529,39 @@ Fichier `vault_drawers-26.2-neoforge-26.2.0.57-0.0.0-beta.9.jar` (1 067 619 octe
     clé n'est pas sauvegardée (elle disparaît au redémarrage).
 - NTM porte des mixins pour Storage Drawers (`com.jaquadro…`) ; ils ne trouvent pas Vault
   Drawers, dont le paquet diffère : de simples avertissements au démarrage.
+
+### Vendre un tiroir plein — Storage Drawers (2026-11-24)
+
+Demandé le 2026-11-24 : « vendre l'intégralité d'un drawer au /sell ou coffre de vente, au lieu
+de tout retirer du drawer et vendre, et récupérer le drawer après vente ». Le serveur du joueur
+tourne désormais avec **Storage Drawers** lui-même, le portage officiel en 26.2
+(`StorageDrawers-neoforge-26.2.0.1.jar`, CurseForge 223852 ; sources : branche `26.2` de
+jaquadro/StorageDrawers). Berskar n'en dépend toujours pas : `DrawerSale` lit les données de
+l'objet.
+
+- **Ce que porte un tiroir cassé plein** (`dropMode = KEEP`, le réglage par défaut) : les données
+  de son bloc, `BLOCK_ENTITY_DATA`, et une pile limitée à 1. Tiroir simple : `Drawers`, une liste
+  de cases (`Item`, `Count`, `Missing` pour une case retirée) ; compacteur : `Drawers.Count`, le
+  réservoir compté en plus petite forme, et `Drawers.Items` (`Item`, `Slot`, `Conv`). Une case
+  retirée du bloc (`detached_drawer_full`) porte le sien dans le composant
+  `storagedrawers:detached_drawer_content`.
+- **Où ça vend** : le coffre de vente (le contenu rejoint la vente, le tiroir revient dans
+  l'inventaire), `/sell hand` et `/sell stack` (le tiroir reste en main), l'onglet Vendre (les
+  lignes comptent les tiroirs du sac ; « Tout vendre » et la vente d'une ligne les vident sans les
+  prendre) et `/sellall`. Pas l'autosell : il vide un coffre lié, pas un tiroir.
+- **Ce qui se vend** : ce que le catalogue rachète et dont la vente est ouverte. Le reste demeure
+  dans le tiroir. Le prix dynamique compte ensemble les piles et les tiroirs d'un même objet.
+- **Le tiroir rendu** : vidé, une case oublie son objet, comme dans le mod (sauf verrou de la clé,
+  qui le garde) ; plus rien dedans et aucune amélioration, il redevient un tiroir neuf, sans
+  données, qui s'empile. Une case retirée vidée redevient une case vide (`detached_drawer`), que le
+  mod reprend dans un tiroir.
+- **Le compacteur** vend d'abord la forme qui paie le mieux par petite unité (les lingots avant les
+  pépites ; un bloc fabriqué ne se rachète pas) ; une fraction qui ne fait pas une pièce vendable
+  reste.
+- **Refusés** : le tiroir fermé par la clé personnelle d'un autre joueur, et celui qui porte
+  l'amélioration de distribution créative (un stock sans fin).
+- **Corrigé au passage** : le total courant du coffre de vente (barre d'action) n'était pas
+  recalculé au dépôt, son conteneur ne prévenant pas le menu ; un écouteur le relie.
 
 ---
 
@@ -4447,3 +4573,188 @@ Une famille de variantes (couleurs, paliers) passe par un tag : `#palamod:colore
   par une boule de slime dans la recette de la poudre.
 - **Le verrou du Fermier 55** visait l'herbe colorée elle-même, qui ne se récupère pas : il porte
   sur les hautes herbes colorées, pour qu'il verrouille quelque chose.
+
+## 45. L'imprimerie : presse à imprimer et table d'écriture (2026-11-26)
+
+Demandée le 2026-11-26 (point 9 de la liste des manques, « Table d'écriture et presse »). Relevé
+au bytecode dans PalaMod 10.3.0 (`BlockPrintPress`, `TileEntityPrintPress`,
+`TileEntityPrintPressRenderer`, `BlockTypeMachine`, `TileEntityTypeMachine`,
+`TileEntityTypeMachineRenderer`, les six modèles Techne `ModelPrintPress`, `ModelInkPlate`,
+`ModelPrintPressBooks`, `ModelTypeset`, `ModelTypesetBase`, `ModelTypesetBook`, `ItemChase`,
+`ItemEnchantedPlate`, `ItemPaladiumInk`, `PRegister_Craft`) ; les prix au wiki. Textures et noms :
+le jar de PalaMod.
+
+### Le circuit
+
+1. **La table d'écriture** (`type_machine`) : un livre enchanté, une **plaque d'impression**
+   (`chase`) et des niveaux d'expérience donnent une **plaque d'impression enchantée**
+   (`enchanted_plate` ; `echanted_plate` dans PalaMod, la faute n'est pas reprise). Le bouton
+   GRAVER de l'interface, ou accroupi main vide sur la table, comme l'original.
+2. **La presse à imprimer** (`print_press`) : la plaque, des livres et de l'**encre de paladium**.
+   Deux encres et 200 ticks (`furnaceCookTime`) par livre ; chaque livre sort avec les
+   enchantements de la plaque (`StoredEnchantments` recopié). La plaque s'use d'un cran par livre
+   et casse au troisième (`setItemDamage`, détruite au-delà de 2).
+
+### Le prix de la gravure — `TileEntityTypeMachine.addBookorPlate`
+
+Pour chaque enchantement : un multiplicateur tiré de son poids de rareté (1 → 8, 2 → 4, 3 → 10,
+4 → 0,5, 5 → 2, 10 → 1, autre → 2), × 2 × le niveau ; plus 10, plus n(n+1)/2 pour n enchantements ;
+50 au plus. Les poids sont ceux de 26.2, sauf deux recalages sur le tableau du wiki : les
+enchantements de PalaMod comptent comme un poids 5 (15 niveaux au niveau I) et Frost Walker comme un
+poids 1 (27 et 43 niveaux). Exemples : Tranchant V 21, Toucher de soie 27, Raccommodage 19,
+Fortune III 35, Épines III 50 (plafond).
+
+### Les recettes — `PRegister_Craft`
+
+| Objet | Recette |
+|---|---|
+| Presse à imprimer | `IBI / SPS / ZZZ` : lingots de fer, bâton de blaze, dalles en paladium, plaque de pression en or, blocs de fer |
+| Table d'écriture | `ICI / SSS / BRB` : lingots de fer, plaque d'impression, dalles de bois, planches, findium |
+| Plaque d'impression | ` S / SIS / S ` : dalles en paladium autour d'un bloc de fer |
+| Encre de paladium ×4 | `XXX / XYX / XXX` : lingots de paladium autour d'une poche d'encre |
+| Dalle en paladium ×6 | `XXX` : lingots de paladium |
+
+La **dalle en paladium** n'existait pas encore dans le mod : c'est une dalle vanilla, à la texture
+du bloc de paladium, à la pioche en diamant comme lui.
+
+### Le rendu
+
+Les deux blocs sont dessinés par leur rendu, comme l'original : la géométrie des six modèles est
+relevée boîte par boîte (miroir compris) par `tools/press_assets.py`, qui écrit
+`client/press/PressGeometry.java` et les objets en 3D de l'inventaire.
+
+- **La presse** : la plaque d'encre change de texture avec la réserve (`getinkStackSize`, neuf
+  états, une marche toutes les huit encres), les livres vierges s'empilent (`numberBlanks`, un par
+  seize livres, quatre au plus), la plaque et le livre imprimé ont le reflet des objets enchantés.
+  Pendant l'impression, le plateau s'abaisse de 0,3 rad et les rouleaux encreurs basculent de
+  1,7 rad, les amplitudes d'origine.
+- **La table** : le meuble, la casse d'imprimeur, les plaques empilées au fond (`getChaseNum`, une
+  couche par seize plaques), la plaque gravée à droite, le livre à gauche.
+- **Les étiquettes** : regarder la presse affiche ses encres et ses livres ; regarder la table, le
+  prix de la gravure et les enchantements du livre (trois au plus).
+
+### Code
+
+- `palamod/press/` : `PalaPress` (registres), `PrintPressBlock(Entity)`, `TypeMachineBlock(Entity)`,
+  `TypesetCost`, `EnchantedPlateItem`, `PressItem`, `HandFed` (le clic droit objet en main).
+- Client : `client/press/PrintPressRenderer`, `TypeMachineRenderer`, `PressClient` (interfaces),
+  `PressGeometry` (généré).
+- Assets : `tools/press_assets.py` (`--check` en CI, `--jar` recopie les textures).
+- Encyclopédie : la fiche « L'imprimerie ».
+
+### Écarts
+
+- **Une interface** pour chaque bloc, au kit des machines : PalaMod n'en avait pas, on y déposait
+  les fournitures en cliquant sur le bloc. Le geste reste (clic droit objet en main), la main vide
+  ouvre l'interface.
+- **L'encre** : deux par livre, la règle du wiki. Le code d'origine brûlait une encre par cycle
+  mais exigeait d'en avoir deux, si bien que la dernière ne servait jamais.
+- **Seuls les livres enchantés** se gravent : l'original gravait aussi les livres signés, qu'il
+  enregistrait dans des fichiers du serveur pour les réimprimer. Un livre signé se copie déjà en
+  vanilla, à l'établi.
+- **La plaque d'impression** s'empile par 64 (une par case dans PalaMod, mais la table en gardait 64).
+- **Le mouvement** suit le temps du jeu (un cycle d'une seconde et demie) au lieu d'avancer à chaque
+  image.
+
+## 46. Les familiers (2026-11-26)
+
+Demandés le 2026-11-26 (point 2 de la liste des manques, « Familiers », avec le serpent et
+l'escargot comme sources d'appât). Règles : le wiki de Paladium (« Java | Familiers »,
+« Java | Compétences actives », « Java | Compétences passives »). Bytecode de PalaMod 10.3.0 :
+`EntitySnake`, `EntitySnail`, `ModelSnake`, `ModelSnail`, `RenderSnake`, `RenderSnail`,
+`HunterRegisterer`, et le pont `modules/apet` (`PetLootListener`, `LuckyMinerSkill` et
+`LuckyMinerListener`, `AutoHarvestSkill`, `BlessedGrowthSkill`, `ElectricCloudSkill`,
+`MiningFortuneListener`, `PortableCoffinListener`). Le reste du système de Paladium (le plugin
+`fr.paladium.pet`) n'est pas dans le jar : il est refait d'après le wiki.
+
+**Les trois familiers sont propres au mod** : Paladium a les siens (noms et dessins), ils ne sont
+pas repris. **Pyrolynx** (un petit lynx gris cendre aux pointes couleur braise), **Mordillon** (un
+chiot brun et crème au foulard rouge) et **Feu-follet** (une flammèche bleue qui flotte). Boîtes,
+couleurs et portraits : `tools/pet_assets.py`.
+
+### Le serpent et l'escargot
+
+| | Serpent | Escargot |
+|---|---|---|
+| Classe | monstre, 20 PV, vitesse 0,3, 10 dégâts, poison 5 s à la morsure | créature, 1 PV, vitesse 0,15 |
+| Taille | 4 × 1 (`setSize(4F, 1F)`) | 1,1 × 0,9 |
+| Comportement | attaque le joueur à vue | s'écarte à 3 blocs, panique si frappé |
+| Appât (`PetLootListener`) | 75 % si un joueur le tue | 25 % |
+| Trophée | venin, `nextInt(1000) < 4`, puis 0 à 2 (+ Butin) | coquille, idem |
+| XP de Chasseur (`HunterRegisterer` au rapport des animaux) | 810 dès le niveau 75 | 170 dès le niveau 0 |
+| Où | la nuit : jungles, marais, déserts, savanes | le jour : forêts, plaines, marais |
+
+Modèles et textures de PalaMod (`tools/modelbase2java.py`), animations de `setRotationAngles` ;
+sons du serpent du jar.
+
+### La cage et l'apprivoisement
+
+- **Cage à familier** : `STS / TCT / STS` (bâtons et lingots de titane, améthyste compressée),
+  Chasseur niveau 15 (le 3 de PalaJobs). Seul celui qui l'a posée s'en sert.
+- **Appât** : la cage est chargée 5 minutes ; toutes les 2 minutes, 5 % de chances qu'un familier
+  (tiré parmi les trois) y entre. Le maître est prévenu où qu'il soit et a 5 minutes pour venir.
+- **Apprivoisement** : un mini-jeu proche de la pêche. Vert +50, jaune +25, rouge −50, noir −150 ;
+  trois paliers de 100, 200 et 400 points ; 2 minutes entre deux paliers, puis 7 minutes pour
+  revenir. Retombé à 0 au palier 1, la cage casse ; aux paliers 2 et 3, retour au palier d'avant.
+  Réussi : le familier, pour toujours, et 5 000 XP de Chasseur.
+
+### Le familier
+
+- `/pet` : niveau (1 à 100, 250 + 50 × niveau XP pour le suivant), bonheur (0 à 200, plafond de
+  50 au niveau 1 à 200 au niveau 100), vingt emplacements (un tous les 5 niveaux), quêtes du jour,
+  visible ou caché.
+- **Bonheur** : multiplicateur des compétences (bonheur / 100). −25 si les quatre quêtes du jour
+  manquent à minuit (heure de Paris) ; figé à 200 au niveau 100.
+- **XP** : quêtes (250 à 400 chacune, et +10 de bonheur), 1 000 à la première connexion du jour,
+  20 × le niveau atteint à chaque niveau de métier, friandise, potions d'XP de familier (1 000,
+  5 000, 20 000).
+- **Quêtes** (quatre tirées par jour) : s'immerger, donner une friandise, marcher, passer du temps
+  avec lui, vaincre des monstres, miner, récolter, pêcher, sauter.
+- **Sur l'épaule droite** : les terrestres assis, le volant à côté ; visible des autres joueurs.
+
+### Les compétences
+
+Valeurs et paliers du wiki (au niveau de déblocage puis 20, 40, 60, 80, 100), multipliées par le
+bonheur. Une compétence posée reste 24 heures ; une à six actives, lancées par la **roue** (touche
+R tenue, viser, relâcher).
+
+- **Passives** : Aviateur et Expert aérien (deltaplane), Bonne pioche, Chimiste en herbe, Estomac
+  sur pattes, Expert agronome, Extracteur miraculeux, Marche rapide, Pêcheur avisé, Pioche
+  expérimentée, Poids plume, Point vital, Absorbeur d'expérience, Aimanté, Artisan de la croquette,
+  Broyeur acéré, Chance florale, Géologie, Familier autosuffisant, Portail magique, Récupération
+  boostée, Cercueil portable, Pousse améliorée, Recul puissant, Expert légendaire.
+- **Actives** : Faux tournoyante (récolte et replante, la récolte dans l'inventaire), Hache
+  gravitationnelle (bûches de PalaMod), Mineur chanceux (le prochain minerai monte d'un cran :
+  charbon → fer → or → diamant → émeraude, améthyste → titane → paladium → paladium vert →
+  findium), Nuage électrique, Tueur de monstres (9 cœurs), Bonheur de poche, Enchanté (enclume et
+  gravure), Pioche incassable (obsidienne), Bénédiction de la terre, Changement rapide, Explosion !,
+  Explosion bénie, Réparo !, Vétérinaire adroit, Foreuse à bedrock.
+
+### Code
+
+- `palamod/pet/` : `PalaPets` (registres), `PetData`, `PetLook`, `PetApi`, `PetSkill`, `Familiar`,
+  `PetMission`, `PetActives`, `PetEvents`, `PetTaming` et `TamingView`, `PetMenu`, `PetView`,
+  `PetWheelView`, `PetNet`, `PetCommand`, `PetCageBlock(Entity)`, `Snake`, `Snail`, `PetEntities`,
+  les objets.
+- `palamod/unlock/PetHooks` : ce que les passives changent aux machines et objets de PalaMod
+  (crusher, cobblebreaker, croquettes, totem, portail, chaudron, extracteur, pierres légendaires,
+  pioche des dieux, deltaplane, knocker, spawners, étable, table d'écriture).
+- Client : `client/pet/` (modèles, rendus, épaule, cage, menus, roue, apprivoisement).
+- Assets : `tools/pet_assets.py` (`--check` en CI, `--jar` recopie textures et sons de PalaMod) ;
+  XP de Chasseur : `tools/bedrock_jobs.py`.
+- Encyclopédie : la fiche « Les familiers ».
+
+### Écarts
+
+- **Les trois familiers** : créatures propres au mod (voir plus haut).
+- **La roue** : touche R par défaut ; le wiki dit MAJ, qui fait déjà s'accroupir (réglable).
+- **Les points de départ** : le wiki ne les donne pas ; chaque palier part de 50.
+- **Nuage électrique** : comme le pont de PalaMod, des éclairs autour du joueur ; casque en fer ou
+  en or et fiole vide en main, chaque éclair a 15 % de chances d'en faire une potion de foudre.
+- **Explosion !** : 4 096 blocs au plus, sans rien laisser, jamais dans le claim d'un autre.
+- **Machines qui ne savent pas qui s'en sert** (extracteur, spawner soufflé) : le joueur le plus
+  proche, à 32 blocs.
+- **Enchanté** : réduit l'enclume et la gravure de la table d'écriture (pas la table
+  d'enchantement, dont le coût n'est que de 1 à 3 niveaux).
+- **Le serpent et l'escargot vivent dans des biomes** : PalaMod ne les faisait apparaître qu'aux
+  œufs et aux événements.

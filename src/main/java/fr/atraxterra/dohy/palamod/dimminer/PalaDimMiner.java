@@ -5,6 +5,8 @@ import fr.atraxterra.dohy.palamod.PalaMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
@@ -14,7 +16,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -32,8 +37,10 @@ import java.util.function.Supplier;
  * BungeeCord. En solo, c'est une vraie dimension, {@code palamod:miner} :
  * un overworld genere normalement, de nuit, sans monstres hors de ceux des
  * spawners de ses ruines, ou les minerais de Paladium sont trois fois plus
- * nombreux (donnees dans {@code data/palamod/dimension}).
+ * nombreux (donnees dans {@code data/palamod/dimension}). La Pierre d'Invocation
+ * y eveille son boss, le gardien des cristaux ({@link MinerBoss}).
  */
+@EventBusSubscriber
 public final class PalaDimMiner {
 
     public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION,
@@ -47,6 +54,8 @@ public final class PalaDimMiner {
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PalaMod.NAMESPACE);
     private static final DeferredRegister<Feature<?>> FEATURES =
             DeferredRegister.create(Registries.FEATURE, PalaMod.NAMESPACE);
+    private static final DeferredRegister<EntityType<?>> ENTITIES =
+            DeferredRegister.create(Registries.ENTITY_TYPE, PalaMod.NAMESPACE);
 
     /** Les ruines a spawner de la dimension, en surface et sous terre ({@link MinerRuinFeature}). */
     public static final DeferredHolder<Feature<?>, MinerRuinFeature> RUIN =
@@ -94,7 +103,16 @@ public final class PalaDimMiner {
                     .sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> INVOKER_ORE_ITEM =
             ITEMS.registerSimpleBlockItem(INVOKER_ORE, properties -> properties);
-    public static final DeferredItem<Item> INVOKER_STONE = ITEMS.registerItem("invoker_stone", Item::new);
+    public static final DeferredItem<InvokerStoneItem> INVOKER_STONE =
+            ITEMS.registerItem("invoker_stone", InvokerStoneItem::new);
+
+    /** {@code EntityMinerBoss} : 2 x 2, insensible au feu ({@code setFire} et la lave sans effet). */
+    public static final DeferredHolder<EntityType<?>, EntityType<MinerBoss>> MINER_BOSS = ENTITIES.register(
+            "miner_boss", key -> EntityType.Builder.<MinerBoss>of(MinerBoss::new, MobCategory.MONSTER)
+                    .sized(2.0f, 2.0f)
+                    .fireImmune()
+                    .clientTrackingRange(10)
+                    .build(ResourceKey.create(Registries.ENTITY_TYPE, key)));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MinerPortalBlockEntity>> MINER_PORTAL_ENTITY =
             BLOCK_ENTITIES.register("miner_portal",
@@ -125,5 +143,11 @@ public final class PalaDimMiner {
         BLOCK_ENTITIES.register(modBus);
         ATTACHMENTS.register(modBus);
         FEATURES.register(modBus);
+        ENTITIES.register(modBus);
+    }
+
+    @SubscribeEvent
+    public static void onAttributes(EntityAttributeCreationEvent event) {
+        event.put(MINER_BOSS.get(), MinerBoss.createAttributes().build());
     }
 }

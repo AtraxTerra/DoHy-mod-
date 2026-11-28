@@ -56,11 +56,13 @@ public final class MountMenus {
     }
 
     /** La fiche d'une monture, pour les bulles. */
-    private static List<String> sheet(String name, int level, float xp, float damage, int food, int shared) {
-        float max = MountLevels.maxHealth(level);
+    private static List<String> sheet(MountSpecies species, String name, int level, float xp, float damage, int food,
+                                      int shared) {
+        float max = MountLevels.maxHealth(species, level);
         double next = MountLevels.nextThreshold(level);
         List<String> lines = new ArrayList<>();
         lines.add("Nom : " + name);
+        lines.add("Espece : " + species.label() + " · " + species.description());
         lines.add("Niveau : " + level + " / " + MountLevels.MAX_LEVEL);
         lines.add("XP : " + (level >= MountLevels.MAX_LEVEL ? "maximum" : Math.round(xp) + " / " + Math.round(next)));
         lines.add("Vie : " + Math.round(Math.max(0, max - damage)) + " / " + Math.round(max));
@@ -68,8 +70,25 @@ public final class MountMenus {
             lines.add("Energie : " + food + " / " + MountData.MAX_FOOD);
         }
         lines.add("XP partagee : " + shared + " %");
-        lines.add("Cases : " + MountLevels.slots(level));
+        lines.add("Cases : " + MountLevels.slots(species, level));
         return lines;
+    }
+
+    /** Les competences de l'espece ({@code Skill}), la derniere ligne de la fiche. */
+    private static List<Card> skills(MountData data) {
+        return switch (data.species()) {
+            case DANCAROK -> List.of(Card.of(new ItemStack(Items.IRON_PICKAXE), "Miner", List.of(
+                    "Capacite de miner des blocs", "Monte, clic droit maintenu, avec une corne")));
+            case RAVIROK -> List.of(Card.of(new ItemStack(Items.FEATHER), "Voler", List.of(
+                    "Saut : monter, course : descendre", "Jusqu'a la couche " + (int) Ravirok.CEILING)));
+            case TEDAROK -> List.of(
+                    Card.of(new ItemStack(Items.SUGAR), "Courir", List.of("Touche de course : x1,9",
+                            "Saut automatique : 5 blocs")),
+                    Card.of(new ItemStack(Items.WATER_BUCKET), "Marcher sur l'eau", List.of(
+                            "Des le niveau 1", data.level() >= MountSpecies.WATER_RUN_LEVEL
+                                    ? "Course sur l'eau : oui" : "Course sur l'eau : niveau "
+                                    + MountSpecies.WATER_RUN_LEVEL)));
+        };
     }
 
     // -- Accueil -------------------------------------------------------------------
@@ -88,7 +107,7 @@ public final class MountMenus {
                 return new MenuView(id(), "Monture", "Aucune monture equipee", List.of(), List.of(), false);
             }
             boolean summoned = MountManager.summoned(player) != null;
-            float max = MountLevels.maxHealth(data.level());
+            float max = data.maxHealth();
             int croquettes = MountManager.count(player.getInventory(), PalaGolem.CROQUETTE.get().getDefaultInstance());
 
             List<Card> mount = new ArrayList<>();
@@ -97,7 +116,8 @@ public final class MountMenus {
                             "Vie " + Math.round(Math.max(0, max - data.damage())) + " / " + Math.round(max)))
                     .accent(0xFFFAC400)
                     .progress(Math.round(data.xp()), Math.round(MountLevels.nextThreshold(data.level())))
-                    .tooltip(sheet(data.name(), data.level(), data.xp(), data.damage(), data.food(), data.sharedXp())));
+                    .tooltip(sheet(data.species(), data.name(), data.level(), data.xp(), data.damage(), data.food(),
+                            data.sharedXp())));
             List<String> summonTip = new ArrayList<>();
             if (data.level() < MountLevels.SUMMON_LEVEL) {
                 summonTip.add("Niveau " + MountLevels.SUMMON_LEVEL + " requis");
@@ -114,22 +134,22 @@ public final class MountMenus {
                     .tooltip(List.of("+" + MountManager.FOOD_PER_CROQUETTE + " par croquette",
                             "Un point par bloc parcouru")));
             mount.add(Card.of(new ItemStack(Items.CHEST), "Inventaire", List.of(
-                            data.slots() + " case(s)", data.horn().isEmpty() ? "Pas de corne" : "Corne posee"))
+                            data.slots() + " case(s)", !data.species().hasHorn() ? data.species().description()
+                                    : data.horn().isEmpty() ? "Pas de corne" : "Corne posee"))
                     .accent(0xFF2F5BEA)
                     .action(summoned ? "inventory|ouvrir" : "")
                     .state(summoned ? MenuView.NORMAL : MenuView.DISABLED)
                     .tooltip(summoned ? List.of() : List.of("Invoquez d'abord la monture")));
 
-            List<Card> xp = List.of(
+            List<Card> xp = new ArrayList<>(List.of(
                     Card.of(new ItemStack(Items.FLINT), "Moins d'XP", List.of("Clic : -10 %", "Clic droit : -1 %"))
                             .accent(0xFFEF3826).action("xp:-10|-10 %").right("xp:-1|-1 %"),
                     Card.of(new ItemStack(Items.EXPERIENCE_BOTTLE), "XP partagee : " + data.sharedXp() + " %", List.of(
                                     "Part des orbes ramassees", "Renommer : /mount nom <nom>"))
                             .accent(0xFFFAC400).progress(data.sharedXp(), 100),
                     Card.of(new ItemStack(Items.EMERALD), "Plus d'XP", List.of("Clic : +10 %", "Clic droit : +1 %"))
-                            .accent(0xFF22E558).action("xp:10|+10 %").right("xp:1|+1 %"),
-                    Card.of(new ItemStack(Items.IRON_PICKAXE), "Miner", List.of("Capacite de miner des blocs",
-                            "Monte, clic droit maintenu, avec une corne")));
+                            .accent(0xFF22E558).action("xp:10|+10 %").right("xp:1|+1 %")));
+            xp.addAll(skills(data));
 
             List<MenuView.Stat> stats = List.of(
                     new MenuView.Stat("NIVEAU", String.valueOf(data.level()), 0xFFFAC400),
@@ -181,8 +201,8 @@ public final class MountMenus {
                 top.add(Card.of(new ItemStack(Items.SADDLE), "Equipee : " + data.name(), List.of(
                                 "Niveau " + data.level(), "Clic : desequiper"))
                         .accent(0xFFFAC400).action("unequip|desequiper la monture")
-                        .tooltip(sheet(data.name(), data.level(), data.xp(), data.damage(), data.food(),
-                                data.sharedXp())));
+                        .tooltip(sheet(data.species(), data.name(), data.level(), data.xp(), data.damage(),
+                                data.food(), data.sharedXp())));
             } else {
                 top.add(Card.of(new ItemStack(Items.SADDLE), "Aucune monture equipee", List.of(
                         "Clic sur une gemme", "pour l'equiper")).state(MenuView.DISABLED));
@@ -197,7 +217,7 @@ public final class MountMenus {
             for (int index = 0; index < list.size() && index < 36; index++) {
                 MountGem gem = list.get(index);
                 Card card = Card.of(MountGemstoneItem.stackOf(gem), gem.name(), List.of(
-                        "Niveau " + gem.level(), "Vie " + Math.round(Math.max(0, gem.maxHealth() - gem.damage()))
+                        gem.species().label() + " · niveau " + gem.level(), "Vie " + Math.round(Math.max(0, gem.maxHealth() - gem.damage()))
                                 + " / " + Math.round(gem.maxHealth())))
                         .accent(gem.inCare() ? 0xFF22E558 : 0xFF2F5BEA)
                         .badge(gem.inCare() ? "SOIN" : "");

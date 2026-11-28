@@ -114,7 +114,16 @@
     "dohy:clandestine_lab",
     "dohy:arms_workbench",
     "dohy:stash_chest",
+    "dohy:barracks",
     "palamod:endium_totem",
-    "palamod:sacrifice_hotel"
+    "palamod:sacrifice_hotel",
+    "palamod:print_press",
+    "palamod:paladium_slab",
+    "palamod:pet_cage",
+    "dohy:random_machine",
+    "dohy:dice",
+    "dohy:coin_slot",
+    "dohy:payout_box",
+    "dohy:unesco_plaque"
   ]
 }

@@ -1,5 +1,6 @@
 package fr.atraxterra.dohy.faction.war;
 
+import fr.atraxterra.dohy.faction.garrison.GarrisonSoldier;
 import fr.atraxterra.dohy.palamod.golem.GuardianGolem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -321,7 +322,15 @@ public class Soldier extends Monster implements RangedAttackMob {
                     (target, level) -> isFoe(target) && distanceToSqr(target) < reach * reach));
             targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, GuardianGolem.class, 10, true, false,
                     (target, level) -> distanceToSqr(target) < 14.0d * 14.0d && defends(target)));
+            targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, GarrisonSoldier.class, 10, true, false,
+                    (target, level) -> distanceToSqr(target) < reach * reach && garrisoned(target)));
         }
+    }
+
+    /** Un soldat de la garnison du joueur assiege. */
+    private boolean garrisoned(LivingEntity target) {
+        Siege current = siege();
+        return current != null && target instanceof GarrisonSoldier ally && current.player.equals(ally.owner());
     }
 
     /** Le joueur assiege, en jeu (ni createur ni spectateur). */

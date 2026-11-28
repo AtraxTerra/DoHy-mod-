@@ -83,7 +83,7 @@ public final class EncyclopediaMenu extends MenuController {
         List<MenuView.Section> sections = new ArrayList<>();
         if (entries.isEmpty()) {
             sections.add(new MenuView.Section("", "", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY,
-                    "Encyclopedie vide", List.of("Le fichier des fiches n'a pas pu etre lu : voir le journal du serveur."))
+                    "Encyclopedie vide", List.of("Fiches illisibles : voir le journal du serveur."))
                     .accent(0xFFEF3826))));
         }
         if (!fresh.isEmpty()) {

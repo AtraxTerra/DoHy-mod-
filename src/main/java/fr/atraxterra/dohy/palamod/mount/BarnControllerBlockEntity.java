@@ -282,7 +282,9 @@ public class BarnControllerBlockEntity extends BlockEntity {
         }
         MountManager.take(player.getInventory(), bandage, bandages);
         long now = System.currentTimeMillis();
-        gems.set(index, gem.withCare(now, now + CARE_MS * bandages));
+        // Le familier : « Veterinaire adroit », les soins se font d'un coup.
+        boolean instant = fr.atraxterra.dohy.palamod.unlock.PetHooks.instantCare(player);
+        gems.set(index, gem.withCare(now, instant ? now : now + CARE_MS * bandages));
         setChanged();
         MountTexts.success(player, "in_care_now");
     }

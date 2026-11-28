@@ -129,7 +129,7 @@ public final class GolemMenus {
             if (golem.isLoading()) {
                 info.add("En chargement");
             }
-            info.add("Nourrissez-le de lingots ou de blocs (accroupi : toute la pile).");
+            info.add("Lingots ou blocs (accroupi : la pile).");
             Card sheet = Card.of(new ItemStack(PalaGolem.GUARDIAN_STONE.get()), "Golem gardien", List.of(
                             "Niveau " + level + " / " + GuardianGolem.MAX_LEVEL,
                             "Vie " + Math.round(golem.getHealth()) + " / " + Math.round(golem.getMaxHealth())))

@@ -556,26 +556,48 @@ dimension (`farmland_built`) ; la changer la fait vider et redessiner.
 
 ### Les créatures
 
-`FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à trois créatures
-arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur), dans le coin qui en manque le plus.
-Plafonds pour toute la carte, 110 créatures au plus :
+`FarmlandSpawner` : toutes les deux secondes, près de chaque joueur, jusqu'à six créatures
+arrivent à 14-72 blocs (jamais à moins de 10 d'un joueur). Chacune est tirée parmi les réserves
+à sa portée — un coin dont une colonne est à 14-72 blocs de lui, la grotte à moins de 96 —,
+d'autant plus qu'il leur en manque. Plafonds pour toute la carte, 200 créatures au plus :
 
 | Réserve | Coin | Plafond | Espèces (poids) |
 |---|---|---|---|
-| foret | forêt | 14 | zombie 30, squelette 25, araignée 20, creeper 15, sorcière 6 |
-| foret_betes | forêt | 6 | loup 3, lapin 4 |
-| prairie | prairie | 16 | vache 10, mouton 10, poule 8, cheval 4, âne 2, lapin 3 |
+| foret | forêt | 28 | zombie 30, squelette 25, araignée 20, creeper 15, sorcière 6 |
+| foret_betes | forêt | 10 | loup 3, lapin 7 |
+| prairie | prairie | 32 | vache 10, mouton 10, poule 8, cochon 8, lapin 3 |
+| prairie_chevaux | prairie | 3 | cheval 2, âne 1 |
 | hameau | hameau | 4 | villageois |
 | champignons | champignons | 4 | champimeuh |
 | collines | collines | 4 | chèvre |
-| grotte | salle et tunnel | 5 | araignée venimeuse |
-| jungle | jungle | 7 | panda 3, perroquet 4, éléphant 2 |
+| grotte | salle et tunnel | 10 | araignée venimeuse |
+| grotte_chauves_souris | salle et tunnel | 5 | chauve-souris |
+| grotte_soufre | salle et tunnel | 3 | cube de soufre |
+| jungle | jungle | 5 | panda 3, perroquet 4 |
+| jungle_elephants | jungle | 5 | éléphant |
 | lac | eau profonde | 3 | dauphin |
+| lac_gardiens | eau profonde | 6 | gardien |
 | plage | plage | 4 | tortue |
-| marais | marais | 6 | slime 4, sorcière 2 |
-| nether | coin du Nether | 11 | piglin zombifié 6, cube de magma 4, squelette wither 3 |
-| nether_ciel | au-dessus du Nether | 2 | ghast |
-| end | coin de l'End | 6 | enderman |
+| marais | marais | 12 | slime 1, sorcière 2 |
+| nether | coin du Nether | 24 | squelette wither 6, blaze 5, cube de magma 5, piglin zombifié 4 |
+| nether_brutes | coin du Nether | 2 | brute piglin (elle ne se change pas en piglin zombifié) |
+| nether_ciel | au-dessus du Nether | 4 | ghast |
+| end | coin de l'End | 12 | enderman |
+| end_shulkers | coin de l'End | 4 | shulker |
+| monture_prairie, monture_collines, monture_foret | prairie, collines, forêt | 1 chacune | Dancarok, Ravirok, Tedarok |
+
+**Plus de créatures du métier (2026-11-25).** Celles qui rapportent de l'XP de Chasseur ou
+d'Alchimiste passent d'environ 53 à 145 sur la carte : plafonds doublés ou plus, et sept espèces
+du barème qui manquaient (cochon, niveau 15 ; cube de soufre, 50 ; chauve-souris et gardien, 60 ;
+blaze, shulker et brute piglin, 80). Les autres (loups, chevaux, ânes, villageois, champimeuh,
+chèvres, pandas, perroquets, dauphins, tortues, slimes, piglins zombifiés, montures) gardent
+leurs nombres. Avant, chaque essai tirait une réserve sur toute la carte, et ceux qui visaient
+un coin hors de portée du joueur (souvent vide : les monstres disparaissent à 128 blocs de lui)
+se perdaient. Mesuré en CI, même scénario avant et après — après quatre minutes de remplissage,
+un chasseur tue pendant une minute, toutes les deux secondes, tout ce qui rapporte à moins de
+72 blocs : forêt 63 → 236 créatures, prairie 75 → 272, Nether 85 → 331 (dont 126 cubes de
+magma, qui se divisent) ; au départ, autour de lui, 30 → 84, 24 → 93 et 19 → 70. Le tick moyen
+du serveur intégré reste entre 12 et 17 ms.
 
 En paisible, seulement les animaux. Ces créatures naissent « naturelles » : le Chasseur en tire
 toute son XP. Les animaux (et les villageois) qu'aucun joueur n'a frappés, nourris, apprivoisés,
@@ -609,6 +631,88 @@ apparaître (créatures des biomes peints, patrouilles) et la foudre n'y tombe p
 `farmland_built` (la version de la carte) sur la dimension ; sur les créatures, les marques
 `dohy_farmland`, `dohy_farmland_<réserve>`, `dohy_farmland_hit` et la date de naissance des
 animaux. Rien sur les joueurs.
+
+## Lot 27 — le casino et la loterie (fait, 2026-11-26)
+
+Demandé le 2026-11-26 (point 13 de la liste des manques). Règles : NationsGlory — l'« Entreprise
+de casino » (machine aléatoire, panneaux `[Casino]` et `[Casino2]`, ticket, gain, taux de gain,
+somme jouée, somme distribuée, taux de redistribution) et la loterie du spawn (`/loto`, tickets,
+candidats, date du tirage, cagnotte). Aucun de ces blocs n'existe dans un jar à disposition :
+dessins propres au mod (`tools/casino_assets.py`). Le **casino clandestin** des entreprises
+(lot 24b) ne change pas : c'est une affaire abstraite qui rapporte de l'argent sale ; le casino
+d'ici est un vrai bâtiment de redstone.
+
+### Les blocs
+
+| Bloc | Rôle | Recette |
+|---|---|---|
+| Machine aléatoire | le signal entre par l'arrière, sort par la flèche du dessus avec une chance réglée de 1 à 99 % (50 % neuve) ; un tirage à chaque front montant, la sortie suit l'entrée si le tirage est réussi | torche de redstone, comparateur, 2 lingots d'or, 3 pierres lisses |
+| Dé de casino | un clic droit ou un front de redstone le lance ; il roule une demi-seconde, s'arrête sur une face de 1 à 6 (tirée sur les six), qu'un comparateur lit | 4 quartz, 4 colorants rouges, 1 bloc d'os |
+| Monnayeur | payer son panneau `[Casino]` fait partir une impulsion de 10 ticks sur ses six faces | 5 lingots d'or, entonnoir, 2 lingots de fer, redstone |
+| Caisse des gains | quand elle s'allume, son panneau `[Casino2]` paie la dernière mise de son jeu, faite dans les 5 s | 4 lingots d'or, distributeur, coffre, 2 lingots de fer, redstone |
+
+Les quatre blocs sont à qui les pose et ne conduisent pas le courant (la machine ne laisse jamais
+filer par son corps un signal refusé). Le maître règle la machine d'un clic droit ; les autres y
+lisent sa chance (une machine de casino doit être honnête).
+
+### Les panneaux
+
+Un panneau ordinaire, écrit comme sur NationsGlory : `[Casino]` sur un monnayeur — le nom du
+casino, le prix du ticket (`1000`, `1 000`, `2k`, `1,5M` ; de 1 $ à 10 millions), le nom du jeu ;
+`[Casino2]` sur une caisse — le nom du casino, la somme gagnée, le nom du jeu (le même). Un clic
+d'un joueur sur `[Casino]` lui prend le ticket et lance le jeu ; le clic du maître, debout, ouvre
+le jeu aux clients et lance une partie d'essai sans argent ; accroupi, il réécrit le panneau.
+
+### Les clients (« joueurs fictifs selon les lois »)
+
+En solo, personne ne vient jouer : des joueurs fictifs le font. Chaque jeu ouvert en reçoit
+environ **12 par heure**, fois **1,5** si le jeu est légal dans le pays du monnayeur, **1** s'il
+est toléré, **0,4** s'il est interdit (la loi « Jeux d'argent » du lot 24d, la tienne chez toi) ;
+fois l'attrait du jeu, selon son taux de redistribution (80 % et plus : tous ; 40 % : un sur dix)
+et selon le prix du ticket (1 000 $ est la norme, entre ×0,25 et ×1,5). **60 parties par heure au
+plus** par casino.
+
+- **Près de toi** (monnayeur chargé), le client joue vraiment : il paie, l'impulsion part, et c'est
+  ton circuit qui décide s'il gagne.
+- **Loin**, sa partie suit les chiffres du jeu (il en faut dix pour les connaître).
+- **La recette** : le ticket entre au coffre du casino, moins 20 % de taxes si le jeu est légal ou
+  des pots-de-vin (÷1,15) s'il est toléré ; les gains en sortent. Coffre vide : le gagnant n'est
+  pas payé (« non payé » dans les chiffres), et le jeu rend moins.
+- **Interdit** : chaque heure, 6 % de risque d'une descente de police qui saisit la moitié du
+  coffre.
+
+`/casino` (ou un clic sur son monnayeur ou sa caisse) : le coffre (retirer, remplir), les jeux
+avec la somme jouée, la somme distribuée, les non-payés, le taux de redistribution, la loi et les
+clients par heure. Essai d'opérateur : `/casino clients` fait venir tout de suite un client à
+chaque jeu.
+
+### La loterie du spawn
+
+- **Où** : chez l'hôtesse du spawn (section « LA LOTERIE » de son écran) ou par `/loto`.
+- **Tickets** : 5 000 $, cent par tirage au plus ; 80 % de chaque ticket vont à la **cagnotte**,
+  qui part de 50 000 $.
+- **Joueurs fictifs** : chaque heure, à peu près une fois sur deux, un candidat de plus prend un ou
+  deux tickets.
+- **Tirage** : chaque **dimanche à 20 h** (heure de `RealClock`), un ticket au hasard parmi tous
+  gagne la cagnotte. Le gagnant absent est payé à sa connexion ; sans aucun ticket, la cagnotte est
+  reportée. L'écran montre la cagnotte, le tirage, tes tickets et ta chance, et les cinq derniers
+  tirages. Opérateur : `/loto tirer` tire tout de suite.
+
+### Code
+
+`casino/` : `DoHyCasino` (registres), `CasinoBlock`, `CasinoBlockEntity`, `RandomMachineBlock`,
+`DiceBlock`, `CoinSlotBlock`, `PayoutBoxBlock`, `CasinoSigns` (lecture des panneaux, clics),
+`CasinoBook` (coffres et jeux, sur l'overworld), `Casinos` (mises, gains, clients, police,
+`/casino`), `CasinoMenus` (livre du casino, réglage de la machine), `LotteryData`, `Lottery`
+(ventes fictives, tirage, `/loto`), `LotteryMenu` ; la carte de l'hôtesse dans `SpawnDaily`.
+
+### Écarts
+
+- Sur NationsGlory, les clients sont des joueurs et le casino est une entreprise à plusieurs ;
+  ici, des clients fictifs et un casino par joueur.
+- Le panneau `[Casino]` lance le circuit par un monnayeur et `[Casino2]` paie par une caisse : un
+  panneau ne peut pas porter de courant lui-même.
+- Le dé, les heures du tirage, le prix du ticket et la part de la cagnotte sont des choix du mod.
 
 ## Lots suivants
 

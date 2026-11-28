@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "palamod:block/print_press"
+    },
+    "facing=south": {
+      "model": "palamod:block/print_press"
+    },
+    "facing=west": {
+      "model": "palamod:block/print_press"
+    },
+    "facing=east": {
+      "model": "palamod:block/print_press"
+    }
+  }
+}

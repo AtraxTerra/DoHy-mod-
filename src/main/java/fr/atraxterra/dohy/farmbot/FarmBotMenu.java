@@ -88,12 +88,12 @@ public final class FarmBotMenu extends MenuController {
 
     private static String subtitle(FarmBot bot) {
         if (bot.zone() == null) {
-            return "Telecommande en main : clic droit sur deux coins du champ, il le cultivera.";
+            return "Telecommande : clic droit sur deux coins du champ";
         }
         if (bot.chests().isEmpty()) {
-            return "Lie-lui un coffre : telecommande en main, accroupi + clic droit sur le coffre.";
+            return "Telecommande : accroupi + clic droit sur un coffre";
         }
-        return "Recolte, replante, range dans ses coffres. L'XP de Fermier va a " + bot.ownerName() + ".";
+        return "Au travail";
     }
 
     private static List<Card> zone(ServerPlayer player, FarmBot bot) {
@@ -110,18 +110,15 @@ public final class FarmBotMenu extends MenuController {
             cards.add(Card.of(new ItemStack(Items.FARMLAND), zone.label(), List.of(
                             "De " + min.getX() + " " + min.getZ() + " a " + max.getX() + " " + max.getZ(),
                             "Clic droit : effacer la zone"))
-                    .accent(GREEN).right("zone_clear|effacer la zone")
-                    .tooltip(List.of("Pour la changer : telecommande en main,", "clic droit sur deux nouveaux coins")));
+                    .accent(GREEN).right("zone_clear|effacer la zone"));
             cards.add(Card.of(new ItemStack(Items.WHEAT), bot.ripe() + " a recolter", List.of(
-                            "Cultures mures de la zone", "Recomptees toutes les 3 s"))
-                    .accent(bot.ripe() > 0 ? GREEN : GREY)
-                    .tooltip(List.of("Ble, carottes, pommes de terre, betteraves,", "cultures du PalaMod et de"
-                            + " l'agriculture,", "verrues, cacao, pasteques, citrouilles,", "canne a sucre, baies")));
+                            "Cultures mures", ""))
+                    .accent(bot.ripe() > 0 ? GREEN : GREY));
         }
         boolean hasRemote = remote(player) != null;
         Card remote = Card.of(new ItemStack(DoHyFarmBots.BOT_REMOTE.get()), "Telecommande", List.of(
                         hasRemote ? "Clic : la relier a ce bot" : MoneyFormat.exact(DoHyFarmBots.REMOTE_PRICE) + " $",
-                        hasRemote ? "Zone et coffres se reglent avec" : "Clic : en acheter une"))
+                        hasRemote ? "" : "Clic : en acheter une"))
                 .accent(BLUE);
         cards.add(remote.action(hasRemote ? "remote|relier la telecommande" : "remote_buy|acheter"));
         return cards;
@@ -146,9 +143,7 @@ public final class FarmBotMenu extends MenuController {
             cards.add(Card.of(new ItemStack(Items.CHEST), chests.isEmpty() ? "Aucun coffre" : "Lier un coffre", List.of(
                             "Accroupi + clic droit dessus", "avec la telecommande"))
                     .accent(chests.isEmpty() ? GOLD : GREY)
-                    .tooltip(List.of("Coffre, baril, tiroir, silo... tout ce", "qui garde des objets, a moins de "
-                            + FarmBot.CHEST_RANGE + " blocs", "de la zone. Le plus proche d'abord ;",
-                            "plein, il passe au suivant.")));
+                    .tooltip(List.of("A moins de " + FarmBot.CHEST_RANGE + " blocs de la zone")));
         }
         return cards;
     }
@@ -179,17 +174,17 @@ public final class FarmBotMenu extends MenuController {
                 .accent(bot.paused() ? GREEN : GOLD)
                 .action("pause|" + (bot.paused() ? "reprendre" : "mettre en pause")));
         boolean carrying = bot.usedSlots() > 0;
-        Card store = Card.of(new ItemStack(Items.HOPPER), "Vider maintenant", List.of("Il va porter son sac",
-                "a ses coffres")).accent(BLUE);
+        Card store = Card.of(new ItemStack(Items.HOPPER), "Vider maintenant", List.of("Vers ses coffres",
+                "")).accent(BLUE);
         cards.add(carrying && !bot.chests().isEmpty() ? store.action("store|vider dans les coffres")
                 : store.state(MenuView.DISABLED));
-        Card take = Card.of(new ItemStack(Items.BUNDLE), "Tout reprendre", List.of("Son sac passe dans",
-                "le tien")).accent(BLUE);
+        Card take = Card.of(new ItemStack(Items.BUNDLE), "Tout reprendre", List.of("Dans ton sac",
+                "")).accent(BLUE);
         cards.add(carrying ? take.action("take|tout reprendre") : take.state(MenuView.DISABLED));
         cards.add(Card.of(new ItemStack(DoHyFarmBots.FARM_BOT_ITEM.get()), "Ranger le bot", List.of(
-                        "Il revient dans ton sac", "avec sa zone et ses coffres"))
+                        "Dans ton sac", ""))
                 .accent(RED).action("pickup|ranger le bot")
-                .confirm("Ranger le bot ?|Il revient dans ton inventaire avec sa zone, ses coffres et son sac."));
+                .confirm("Ranger le bot ?"));
         return cards;
     }
 

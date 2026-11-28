@@ -143,11 +143,8 @@ public final class ContractsController extends MenuController {
         int streak = TrixiumOrder.streak(player);
         String change = "Change dans " + delay(TrixiumOrder.minutesUntilChange());
         List<String> tooltip = new ArrayList<>();
-        tooltip.add("L'objet demande change chaque jour a " + config.resetHour() + " h");
-        tooltip.add("Une livraison partielle compte");
         if (goal > 0) {
-            tooltip.add(goal + " commandes de suite : le God Villager apparait");
-            tooltip.add("Un jour manque remet la serie a zero, rien d'autre");
+            tooltip.add(goal + " de suite : le God Villager");
         }
         String series = goal > 0 ? "  ·  serie " + streak + " / " + goal : "";
         String title = MenuView.text(Component.literal("Livrer " + entry.amount() + " ")

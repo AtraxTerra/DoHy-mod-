@@ -38,6 +38,7 @@ chapitre 24 : `docs/ORGANISATIONS.md`.
 | 22m | Mines de la Terre à capturer : une balise de concession, rester à côté de 2 à 5 min ; revenus horaires (hors ligne compris) à la banque de faction, argent et minerais (coffre de la banque) ; reprise par la guerre | fait |
 | 22l-2 | La riposte contre les nations : ta contre-offensive (ce qu'elles t'ont pris te revient quand leur place forte tombe), une IA qui apprend de tes défenses d'un assaut à l'autre, les coalitions de nations | fait |
 | 22l-3 | Éclaireurs | à faire |
+| 22n | La garnison : une caserne dans tes claims, des soldats recrutés et payés par la banque (fantassins, archers, médecins, un capitaine), ordres (garde, escorte, repos, congé), équipement fer → diamant → paladium, solde quotidienne et désertion ; pendant un assaut, elle tient ton coffre | fait (en validation) |
 
 ## Ce qui change en solo
 
@@ -1014,3 +1015,274 @@ commandes d'essai), `Siege` (le contingent allié, la troupe selon la leçon, `c
 (le renseignement, la mémoire des morts), `SiegePlanner.capture` (le poids des tourelles),
 `Strongholds` (la récompense, la place forte d'une coalition), `WarMenu`, `WarCommand` ;
 `earth/mine/EarthMines.restore`.
+
+## La garnison (22n)
+
+Demandée le 2026-11-24 (le point 4 de « Fais 1, 2, 4 et 5 ») : des soldats alliés à recruter,
+qui gardent ta base, t'accompagnent et se battent dans les assauts. Ce sont les soldats des
+nations rivales (lot 22l), passés de ton côté : mêmes corps, mêmes visages, le cuir teint à la
+bannière de ta nation.
+
+### La caserne
+
+- **Une par joueur**, posée dans tes claims : hors de tes claims, sans nation ou s'il en existe
+  déjà une, la pose est refusée et l'objet reste en main. Établi : briques de pierre en haut et en
+  bas, deux blocs de fer et un bloc de paladium au milieu (onglet des machines de DoHy).
+- Un corps de garde crénelé, porte ferrée tournée vers celui qui la pose, fanion aux épées
+  croisées (dessin original, `tools/barracks_assets.py`). Un clic ouvre la garnison ; ailleurs,
+  `/garnison`, ou la carte « Ta garnison » de l'écran de la guerre.
+- **Niveaux** : 4 soldats ; 8 (100 000 $) ; 12 (300 000 $). Cassée, la garnison part en congé
+  jusqu'à la prochaine ; les charges des sapeurs ne la touchent pas (elle a une entité de bloc,
+  comme les coffres).
+
+### Les soldats
+
+| Rôle | Recrutement | Solde par jour | Vie | Dégâts | Ce qu'il fait |
+|---|---|---|---|---|---|
+| Fantassin | 20 000 $ | 2 000 $ | 26 | 4 | épée et bouclier, il charge |
+| Archer | 25 000 $ | 2 500 $ | 20 | les flèches d'un squelette | il tire à l'arrêt, tourne autour de sa cible |
+| Médecin | 35 000 $ | 3 500 $ | 20 | 1 | soigne le plus blessé des siens, ou toi, à 12 blocs (6 vie) |
+| Capitaine (un seul) | 80 000 $ | 8 000 $ | 60 | 7 | Force et Résistance aux siens à 12 blocs |
+
+**L'équipement**, pour toute la garnison d'un coup : fer (cuir teint aux couleurs de la nation),
+diamant (150 000 $ : vie ×1,5, +2 dégâts), paladium (450 000 $ : vie ×2, +4 dégâts). Tout est payé
+par la banque de la nation : rien ne sort d'une banque assiégée.
+
+### Les ordres
+
+- **Garder la base** (`/garnison garde`) : chacun à son poste, en cercle autour de la caserne (4 et
+  6 blocs), tant que tu es à moins de 64 blocs d'elle (ils rentrent au-delà de 80). Ils engagent
+  ce qui approche à 24 blocs de leur poste ; sans ennemi, ils pansent leurs plaies.
+- **Me suivre** (`/garnison suivre`) : derrière toi, partout ; au-delà de 20 blocs, ils te
+  rejoignent d'un saut ; dans une autre dimension, ils arrivent avec toi. Pas au spawn, où rien ne
+  se bat : ils attendent dehors. C'est l'escorte des contre-offensives.
+- **Au repos** : à la caserne, sans se battre. **En congé** : personne en jeu (la solde court).
+
+Au combat, ils frappent ce que tu frappes et ce qui te frappe, les soldats des nations et les
+monstres — pas les creepers. Ni toi ni eux ne vous blessez (flèches comprises).
+
+### Pendant un assaut
+
+Du camp à la fuite du trésorier, ceux qui gardent la base **se postent autour de ton coffre** (à
+1 et 3 blocs) : comme tes golems gardiens, ils comptent pour le tenir, et la prise n'avance pas
+tant qu'ils y sont. Les soldats de la nation les prennent pour cible ; la prime des soldats
+qu'ils abattent est pour toi, et la nation retient la leçon « tes gardiens » (plus de
+fantassins au prochain assaut).
+
+### La solde, les blessés, les morts
+
+- **La solde** se paie chaque jour réel (à 5 h, comme les contrats), depuis la banque, le premier
+  moment où tu es en ligne ce jour-là : rien n'est dû pour les jours d'absence. Pendant un assaut,
+  elle attend.
+- **Deux jours sans solde** : un soldat déserte chaque jour (le dernier recruté).
+- **Les blessés** gardent leurs blessures d'un déploiement à l'autre ; rappelés, ils reprennent
+  une demi-vie par seconde à la caserne ; déployés, un point toutes les deux secondes à leur poste.
+- **Un mort** quitte la garnison ; un renvoi (écran, clic avec confirmation) n'est pas remboursé.
+
+### Ce qui se passe hors de ta vue
+
+Les soldats ne sont jamais écrits sur disque : la garnison (sur le joueur, gardée à la mort) les
+refait à chaque déploiement, avec leur vie. Déconnecté, ils sont rappelés : un siège ne vient
+jamais en ton absence, ta base n'a besoin d'eux que quand tu es là.
+
+Code : `faction/garrison/` — `Garrison` (les données), `GarrisonRole`, `GarrisonTier`,
+`GarrisonSoldier` (l'entité, l'arc réécrit pour un soldat qui n'est pas un monstre),
+`Garrisons` (déploiement, solde, actions, combats, `/garnison`), `GarrisonMenu`,
+`BarracksBlock` ; `Siege.tickZone` et `Siege.onDeath`, `Soldier.installGoals`,
+`Sieges.defendedVault`, la carte de `WarMenu` ; `client/war/GarrisonSoldierRenderer`.
+
+## Le Base Claim Controller (lot 25, 2026-11-26)
+
+Demandé le 2026-11-26 (point 5 de la liste des manques). Règles : le wiki de Paladium
+(« Java | Base Claim Controller ») ; le BCC est un bloc du plugin de faction, absent du jar de
+PalaMod : modèle et texture propres au mod (`tools/bcc_assets.py`).
+
+### Le bloc
+
+- **Achat** : 75 000 $ de la banque nationale, carte « Acheter un BCC » de l'onglet
+  **Territoire**, quand la nation a passé le **niveau 10** (lu en paliers de l'arbre de
+  technologie, toutes branches comprises : plus de 10). Sans remboursement si la pose échoue.
+- **Pose** : au centre d'un claim d'au moins **3 × 3 chunks** (son chunk et les huit voisins à la
+  nation), les **huit blocs autour** et les **neuf au-dessus** vides, à **1 500 blocs** de tout
+  autre BCC (en solo : celui de la base rivale en cours), **un seul** à la fois, **14 jours**
+  entre deux poses. Une condition manquée : il disparaît (message dans le chat).
+- **Indestructible** : ni à la main (même par son maître), ni aux explosions, ni au wither ou au
+  dragon, ni aux pistons. Seul le pillage le fait partir.
+- **Coffre de 55 cases** (5 × 11), sans tiroirs (Vault Drawers) ; seul le maître l'ouvre.
+- **Surveillance** : l'interface et le bloc (regardé de près) comptent les **intrus à 200 blocs**
+  : les autres joueurs, les soldats rivaux et les pillards.
+
+### Ce qu'il rapporte
+
+- **120 ELO** à la pose (le wiki dit « 120 XP de faction » ; le mod n'a pas d'XP de faction).
+- Chaque jour réel : **30 de gloire** (comptée sur le BCC) et de l'**ELO** qui croît de 5 % par
+  jour : 10 le premier jour, 109 au cinquantième, puis plafonné. Ces gains comptent comme des
+  victoires ELO de la semaine (critère Militaire de la notation).
+
+### Le revers et le pillage
+
+- **Repéré** : une nation sur le **podium de la dernière notation** (top 3) est repérée. En solo,
+  ce sont les rivales qui la voient : quand son maître est à 200 blocs du BCC, un **raid de
+  pillards** (deux vindicateurs, deux pillards, au nom d'une nation rivale) peut venir, une fois
+  par jour au plus. Le pillard qui brille (son nom toujours affiché ; il porte un casque d'or,
+  mais les illageois ne montrent pas leur casque) file vers le BCC ; s'il tient **deux minutes au
+  contact**, le BCC est pillé. Le frapper remet son compte à zéro ; le tuer repousse le raid
+  (+50 ELO). Le raid renonce au bout de dix minutes.
+- **Piller un BCC** (les bases rivales en ont un) : **deux minutes de clic droit**, sans lâcher
+  ni être frappé ; le temps s'affiche dans la barre d'action. Pillé, le BCC **prend feu et
+  explose sans rien casser**, son contenu tombe. Le pillard gagne **300 ELO**, le maître en perd
+  autant.
+- **Les BCC rivaux** : chaque base ou forteresse ennemie (`EnemyBases`) en pose un au cœur de son
+  bâtiment, rempli du butin des coffres-forts (une fois par palier de la base).
+
+### Code
+
+`faction/bcc/` : `DoHyBcc` (registres), `BccBlock`, `BccBlockEntity` (coffre, intrus),
+`BccItem`, `BccData` (le BCC du joueur), `Bccs` (achat, pose, revenus, pillage, raids, BCC
+rivaux) ; `FactionApi.removeElo` ; la carte de `FactionMenus.Claims` ; `EnemyBases.deliver`.
+Client : `client/bcc/BccClient` (interface), `BccRenderer` (étiquettes).
+
+### Écarts
+
+- **Niveau de faction** : lu dans l'arbre de technologie ; **XP de faction** : de l'ELO.
+- **« /f f »** et la révélation entre joueurs deviennent les raids des nations rivales.
+- **Un seul BCC par serveur** : un par nation du joueur, plus ceux des bases rivales.
+
+## À vos marques (lot 26, 2026-11-26)
+
+Demandé le 2026-11-26 (point 7 de la liste des manques). Règles : le wiki de Paladium
+(« Java | À vos marques ») — un event quotidien de farm, sur les serveurs de minage et de
+farmland : en 30 minutes, atteindre un objectif (miner, tuer des créatures, couper du bois ou
+pêcher une certaine quantité) ; chaque joueur qui l'atteint rapporte **7 ELO** à sa faction,
+**70 au plus par faction et par jour** ; l'objectif et le compte à rebours restent affichés ; une
+deuxième variante affiche aussi un compteur de points. Le wiki ne donne ni les heures, ni les
+quantités, ni les règles de la variante : ce qui suit les fixe pour le solo.
+
+### Les manches
+
+- **Quand** : une manche de **30 minutes** chaque heure, de **10 h 30 à 23 h 30** (heure de
+  `RealClock`, Paris par défaut) ; elle finit à l'heure pile, comme la remise à neuf de la Mine
+  (10 h, 15 h, 20 h), qui ne coupe donc jamais une manche.
+- **Quel objectif** : chaque jour tire un ordre des quatre objectifs, et les manches le suivent ;
+  **une manche sur trois** (la 3ᵉ, la 6ᵉ…) est la **manche aux points**. Tout se déduit de
+  l'heure : un redémarrage retrouve la même manche et la progression du joueur.
+- **Où** : les serveurs de minage et de farmland de Paladium sont ici des mondes. Chaque
+  objectif compte là où il se fait :
+
+| Objectif | Quantité | Où | Points |
+|---|---|---|---|
+| Miner (blocs à la pioche) | 1 000 | la Mine, la dimension du Mineur | 1 |
+| Couper du bois (bûches) | 250 | l'overworld, la dimension du Mineur | 4 |
+| Tuer des créatures | 50 | la Farmland, la dimension du Mineur | 20 |
+| Pêcher (prises) | 25 | la Farmland, la dimension du Mineur | 40 |
+| Manche aux points | 1 000 points | chaque action dans ses mondes | — |
+
+  La Mine est sous terre et la Farmland ne se casse pas : le bois se coupe dans l'overworld et
+  la dimension du Mineur. Les quantités sont prévues pour un joueur seul en 30 minutes ; dans la
+  manche aux points, les quatre actions valent autant (1 000 points = 1 000 blocs = 250 bûches =
+  50 créatures = 25 prises).
+- **Ce qui compte** : les blocs qui tombent d'un joueur (la pioche, ou la hache pour les bûches),
+  sauf ceux qu'un joueur avait posés ; les créatures tuées par un joueur (ou mortes de ses
+  coups) ; les prises de la canne du jeu et du mini-jeu des cannes de PalaMod. Rien en créatif.
+
+### L'affichage
+
+- **Au départ** : un message à tous (objectif, mondes, récompense), une cloche, et le titre
+  « A vos marques ! » à ceux qui sont déjà dans un monde où l'objectif compte. Un joueur qui se
+  connecte pendant une manche la voit annoncée.
+- **Pendant** : une **barre en haut de l'écran** dans les mondes où l'objectif compte — objectif,
+  compteur (ou points) et compte à rebours ; elle passe au vert une fois l'objectif atteint.
+- **L'écran des events** (`/f event`) : section « A VOS MARQUES » — la manche en cours et ta
+  progression, la prochaine manche, l'ELO du jour, et les cinq sortes de manches.
+- **À la fin** : « Temps écoulé : 640 / 1 000 blocs » pour qui n'a pas fini.
+
+### La récompense
+
+- **7 ELO** pour la nation du joueur à l'objectif atteint (titre « Objectif atteint ! »).
+- **70 au plus par jour** et par nation (remise à zéro à minuit) ; en solo, la nation est celle
+  du joueur. Au-delà, ou sans nation, l'objectif atteint ne rapporte rien (et le dit).
+
+### Code
+
+`faction/marks/` : `MarksGoal` (les quatre objectifs), `MarksRound` (calendrier, rotation,
+variante), `MarksData` (la progression du joueur, gardée à la mort), `Marks` (barres, compteurs,
+annonces, ELO). Crochets : `FishingGame.catchFish` (les prises du mini-jeu),
+`FactionEventMenu` (la section), `FactionCommand` (`/f event marques`).
+
+Essai (opérateur) : `/f event marques lancer <mine|bois|creatures|peche|points>` lance une manche
+de 30 minutes tout de suite, `/f event marques arreter` l'arrête.
+
+### Écarts
+
+- **Les serveurs** de minage et de farmland deviennent des mondes ; le bois, faute d'arbres dans
+  la Mine et la Farmland, se coupe dans l'overworld et la dimension du Mineur.
+- **Les heures, les quantités et la manche aux points** ne sont pas dans le wiki : choix du mod.
+
+## Le patrimoine mondial : UNESCO et merveilles (lot 28, 2026-11-26)
+
+Demandé le 2026-11-26 (point 22 de la liste des manques). Règles : NationsGlory — le programme
+UNESCO (« UNESCO request » : un bâtiment d'une taille raisonnable, détaillé façade et intérieur,
+cohérent avec le style du pays, intéressant pour le jeu de rôle, après le niveau 10 de la R&D
+Générale ; une subvention de 12 500 $ au plus par pays, une protection contre les missiles et les
+destructions sauf antimatière et matière rouge, un warp devant le bâtiment, un PNJ, 200 de
+puissance ; cinq bâtiments au plus, un grand pouvant compter pour cinq ; pas de bunker dessous ;
+pas de `/f home` dedans) et les merveilles du monde (une par serveur, élue par le conseil
+inter-serveur de l'ONU). La plaque est propre au mod (`tools/unesco_assets.py`).
+
+### Le dossier
+
+- **La plaque UNESCO** (livre, 2 lingots d'or, 4 blocs de quartz) : une stèle à poser dans le
+  bâtiment, tournée vers l'entrée ; nommée à l'enclume, elle donne son nom au monument (sinon
+  « Monument de <nation> »).
+- **Conditions** : une nation de **niveau 10** (paliers de l'arbre, comme le BCC), la plaque dans
+  un de ses claims, un emplacement libre, une zone qui n'empiète sur aucun monument inscrit ; un
+  dossier par minute.
+- **Le jury** (en solo, le mod) arpente **33 × 33 blocs** autour de la plaque, de 6 dessous à 34
+  dessus. Compte comme construit un bloc posé par un joueur, ou qui ne vient pas du terrain (terre,
+  roche, sable, feuilles, bûches, minerais, eau... ne comptent que posés à la main) ; sous le sol de
+  la plaque, seuls les blocs posés par un joueur comptent.
+
+| Critère | Points | Pour tout |
+|---|---|---|
+| Taille | 25 | 1 500 blocs construits (300 au moins, sinon refusé) |
+| Détails | 20 | 15 % de détails : escaliers, dalles, murets, barrières, portes, trappes, vitres et barreaux, bannières, bougies, pots, panneaux, lits, tapis, lumières |
+| Intérieur | 15 | autant d'air sous un toit (8 blocs au plus) que 40 % des blocs |
+| Style | 25 | 15 pour une palette tenue (les six blocs les plus posés font de 55 à 92 %), 10 pour 20 sortes de blocs |
+| Fonctions | 15 | six sortes de blocs qui font vivre le lieu (coffres, fours, lits, lutrins, enclumes, machines...) |
+
+  **Il faut 60 / 100.** Refusé, le jury dit le critère qui rapporterait le plus.
+
+### Un monument inscrit
+
+- **Emplacements** : un par tranche de 2 500 blocs construits, cinq au plus ; cinq par nation.
+- **Subvention** : 2 500 $ par emplacement, à la banque nationale (12 500 $ au plus par nation).
+- **Protection** : sa zone (les blocs construits relevés, en boîte) ne se casse plus aux explosions
+  (TNT, dynamite, creepers, withers — pas les armes de NTM : l'antimatière et la matière rouge de
+  NationsGlory), ni par un autre joueur que son maître. **Pas de F home** dedans.
+- **Prestige** : un point de Territoire à la notation par emplacement (la « puissance » de
+  NationsGlory).
+- **Warp et guide** : l'écran (`/f unesco`) y emmène, devant la plaque ; clic droit, un guide (un
+  villageois immobile, nommé) accueille les visiteurs et raconte le monument.
+- **Casser la plaque** retire le monument du programme ; la subvention reste acquise.
+
+### La merveille du monde
+
+- **Le 1er de chaque mois à 21 h** (heure de `RealClock`), le conseil de l'ONU élit la merveille du
+  mois parmi les monuments inscrits et cinq candidats des nations rivales (notés de 62 à 92) : la
+  note, plus de 0 à 12 de « couloirs ». Au premier lancement, une première élection a lieu.
+- **Élue** : 25 000 $ à la banque nationale (payés à la connexion si son maître est absent), trois
+  points de plus à la notation, un halo sur sa plaque, jusqu'à l'élection suivante. Les six
+  dernières merveilles restent à l'écran. Opérateur : `/f unesco elire`.
+
+### Code
+
+`faction/unesco/` : `DoHyUnesco` (registres), `UnescoPlaqueBlock`, `UnescoPlaqueBlockEntity`,
+`UnescoData` (monuments, merveilles, sur l'overworld), `Unesco` (arpentage, note, inscription,
+protection, guides, élections), `UnescoMenu` ; crochets : `FactionHomes.set`, `FactionNotation`
+(Territoire), `FactionCommand` (`/f unesco`).
+
+### Écarts
+
+- Le jury de NationsGlory est l'équipe du serveur ; ici, une note calculée — « cohérent avec le
+  style du pays » devient « une palette tenue ».
+- Le bunker sous le bâtiment n'est pas vérifié.

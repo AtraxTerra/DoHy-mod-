@@ -56,10 +56,7 @@ public final class BoutiqueController extends MenuController {
                             MoneyFormat.exact(tier.price()) + " $", "Ventes " + tier.key() + " pendant "
                                     + Boosters.DURATION_MINUTES + " min"))
                     .accent(0xFFFAC400).badge(tier.key())
-                    .tooltip(List.of("Multiplie l'argent des ventes",
-                            "Le montant booste ne fait pas baisser les prix",
-                            "Prepare un stock avant de le declencher",
-                            busy ? "Un booster est deja actif : ils ne se cumulent pas"
+                    .tooltip(List.of(busy ? "Un booster est deja actif"
                                     : missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             if (busy || missing > 0) {
                 card = card.state(MenuView.DISABLED);
@@ -97,12 +94,9 @@ public final class BoutiqueController extends MenuController {
             ItemStack icon = new ItemStack(PalaBoxes.item(kind));
             long missing = PalaBoxes.PRICE - Economy.balance(player);
             Card card = Card.of(icon, MenuView.text(icon.getHoverName()), List.of(
-                            MoneyFormat.exact(PalaBoxes.PRICE) + " $", "Deco animee, s'ouvre avec une cle"))
+                            MoneyFormat.exact(PalaBoxes.PRICE) + " $", "S'ouvre avec une cle"))
                     .accent(0xFF9B59E8)
-                    .tooltip(List.of("Un coffre anime a poser chez soi",
-                            "Clic droit avec une " + Crates.keyName(tier) + " : il s'ouvre",
-                            "Accroupi, main vide : achete une cle",
-                            "Meme butin qu'a la roulette, l'ouverture en plus",
+                    .tooltip(List.of("Clic droit avec une " + Crates.keyName(tier),
                             missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             boxes.add(missing > 0 ? card.state(MenuView.DISABLED)
                     : card.action("box:" + kind.getSerializedName() + "|acheter"));
@@ -120,10 +114,7 @@ public final class BoutiqueController extends MenuController {
                             MoneyFormat.exact(offer.price()) + " $", "XP de metier x" + offer.multiplier() + " pendant "
                                     + duration))
                     .accent(offer.multiplier() == 3 ? 0xFFFAC400 : 0xFF22E558).badge("x" + offer.multiplier())
-                    .tooltip(List.of("Toute l'XP de metier x" + offer.multiplier() + " pendant " + duration
-                                    + " de jeu",
-                            "Bue pendant l'effet : la duree s'ajoute",
-                            "Le x3 passe avant le x2 ; ni le lait ni la mort ne l'enlevent",
+                    .tooltip(List.of("La duree s'ajoute",
                             missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : ""));
             potions.add(missing > 0 ? card.state(MenuView.DISABLED)
                     : card.action("xp:" + offer.multiplier() + ":" + offer.minutes() + "|acheter"));
@@ -139,10 +130,7 @@ public final class BoutiqueController extends MenuController {
                                 + " $", "Tes bots : " + owned + " / "
                                 + fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER))
                 .accent(0xFF22E558).badge(owned > 0 ? owned + " BOT" + (owned > 1 ? "S" : "") : "")
-                .tooltip(List.of("Il recolte ce qui est mur dans la zone que tu traces,",
-                        "replante, et vide sa recolte dans les coffres que tu lui lies",
-                        "L'XP de Fermier te revient, comme a la main",
-                        "Une telecommande est donnee si tu n'en as pas",
+                .tooltip(List.of("Recolte, replante, remplit tes coffres",
                         owned >= fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER
                                 ? fr.atraxterra.dohy.farmbot.BotRegistry.MAX_PER_PLAYER + " bots au plus par joueur"
                                 : botMissing > 0 ? "Il te manque " + MoneyFormat.exact(botMissing) + " $" : ""));
@@ -150,16 +138,13 @@ public final class BoutiqueController extends MenuController {
                 ? bot.state(MenuView.DISABLED)
                 : bot.action("farm_bot|acheter").confirm("Acheter un bot de farming ?|"
                         + MoneyFormat.exact(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_PRICE)
-                        + " $, avec une telecommande si tu n'en as pas."));
+                        + " $"));
         long remoteMissing = fr.atraxterra.dohy.farmbot.DoHyFarmBots.REMOTE_PRICE - Economy.balance(player);
         Card remote = Card.of(new ItemStack(fr.atraxterra.dohy.farmbot.DoHyFarmBots.BOT_REMOTE.get()),
                         "Telecommande", List.of(MoneyFormat.exact(fr.atraxterra.dohy.farmbot.DoHyFarmBots.REMOTE_PRICE)
                                 + " $", "Zone et coffres des bots"))
                 .accent(0xFF27C4E8)
-                .tooltip(List.of("Clic droit sur un de tes bots : elle le pilote",
-                        "Clic droit sur deux coins : sa zone",
-                        "Accroupi + clic droit sur un coffre : le lier",
-                        remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) + " $" : ""));
+                .tooltip(List.of(remoteMissing > 0 ? "Il te manque " + MoneyFormat.exact(remoteMissing) + " $" : ""));
         bots.add(remoteMissing > 0 ? remote.state(MenuView.DISABLED) : remote.action("bot_remote|acheter"));
 
         // Les mines de la Terre : la balise qui en capture une (seulement sur une carte de la Terre).
@@ -172,10 +157,7 @@ public final class BoutiqueController extends MenuController {
                                     fr.atraxterra.dohy.earth.mine.DoHyMines.BEACON_PRICE) + " $",
                                     "Tes mines : " + held))
                     .accent(0xFFE8590C).badge(held > 0 ? held + " MINE" + (held > 1 ? "S" : "") : "")
-                    .tooltip(List.of("Pose-la dans une mine de la Terre et reste a cote :",
-                            "2 a 5 min, et la mine est a ta nation",
-                            "Chaque heure, meme hors ligne : argent et minerais",
-                            "a ta banque nationale. La capture la consomme.",
+                    .tooltip(List.of("Capture une mine de la Terre",
                             beaconMissing > 0 ? "Il te manque " + MoneyFormat.exact(beaconMissing) + " $" : ""));
             mines.add(beaconMissing > 0 ? beacon.state(MenuView.DISABLED) : beacon.action("beacon|acheter"));
         }
@@ -188,7 +170,7 @@ public final class BoutiqueController extends MenuController {
                                 ? charges + (charges > 1 ? " charges : tu perds moitie moins a la mort"
                                 : " charge : tu perds moitie moins a la mort") : "Tu perds moitie moins a la mort"))
                 .accent(0xFF2F5BEA).badge(String.valueOf(charges)).action("insurance|acheter une charge")
-                .tooltip(List.of("Divise par deux la perte a la mort", "Une charge est consommee par mort")));
+                .tooltip(List.of("Perte a la mort / 2", "Une charge par mort")));
         if (!data.autosellUnlocked()) {
             long missing = Autosell.UNLOCK_PRICE - Economy.balance(player);
             services.add(Card.of(new ItemStack(Items.HOPPER_MINECART), "Autosell", List.of(
@@ -196,8 +178,7 @@ public final class BoutiqueController extends MenuController {
                             "Vend un coffre toutes les " + Autosell.INTERVAL_MINUTES + " min"))
                     .accent(0xFF2F5BEA).action("autosell|debloquer")
                     .state(missing > 0 ? MenuView.DISABLED : MenuView.NORMAL)
-                    .tooltip(List.of("Ne charge jamais le chunk : un coffre non charge est saute",
-                            missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : "")));
+                    .tooltip(List.of(missing > 0 ? "Il te manque " + MoneyFormat.exact(missing) + " $" : "")));
         } else {
             BlockPos linked = data.autosellPos();
             long since = Math.max(0L, ContractApi.data(player).playtimeMinutes() - data.autosellLast());
@@ -205,15 +186,15 @@ public final class BoutiqueController extends MenuController {
                             linked == null ? "Aucun coffre lie"
                                     : "Coffre " + linked.getX() + " " + linked.getY() + " " + linked.getZ(),
                             "Dernier passage il y a " + since + " min"))
-                    .state(MenuView.DONE).tooltip(List.of("Place-toi devant un coffre et fais /autosell link")));
+                    .state(MenuView.DONE).tooltip(List.of("/autosell link devant un coffre")));
         }
         // La banque et les ameliorations ont leur entree dans la barre laterale : elles
         // ne s'achetent pas ici, elles n'y ont plus de carte.
         List<MenuView.Section> sections = new ArrayList<>(List.of(
                 // Les grades d'abord, comme sur la boutique de Paladium ; clic droit : tous les avantages.
-                new MenuView.Section("GRADES : DU CONFORT, POUR TOUJOURS", "armor", MenuView.GRID,
+                new MenuView.Section("GRADES", "armor", MenuView.GRID,
                         fr.atraxterra.dohy.grade.GradesController.offers(player, "grade:")),
-                new MenuView.Section("BOOSTERS : TES VENTES RAPPORTENT PLUS", "upgrade", MenuView.GRID, boosters),
+                new MenuView.Section("BOOSTERS", "upgrade", MenuView.GRID, boosters),
                 new MenuView.Section("CLES DE BOX", "resources", MenuView.GRID, crates),
                 new MenuView.Section("POTIONS D'XP DE METIER", "upgrade", MenuView.GRID, potions),
                 new MenuView.Section("BOTS DE FARMING", "resources", MenuView.GRID, bots)));
@@ -346,7 +327,7 @@ public final class BoutiqueController extends MenuController {
                     }
                 }
                 case "autosell" -> report(player, Autosell.unlock(player),
-                        "Autosell debloque — /autosell link devant un coffre.");
+                        "Autosell debloque (/autosell link).");
                 case "bank" -> BankController.INSTANCE.open(player);
                 case "upgrades" -> UpgradesController.INSTANCE.open(player);
                 default -> {

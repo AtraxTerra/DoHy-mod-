@@ -22,38 +22,38 @@ import java.util.function.Supplier;
  *   <li>defense : degats recus en moins.</li>
  * </ul>
  *
- * @param perNode  ce que vaut un noeud de l'arbre
+ * @param nodes    ce que vaut chaque noeud de la branche, en points de pourcentage ({@link RpgTree})
  * @param runeBase ce que vaut une ligne de rune commune de tier 1
  * @param cap      le plafond, arbre et runes compris
  */
 public enum RpgStat implements StringRepresentable {
 
-    ATTACK("attack", "Attaque", ChatFormatting.RED, () -> Items.IRON_SWORD, 0.04f, 0.02f, 1.0f),
-    DODGE("dodge", "Esquive", ChatFormatting.AQUA, () -> Items.FEATHER, 0.02f, 0.01f, 0.35f),
-    CRIT("crit", "Critique", ChatFormatting.GOLD, () -> Items.BLAZE_ROD, 0.03f, 0.015f, 0.60f),
-    DEFENSE("defense", "Defense", ChatFormatting.GREEN, () -> Items.SHIELD, 0.03f, 0.015f, 0.50f);
+    ATTACK("attack", "Attaque", ChatFormatting.RED, () -> Items.IRON_SWORD,
+            new int[] {2, 2, 3, 3, 3, 3, 4, 4, 4, 4}, 0.02f, 1.0f),
+    DODGE("dodge", "Esquive", ChatFormatting.AQUA, () -> Items.FEATHER,
+            new int[] {1, 1, 1, 1, 2, 2, 2, 2, 2, 2}, 0.01f, 0.35f),
+    CRIT("crit", "Critique", ChatFormatting.GOLD, () -> Items.BLAZE_ROD,
+            new int[] {2, 2, 2, 2, 2, 2, 3, 3, 3, 3}, 0.015f, 0.60f),
+    DEFENSE("defense", "Defense", ChatFormatting.GREEN, () -> Items.SHIELD,
+            new int[] {2, 2, 2, 2, 2, 2, 3, 3, 3, 3}, 0.015f, 0.50f);
 
     public static final Codec<RpgStat> CODEC = StringRepresentable.fromEnum(RpgStat::values);
-
-    /** Le cout des huit noeuds d'une branche : 65 points, 260 pour l'arbre. */
-    public static final int[] NODE_COSTS = {2, 4, 5, 7, 9, 11, 12, 15};
-    public static final int NODES = NODE_COSTS.length;
 
     private final String key;
     private final String label;
     private final ChatFormatting color;
     private final Supplier<Item> icon;
-    private final float perNode;
+    private final int[] nodes;
     private final float runeBase;
     private final float cap;
 
-    RpgStat(String key, String label, ChatFormatting color, Supplier<Item> icon, float perNode, float runeBase,
+    RpgStat(String key, String label, ChatFormatting color, Supplier<Item> icon, int[] nodes, float runeBase,
             float cap) {
         this.key = key;
         this.label = label;
         this.color = color;
         this.icon = icon;
-        this.perNode = perNode;
+        this.nodes = nodes;
         this.runeBase = runeBase;
         this.cap = cap;
     }
@@ -79,8 +79,20 @@ public enum RpgStat implements StringRepresentable {
         return icon.get();
     }
 
-    public float perNode() {
-        return perNode;
+    /** Ce que vaut ce noeud, en points de pourcentage. */
+    public int node(int index) {
+        return nodes[index];
+    }
+
+    /** Ce que valent les noeuds de ce masque : 0,12 pour 12 %. */
+    public float value(int mask) {
+        int total = 0;
+        for (int index = 0; index < RpgTree.NODES; index++) {
+            if (RpgTree.has(mask, index)) {
+                total += nodes[index];
+            }
+        }
+        return total / 100.0f;
     }
 
     public float runeBase() {
@@ -89,15 +101,6 @@ public enum RpgStat implements StringRepresentable {
 
     public float cap() {
         return cap;
-    }
-
-    /** Le cout total des {@code nodes} premiers noeuds. */
-    public static int costOf(int nodes) {
-        int total = 0;
-        for (int i = 0; i < Math.min(nodes, NODES); i++) {
-            total += NODE_COSTS[i];
-        }
-        return total;
     }
 
     /** Un pourcentage lisible : 0,04 -> « 4 % », 0,015 -> « 1,5 % ». */

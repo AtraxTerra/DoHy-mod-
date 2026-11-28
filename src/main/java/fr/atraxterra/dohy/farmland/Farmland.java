@@ -138,9 +138,7 @@ public final class Farmland {
         }
         player.closeContainer();
         toHub(player, level);
-        tell(player, "Bienvenue a la farmland : les creatures du Chasseur, et elles seules.", ChatFormatting.GOLD);
-        tell(player, "Rien ne s'y casse, la faim n'y baisse pas, ni PvP ni commandes de faction. "
-                + "Sortie : la borne RETOUR ou /spawn.", ChatFormatting.GRAY);
+        tell(player, "Farmland. Sortie : la borne RETOUR ou /spawn.", ChatFormatting.GOLD);
     }
 
     /** Pose le joueur au camp, face au nord. */

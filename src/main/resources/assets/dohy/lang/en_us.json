@@ -2,6 +2,7 @@
   "itemGroup.dohy.machines": "Berskar — machines",
   "itemGroup.dohy.agriculture": "Berskar — farming",
   "block.dohy.trading_server": "Trading Server",
+  "block.dohy.barracks": "Barracks",
   "block.dohy.research_lab": "Research Laboratory",
   "block.dohy.terminal": "Spawn Terminal",
   "block.dohy.hologram": "Floating Label",
@@ -43,6 +44,7 @@
   "block.dohy.fuel_pump_part": "Fuel Pump",
   "block.dohy.palette": "Ammunition Pallet",
   "entity.dohy.soldier": "Soldier",
+  "entity.dohy.garrison_soldier": "Garrison Soldier",
   "item.dohy.plan": "Construction Plan",
   "item.dohy.plan.of": "Plan: %s",
   "item.dohy.plan.help.place": "Right-click a block: place the plan",
@@ -263,5 +265,14 @@
   "tooltip.dohy.clandestine_lab": "Leaves and cans into finished products",
   "tooltip.dohy.packaging_table": "Products into bags, bags into parcels",
   "tooltip.dohy.arms_workbench": "Machined parts and sealed crates",
-  "tooltip.dohy.stash_chest": "Yours only · deposits into your enterprises' stocks · machines can fill it"
+  "tooltip.dohy.stash_chest": "Yours only · deposits into your enterprises' stocks · machines can fill it",
+  "block.dohy.base_claim_controller": "Base Claim Controller",
+  "tooltip.dohy.base_claim_controller": "The heart of your base: glory and ELO every day, 55 slot storage",
+  "tooltip.dohy.base_claim_controller.place": "At the center of a 3 x 3 chunk claim, the 8 blocks around and above empty",
+  "tooltip.dohy.base_claim_controller.warn": "Failed placement: it vanishes. Looted with 2 minutes of right click",
+  "block.dohy.random_machine": "Random Machine",
+  "block.dohy.dice": "Casino Die",
+  "block.dohy.coin_slot": "Coin Slot",
+  "block.dohy.payout_box": "Payout Box",
+  "block.dohy.unesco_plaque": "UNESCO Plaque"
 }

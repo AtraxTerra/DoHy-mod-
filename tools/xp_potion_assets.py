@@ -32,7 +32,7 @@ LANG = {
     "fr_fr": {
         "item.palamod.xp_potion.named": "%s (%s)",
         "tooltip.palamod.xp_potion": "%s XP sur tous tes metiers pendant %s de jeu",
-        "tooltip.palamod.xp_potion.stack": "Bue pendant l'effet : la duree s'ajoute. Le x3 passe avant le x2.",
+        "tooltip.palamod.xp_potion.stack": "La duree s'ajoute ; le x3 passe avant le x2.",
         "message.palamod.xp_potion": "XP de metier %s : encore %s",
     },
     "en_us": {

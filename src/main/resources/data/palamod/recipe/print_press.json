@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IBI",
+    "SPS",
+    "ZZZ"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "B": "minecraft:blaze_rod",
+    "S": "palamod:paladium_slab",
+    "P": "minecraft:light_weighted_pressure_plate",
+    "Z": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "palamod:print_press",
+    "count": 1
+  }
+}

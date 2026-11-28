@@ -94,22 +94,8 @@ public final class PlayerKitsMenu extends MenuController {
                 new MenuView.Stat("PRETS", String.valueOf(ready), ready > 0 ? 0xFF22E558 : 0xFFFFFFFF),
                 new MenuView.Stat("LE PROCHAIN", soonest == Long.MAX_VALUE ? "-" : PlayerKits.duration(soonest),
                         0xFFFFFFFF));
-        List<Card> rules = List.of(
-                Card.of(new ItemStack(Items.IRON_PICKAXE), "Le kit de depart", List.of("A ta premiere connexion",
-                        "Une seule fois")).accent(0xFF2F5BEA)
-                        .tooltip(List.of("Il arrive de lui-meme dans ton sac.",
-                                "Sac trop plein ? Il t'attend ici.")),
-                Card.of(new ItemStack(Items.CLOCK), "Les delais", List.of("En heures reelles",
-                        "Meme partie fermee")).accent(0xFF2F5BEA)
-                        .tooltip(List.of("Un kit pris revient apres son delai.",
-                                "Le kit entier, ou rien : garde de la place.")),
-                Card.of(new ItemStack(fr.atraxterra.dohy.grade.DoHyGrades.LEGENDE.get()), "Les grades",
-                        List.of("Un kit par grade, chaque semaine", "Ceux d'en dessous aussi")).accent(0xFF2F5BEA)
-                        .tooltip(List.of("Heros, Legende, Divinite et Premium :",
-                                "a la Boutique, avec ton argent.")));
         return new MenuView(id(), "Kits", "", stats, List.of(
-                new MenuView.Section("TES KITS", "resources", MenuView.GRID, cards),
-                new MenuView.Section("REGLES", "upgrade", MenuView.GRID, rules)), false);
+                new MenuView.Section("TES KITS", "resources", MenuView.GRID, cards)), false);
     }
 
     @Override

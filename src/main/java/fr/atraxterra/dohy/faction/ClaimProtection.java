@@ -70,7 +70,7 @@ public final class ClaimProtection {
         if (last == null || now - last > 1000L) {
             LAST_WARNING.put(player.getUUID(), now);
             FactionApi.tell(player, owner.enemy()
-                    ? owner.label() + " : rien ne se casse ni ne se pose ici. Dynamites, canon a TNT, wither ou missiles."
+                    ? owner.label() + " : protege."
                     : "Ce territoire appartient a la nation " + owner.faction() + ".", ChatFormatting.RED);
         }
     }

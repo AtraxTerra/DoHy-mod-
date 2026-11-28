@@ -57,8 +57,8 @@ public final class DimMinerMenus {
                             .accent(0xFFEF3826)
                             .tooltip(List.of("Paladium : 1 point", "Paladium vert : 5 points",
                                     "Pepite d'endium : 501 points", "Les autres blocs sont gratuits.", "",
-                                    "Pas de monstres, pas de chute, pas de coffres.",
-                                    "Sortie : le portail d'arrivee ou /dimminer quitter.")),
+                                    "Ni monstres ni chute.",
+                                    "Sortie : /dimminer quitter.")),
                     Card.of(new ItemStack(Items.CLOCK), "Ta session", List.of(
                                     "Temps restant " + DimMinerManager.clock(data.remainingSeconds()),
                                     "Points " + points + " / " + DimMinerData.TOTAL_POINTS))

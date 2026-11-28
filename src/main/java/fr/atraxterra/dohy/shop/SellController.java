@@ -39,6 +39,9 @@ import java.util.Map;
  * heures : c'est la que choisir l'heure de vendre compte. Ce que le shop refuse
  * mais que l'hotel des ventes prend, avec un raccourci vers la mise en vente. Le
  * coffre de vente reste la, pour deposer une fournee a la main.
+ *
+ * <p>Les tiroirs de Storage Drawers du sac comptent : leur contenu s'ajoute aux
+ * lignes, et la vente les vide sans les prendre ({@link DrawerSale}).
  */
 public final class SellController extends MenuController {
 
@@ -52,8 +55,8 @@ public final class SellController extends MenuController {
         super("sell");
     }
 
-    /** Une sorte d'objet du sac que le shop rachete. */
-    private record Line(Item item, Identifier id, PriceEntry entry, int count) {
+    /** Une sorte d'objet du sac que le shop rachete ; {@code drawers}, la part rangee en tiroir. */
+    private record Line(Item item, Identifier id, PriceEntry entry, int count, int drawers) {
     }
 
     @Override
@@ -75,9 +78,7 @@ public final class SellController extends MenuController {
                 rows.add(Card.of(new ItemStack(line.item()), name(line.item()), List.of(
                                 "x" + line.count() + " · vente pas encore ouverte",
                                 "Encore " + MoneyFormat.exact(missing) + " a collecter"))
-                        .state(MenuView.DISABLED).progress(collected, collected + missing)
-                        .tooltip(List.of("Le shop rachete cet objet une fois que tu en as assez collecte",
-                                "Ca se voit dans l'onglet Collections")));
+                        .state(MenuView.DISABLED).progress(collected, collected + missing));
                 continue;
             }
             long unit = DynamicPrice.unitPrice(player, line.id(), line.entry());
@@ -86,15 +87,16 @@ public final class SellController extends MenuController {
             total += payout;
             open++;
             List<String> tooltip = new ArrayList<>();
-            tooltip.add("Clic : vendre les " + line.count() + " pour " + money(payout));
+            if (line.drawers() > 0) {
+                tooltip.add("Dont " + line.drawers() + " en tiroir : le tiroir reste");
+            }
             if (percent < 100) {
-                tooltip.add("Le shop paie moins quand tu en vends beaucoup d'un coup");
-                tooltip.add("Le prix remonte tout seul, partie fermee comprise");
+                tooltip.add("Prix bas : il remonte avec le temps");
             }
             boolean hourly = HourlyCourse.follows(line.entry());
             if (hourly) {
                 int course = HourlyCourse.percent(line.id(), line.entry()) - 100;
-                tooltip.add("Prix de l'heure : " + (course > 0 ? "+" : "") + course + " % (change dans "
+                tooltip.add("Cours : " + (course > 0 ? "+" : "") + course + " % (encore "
                         + HourlyCourse.minutesLeft() + " min)");
             }
             Card row = Card.of(new ItemStack(line.item()), name(line.item()), List.of(
@@ -116,17 +118,15 @@ public final class SellController extends MenuController {
         List<Card> quick = new ArrayList<>();
         Card all = Card.of(new ItemStack(Items.EMERALD), "Tout vendre", List.of(
                         open > 0 ? money(total) : "Rien a vendre",
-                        open > 0 ? open + (open > 1 ? " sortes d'objets" : " sorte d'objet") : "Le shop ne rachete rien de ton sac"))
+                        open > 0 ? open + (open > 1 ? " sortes d'objets" : " sorte d'objet") : ""))
                 .accent(GREEN)
-                .tooltip(List.of("Vend d'un coup tout ce que le shop rachete",
-                        "L'armure portee et la seconde main ne partent pas",
-                        "Ce dont la vente n'est pas ouverte reste dans ton sac"));
+                .tooltip(List.of("Sauf l'armure portee et la seconde main", "Tiroirs du sac : le contenu se vend, le tiroir reste"));
         quick.add(open > 0 ? all.action("all|tout vendre").confirm("Tout vendre pour " + money(total) + " ?|"
                 + open + (open > 1 ? " sortes d'objets" : " sorte d'objet") + " du sac") : all.state(MenuView.DISABLED));
-        quick.add(Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : c'est vendu",
-                        "Ce qui ne se vend pas te revient"))
-                .accent(GOLD).action("chest|ouvrir")
-                .tooltip(List.of("Pour vendre une fournee choisie a la main", "La commande /sell coffre l'ouvre aussi")));
+        quick.add(Card.of(new ItemStack(Items.CHEST), "Coffre de vente", List.of("Depose, ferme : vendu",
+                        "/sell coffre"))
+                .accent(GOLD).tooltip(List.of("Un tiroir plein : son contenu est vendu, le tiroir rendu"))
+                .action("chest|ouvrir"));
 
         List<Card> rare = new ArrayList<>();
         for (Map.Entry<Item, Integer> entry : auction.entrySet()) {
@@ -134,17 +134,15 @@ public final class SellController extends MenuController {
             long each = AuctionSales.recommended(sample);
             rare.add(Card.of(new ItemStack(entry.getKey()), name(entry.getKey()), List.of(
                             "x" + entry.getValue() + " · " + money(each) + " piece conseille",
-                            "Le shop ne le rachete pas"))
+                            "Hotel des ventes"))
                     .accent(BLUE)
-                    .tooltip(List.of("Des acheteurs le prennent a l'hotel des ventes",
-                            "Tu choisis le prix : moins cher, ca part plus vite"))
                     .action("auction:" + BuiltInRegistries.ITEM.getKey(entry.getKey()) + "|mettre en vente"));
         }
 
         List<MenuView.Section> sections = new ArrayList<>();
         sections.add(new MenuView.Section("VENDRE D'UN COUP", "resources", MenuView.GRID, quick));
         if (!moving.isEmpty()) {
-            sections.add(new MenuView.Section("PRIX QUI CHANGENT CHAQUE HEURE|" + moving.size(), "upgrade",
+            sections.add(new MenuView.Section("COURS DE L'HEURE|" + moving.size(), "upgrade",
                     MenuView.GRID, moving));
         }
         if (!rows.isEmpty()) {
@@ -155,11 +153,7 @@ public final class SellController extends MenuController {
         }
         if (rows.isEmpty() && moving.isEmpty() && rare.isEmpty()) {
             sections.add(new MenuView.Section("TON SAC", "craft", MenuView.TEXT, List.of(Card.of(ItemStack.EMPTY, "",
-                    List.of("Rien a vendre pour l'instant.",
-                            "- Le shop rachete presque tout ce qui se recolte, se mine ou se chasse.",
-                            "- Ce qui se fabrique ne se revend pas : vends plutot ce qui sert a le fabriquer.",
-                            "- Les raretes (runes, essences, equipement de donjon, cles...) se vendent a l'hotel des "
-                                    + "ventes.")))));
+                    List.of("Rien a vendre.")))));
         }
         List<MenuView.Stat> stats = List.of(new MenuView.Stat("TON ARGENT", money(balance), 0xFFFFFFFF));
         return new MenuView(id(), Commerce.TITLE, Commerce.Tab.SELL.subtitle(), stats, sections, false)
@@ -180,7 +174,7 @@ public final class SellController extends MenuController {
             Item item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
             PriceEntry entry = id == null ? null : Prices.book().entry(id).orElse(null);
             if (item != null && entry != null) {
-                ShopController.sell(player, id, item, entry, Integer.MAX_VALUE);
+                ShopController.sell(player, id, item, entry, Integer.MAX_VALUE, true);
             }
         } else if (key.startsWith("auction:")) {
             Identifier id = Identifier.tryParse(key.substring(8));
@@ -207,8 +201,24 @@ public final class SellController extends MenuController {
     static void sellAll(ServerPlayer player) {
         NonNullList<ItemStack> items = player.getInventory().getNonEquipmentItems();
         Map<Item, Integer> batch = new LinkedHashMap<>();
-        for (ItemStack stack : items) {
+        int drawers = 0;
+        int drawersLeft = 0;
+        for (int slot = 0; slot < items.size(); slot++) {
+            ItemStack stack = items.get(slot);
             if (stack.isEmpty()) {
+                continue;
+            }
+            DrawerSale.Plan drawer = DrawerSale.plan(player, stack, item -> true,
+                    item -> Integer.MAX_VALUE - batch.getOrDefault(item, 0)).orElse(null);
+            if (drawer != null) {
+                if (!drawer.sold().isEmpty()) {
+                    drawer.sold().forEach((item, amount) -> batch.merge(item, amount, Integer::sum));
+                    player.getInventory().setItem(slot, drawer.apply());
+                    drawers++;
+                    if (drawer.leftover()) {
+                        drawersLeft++;
+                    }
+                }
                 continue;
             }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
@@ -220,7 +230,7 @@ public final class SellController extends MenuController {
             stack.setCount(0);
         }
         long payout = 0L;
-        int sold = 0;
+        long sold = 0L;
         for (Map.Entry<Item, Integer> line : batch.entrySet()) {
             PriceEntry entry = Prices.book().entry(line.getKey()).orElse(null);
             if (entry == null) {
@@ -229,7 +239,7 @@ public final class SellController extends MenuController {
             payout += DynamicPrice.sell(player, BuiltInRegistries.ITEM.getKey(line.getKey()), entry, line.getValue());
             sold += line.getValue();
         }
-        if (sold == 0) {
+        if (sold == 0L) {
             failure(player);
             player.sendSystemMessage(Component.literal("Rien a vendre.").withStyle(ChatFormatting.GRAY));
             return;
@@ -242,26 +252,50 @@ public final class SellController extends MenuController {
                 .append(Component.literal(money(payout)).withStyle(ChatFormatting.GOLD))
                 .append(Component.literal(" · solde " + MoneyFormat.shortForm(balance))
                         .withStyle(ChatFormatting.DARK_GRAY)));
+        if (drawers > 0) {
+            String kept = drawersLeft == 0
+                    ? drawers + (drawers > 1 ? " tiroirs vides" : " tiroir vide") + ", toujours dans ton sac."
+                    : drawers + (drawers > 1 ? " tiroirs" : " tiroir") + " toujours dans ton sac"
+                            + (drawers > 1 ? ", dont " + drawersLeft : "") + " avec ce qui ne se vend pas.";
+            player.sendSystemMessage(Component.literal(kept).withStyle(ChatFormatting.GRAY));
+        }
     }
 
-    /** Ce que le shop rachete dans le sac, par sorte d'objet, les plus rentables d'abord. */
+    /** Ce que le shop rachete dans le sac, tiroirs compris, par sorte d'objet, les plus rentables d'abord. */
     private static List<Line> shopLines(ServerPlayer player) {
         Map<Item, Line> lines = new LinkedHashMap<>();
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.isEmpty()) {
                 continue;
             }
+            DrawerSale.Plan drawer = DrawerSale.plan(player, stack, item -> true, item -> {
+                Line known = lines.get(item);
+                return Integer.MAX_VALUE - (known == null ? 0 : known.count());
+            }).orElse(null);
+            if (drawer != null) {
+                // Apercu : le tiroir n'est vide qu'a la vente.
+                drawer.sold().forEach((item, amount) -> add(lines, item, amount, amount));
+                continue;
+            }
             PriceEntry entry = Prices.book().entry(stack).orElse(null);
             if (entry == null || !entry.sellable()) {
                 continue;
             }
-            Line known = lines.get(stack.getItem());
-            lines.put(stack.getItem(), new Line(stack.getItem(), BuiltInRegistries.ITEM.getKey(stack.getItem()), entry,
-                    (known == null ? 0 : known.count()) + stack.getCount()));
+            add(lines, stack.getItem(), stack.getCount(), 0);
         }
         List<Line> out = new ArrayList<>(lines.values());
         out.sort(Comparator.comparingLong((Line line) -> -line.entry().basePrice() * (long) line.count()));
         return out;
+    }
+
+    private static void add(Map<Item, Line> lines, Item item, int count, int drawers) {
+        PriceEntry entry = Prices.book().entry(item).orElse(null);
+        if (entry == null) {
+            return;
+        }
+        Line known = lines.get(item);
+        lines.put(item, new Line(item, BuiltInRegistries.ITEM.getKey(item), entry,
+                (known == null ? 0 : known.count()) + count, (known == null ? 0 : known.drawers()) + drawers));
     }
 
     /** Ce que l'hotel des ventes prend dans le sac, par sorte d'objet, avec la quantite. */

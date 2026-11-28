@@ -81,10 +81,8 @@ public final class SiloMenu extends MenuController {
         if (silo != null) {
             int carried = carried(player, silo);
             Card deposit = Card.of(new ItemStack(Items.HOPPER), "Tout deposer", List.of(
-                            "Verse les cereales de ton sac", carried + " dans ton sac"))
-                    .accent(GOLD).tooltip(List.of("Un clic sur le silo, une cereale en main,", "la depose aussi",
-                            "Entonnoir ou convoyeur dessus ou sur un cote : entree",
-                            "Entonnoir ou convoyeur dessous : sortie"));
+                            "Les cereales du sac", carried + " dans ton sac"))
+                    .accent(GOLD).tooltip(List.of("Entonnoir : entree dessus, sortie dessous"));
             cards.add(carried > 0 && total < config.siloCapacity() ? deposit.action("deposit|tout deposer")
                     : deposit.state(MenuView.DISABLED));
             for (int slot = 0; slot < silo.kinds(); slot++) {

@@ -177,6 +177,10 @@ public class CauldronCoreBlockEntity extends BlockEntity {
                     ItemStack rare = rareFlower(random);
                     if (!rare.isEmpty()) {
                         output(server, rare);
+                        // Le familier : « Chance florale », une fleur de plus.
+                        if (fr.atraxterra.dohy.palamod.unlock.PetHooks.extraFlower(player)) {
+                            output(server, rare.copy());
+                        }
                     }
                 }
                 AlchemistXp.grant(player, flowerXp * count, FLOWER_XP_LEVEL);

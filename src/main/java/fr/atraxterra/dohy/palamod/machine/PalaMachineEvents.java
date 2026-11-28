@@ -86,6 +86,24 @@ public final class PalaMachineEvents {
             return;
         }
 
+        // La presse a imprimer et la table d'ecriture : l'objet tenu va dans sa
+        // case, comme les clics de l'original ; la table grave accroupie, main vide.
+        if (machine instanceof fr.atraxterra.dohy.palamod.press.HandFed fed) {
+            ItemStack held = event.getItemStack();
+            if (machine instanceof fr.atraxterra.dohy.palamod.press.TypeMachineBlockEntity table
+                    && player.isShiftKeyDown() && held.isEmpty()) {
+                event.setCanceled(true);
+                if (event.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND) {
+                    table.engrave(player);
+                }
+                return;
+            }
+            if (!player.isShiftKeyDown() && !held.isEmpty() && fed.feed(player, held)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
+
         // Accroupi avec un item en main : on laisse poser le bloc, comme pour
         // un coffre. Sinon l'interface s'ouvre.
         if (player.isShiftKeyDown() && !event.getItemStack().isEmpty()) {
@@ -124,6 +142,9 @@ public final class PalaMachineEvents {
                 return true;
             }
             held.shrink(1);
+            // Le familier : « Pousse amelioree », le lingot dure plus longtemps.
+            totem.addBonus(fr.atraxterra.dohy.palamod.unlock.PetHooks.totemBonus(player,
+                    TotemBlockEntity.BOOSTS_PER_INGOT));
             fr.atraxterra.dohy.palamod.achievement.Achievements.count(player, "totem:fuel", 1);
             player.level().playSound(null, totem.getBlockPos(),
                     SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.7f, 1.2f);
