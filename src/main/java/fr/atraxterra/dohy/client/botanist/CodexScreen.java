@@ -47,7 +47,7 @@ public final class CodexScreen extends UiScreen {
     private static final int CLOSE_X = W - 30;
     private static final int CLOSE_Y = 12;
     private static final int CLOSE_SIZE = 16;
-    private static final int CHIP_Y = 196;
+    private static final int CHIP_Y = 214;
     private static final int CHIP_W = 40;
     private static final int CHIP_H = 16;
     private static final Identifier DIAMOND = Identifier.fromNamespaceAndPath("palamod",
@@ -150,7 +150,8 @@ public final class CodexScreen extends UiScreen {
         float after = LIST_X + 8 + g.width(Ui.PIXEL, rarity.plural().toUpperCase(Locale.ROOT), 6.0f) + 8;
         g.text(Ui.PIXEL, found + "/" + total, after, y + 4, 4.5f, Ui.Theme.MUTED);
         float lineStart = after + g.width(Ui.PIXEL, found + "/" + total, 4.5f) + 8;
-        p.rect(lineStart, y + 6, SHEET_X - 22 - lineStart, 1, Paint.alpha(rarity.color(), 0.35f));
+        // Le filet s'arrete avant le niveau de la categorie, ecrit au bout.
+        p.rect(lineStart, y + 6, SHEET_X - 58 - lineStart, 1, Paint.alpha(rarity.color(), 0.35f));
         g.text(Ui.PIXEL, "NIV. " + rarity.level(), SHEET_X - 50, y + 4, 4.5f, Ui.Theme.MUTED);
     }
 

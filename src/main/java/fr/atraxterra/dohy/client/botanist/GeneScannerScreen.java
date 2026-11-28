@@ -49,6 +49,8 @@ public final class GeneScannerScreen extends UiContainerScreen<MachineMenu> {
     private static final int CODEX_Y = 10;
     private static final int CODEX_W = 60;
     private static final int CODEX_H = 20;
+    /** Le titre s'arrete la : l'etat du codex tient entre lui et le bouton. */
+    private static final int TITLE_W = 86;
 
     /** Le vert du laser de JobsReborn ({@code #00FF6A}) et le fond de sa chambre ({@code #0C1714}). */
     private static final int LASER = 0xFF00FF6A;
@@ -76,7 +78,7 @@ public final class GeneScannerScreen extends UiContainerScreen<MachineMenu> {
     @Override
     protected void drawPanel(UiGraphics g, int mouseX, int mouseY) {
         g.panel(0, 0, WIDTH, HEIGHT);
-        title(g, "SCANNER", 16, 15, 16, 110, Ui.RED, Ui.RED_SHADE);
+        title(g, "SCANNER", 16, 15, 16, TITLE_W, Ui.RED, Ui.RED_SHADE);
         codexHeader(g, mouseX, mouseY);
         for (int index = 0; index < GeneScannerBlockEntity.SIZE; index++) {
             frame(g, menu.slots.get(index), index != GeneScannerBlockEntity.SLOT_FUEL);
@@ -103,19 +105,27 @@ public final class GeneScannerScreen extends UiContainerScreen<MachineMenu> {
         g.button(CODEX_X, CODEX_Y, CODEX_W, CODEX_H, 0xFF3C8D2F, 0xFF22561A, hovered);
         g.centered(Ui.PIXEL, "LE CODEX", CODEX_X + CODEX_W / 2.0f, CODEX_Y + 4, 5.0f, Ui.WHITE);
         g.centered(Ui.PIXEL, found + " / " + total, CODEX_X + CODEX_W / 2.0f, CODEX_Y + 11, 4.0f, 0xFFD9F5D0);
+        // L'etat du codex (« A decouvrir a ton niveau », « Prochain deblocage » de JobsReborn), en
+        // court : il tient entre le titre et le bouton ; la bulle du bouton le dit en entier.
+        int left = ClientCodex.toDiscover();
+        int next = ClientCodex.nextUnlock();
         String status;
         int color;
-        if (ClientCodex.somethingToDiscover()) {
-            status = "A DECOUVRIR A TON NIVEAU";
+        if (left > 0) {
+            status = left + " A DECOUVRIR";
             color = GREEN;
-        } else {
-            status = "RIEN A DECOUVRIR A TON NIVEAU";
+        } else if (next > 0) {
+            status = "RIEN A DECOUVRIR";
             color = AMBER;
+        } else {
+            status = "CODEX COMPLET";
+            color = GREEN;
         }
-        g.right(Ui.PIXEL, status, CODEX_X - 6, 13, 4.0f, color);
-        int next = ClientCodex.nextUnlock();
+        float room = CODEX_X - 6 - (16 + TITLE_W + 6);
+        g.right(Ui.PIXEL, g.fit(Ui.PIXEL, status, 4.0f, room), CODEX_X - 6, 13, 4.0f, color);
         if (next > 0) {
-            g.right(Ui.PIXEL, "PROCHAIN DEBLOCAGE : NIV. " + next, CODEX_X - 6, 20, 4.0f, Ui.MUTED);
+            g.right(Ui.PIXEL, g.fit(Ui.PIXEL, "DEBLOCAGE NIV. " + next, 3.6f, room), CODEX_X - 6, 20, 3.6f,
+                    Ui.MUTED);
         }
     }
 
@@ -242,9 +252,12 @@ public final class GeneScannerScreen extends UiContainerScreen<MachineMenu> {
         } else {
             tip(g, mouseX, mouseY, SCAN_X, SCAN_Y, SCAN_W, SCAN_H, List.of(statusLine()));
         }
+        int next = ClientCodex.nextUnlock();
         tip(g, mouseX, mouseY, CODEX_X, CODEX_Y, CODEX_W, CODEX_H, List.of("Le codex",
                 "Ouvre le codex des mutations.", "Decouvertes : " + ClientCodex.count() + " / "
-                        + Mutation.values().length));
+                        + Mutation.values().length,
+                "A decouvrir a ton niveau : " + ClientCodex.toDiscover(),
+                next > 0 ? "Prochain deblocage : niveau " + next : "Toutes les plantes sont a ta portee."));
         ItemStack input = menu.slots.get(GeneScannerBlockEntity.SLOT_INPUT).getItem();
         if (input.getItem() instanceof UnknownMutationItem) {
             tip(g, mouseX, mouseY, CHAMBER_X, CHAMBER_Y, CHAMBER_W, CHAMBER_H, List.of("Mutation inconnue",

@@ -4966,3 +4966,144 @@ configuration du serveur de Paladium. Valeurs retenues (`Mutation`, `Need`) :
   3D tenus en main et leurs animations d'usage, pas encore repris.
 - **La boule de neige** réclamée par la givrelune n'a pas d'icône de besoin dans le jar : c'est
   l'objet lui-même qui flotte au-dessus de la plante.
+
+## 49. Le Botaniste, lot 2b : mutations, scanner de Genis, codex, nibblers et filet (2026-11-28)
+
+Suite du § 48, toujours d'après **JobsReborn 1.92.0** au bytecode : `BotanistMutationManager`
+(`stage`, `harvest`, `getTargets`, `isEligible`), `BotanistMutationRarity`,
+`BotanistMutationRemoveCause.MUTATED`, `ItemBotanistUnknownMutation`, `ItemBotanistNet`,
+`EntityBotanistNibbler` et sa `PanicTask`, `NibblerBotanistNeed`, `RenderBotanistNibbler`,
+`BlockBotanistScanner`, `TileEntityBotanistScanner`, `TileEntityBotanistMachineRenderer`,
+`UIBotanistScanner`, `UIBotanistCodex` et `IBotanistJobsModuleData.getCodex`.
+
+### Ce qui vient du jar
+
+- **Les douze autres plantes**, aux identifiants de JobsReborn (`glowbloom`, `puffbloom`,
+  `jade_maw`, `motherroot`, `thornwick`, `songlily`, `aurelys`, `arcanium`, `sunbloom`, `smokepod`,
+  `miasma_bloom`, `ember_orchid`) : modèles, textures, quatre états animés et leurs évolutions,
+  icônes de graine. Avec les trois du lot 2a, quinze plantes, cinq par climat.
+- **Les raretés** (`BotanistMutationRarity`) : commune, rare, épique, légendaire.
+- **La mutation à la floraison** (`BotanistMutationManager.stage`) : quand une plante fleurit, elle
+  peut muter vers l'une de ses plantes cibles (`getTargets`) que son maître peut avoir
+  (`isEligible`, son niveau). La fleur mutée prend les anneaux et les étincelles du pot (le modèle
+  du jar). Sa récolte (`harvest`) rend une **mutation inconnue** qui porte la plante cible, et la
+  plante disparaît (`BotanistMutationRemoveCause.MUTATED`) ; l'XP de la récolte reste.
+- **La mutation inconnue** (`ItemBotanistUnknownMutation`, « À analyser au Scanner de Genis ») :
+  la plante qu'elle porte est son NBT `mutation` (ici le composant
+  `palamod:botanist_mutation_target`). Sans plante portée, le scanner en tire une parmi celles à la
+  portée du joueur (`draw`), ou rend un déchet de mutation.
+- **Le scanner de Genis** (`TileEntityBotanistScanner`, `UIBotanistScanner`) : trois cases
+  (graine, carburant, résultat), le charbon pour carburant (l'animation `no_coal`). Il accepte
+  (`isScannable`) une mutation inconnue, ou la graine d'une plante absente du codex. Il a deux
+  durées : plante déjà connue, découverte. Le scan s'interrompt sans rien consommer si la graine
+  change, si le charbon manque ou si la case du résultat se remplit. Repris aussi : les lignes
+  d'état de l'écran (« Place une graine à analyser », « Mutation déjà dans ton codex », « Ajoute
+  du carburant », « Récupère le résultat », « Prêt à scanner », « Scan en cours »), l'objet posé
+  sur son plateau (`resolveDisplay`, sur l'os `seed_anchor`) et son animation (`resolveAnimation` :
+  attente, sans charbon, scan en cours, scan terminé). Comme dans JobsReborn, la barre de
+  progression du modèle s'étire sur la durée du scan. Son modèle, sa texture et ses sons.
+- **Le codex** (`IBotanistJobsModuleData.getCodex`, `UIBotanistCodex`) : on ne découvre une plante
+  qu'au scanner, en révélant une mutation inconnue ou en scannant sa graine ; l'avoir fait pousser
+  ne suffit pas. L'écran range les plantes par catégorie, grise celles qui restent à découvrir, et
+  donne la fiche de la plante choisie : famille, variété, rôle, ses quatre variantes (les états,
+  avec leurs textes : « La mutation vient d'être plantée »…), le niveau requis, et « Peut aussi
+  apparaître à la floraison de ».
+- **Le nibbler** (`EntityBotanistNibbler`, `RenderBotanistNibbler`) : quatre points de vie,
+  vitesse 0,3, invulnérable (on l'attrape, on ne le tue pas), jamais retiré pour l'éloignement. La
+  panique (`PanicTask`) : un joueur arrive à moins de 8 blocs, il se fige 25 ticks en hurlant puis
+  fuit (vitesse 1,2 puis 1,6) ; il ne repanique qu'une fois le joueur reparti à plus de 12 blocs.
+  Sa vie (`lifetime`, 3 000 ticks par défaut), son modèle, sa texture, ses quatre animations
+  (panique, marche, grignote, attente) et ses sons.
+- **Le besoin de nibblers** (`NibblerBotanistNeed`) : la plante en réclame, ils apparaissent près
+  d'elle (`start`) ; un clic droit au filet sur la plante les relâche, au plus ce qu'elle réclame
+  (`consume`). Rempli : son `mob.slime.small`, particules `happyVillager`.
+- **Le filet** (`ItemBotanistNet`, un `ABotanistChargedTool` de huit charges) : « Clic droit sur
+  un nibbler pour l'attraper », « Clic droit sur une plante qui le réclame ». Tenu avec des
+  nibblers dedans, il les fait entendre de temps en temps. Ses sons d'attrape et de relâche.
+
+### Ce qui est calibré
+
+Les niveaux, les chances, les durées du scanner et les XP sont dans la configuration du serveur
+de Paladium. Ici ils suivent la rareté (`Rarity`) :
+
+| Rareté | Fermier | Chance de muter à la floraison | XP de découverte | Nibblers par besoin |
+|---|---|---|---|---|
+| Commune | 10 | 8 % | 150 | — |
+| Rare | 25 | 5 % | 300 | 1 |
+| Épique | 45 | 3 % | 800 | 2 |
+| Légendaire | 70 | — | 2 000 | 3 |
+
+**L'arbre des mutations** : dans chaque climat, la commune mute vers l'une de ses deux rares, les
+deux rares vers l'épique, l'épique vers la légendaire. Une floraison ne mute que vers une plante
+que son maître peut planter (son niveau de Fermier).
+
+| Climat | Commune | Rares | Épique | Légendaire |
+|---|---|---|---|---|
+| Normal | Blé de fer | Luminelle, Duvetine | Gueule de jade | Racine-mère |
+| Glacial | Givrelune | Mèche-épine, Lys chantant | Aurelys | Arcanium |
+| Désertique | Corail des sables | Fleur solaire, Cosse fumante | Fleur des miasmes | Orchidée de braise |
+
+| Plante | Bourgeon | Fleur | Refleurit | Récolte (par fleur) | XP par fleur |
+|---|---|---|---|---|---|
+| Luminelle | 10 min | 15 min | 12 min | 2-4 glowstone, 2-4 baies lumineuses | 100 |
+| Duvetine | 10 min | 14 min | 12 min | 1-3 plumes, 2-4 fils, 0-1 slime | 100 |
+| Gueule de jade | 12 min | 18 min | 14 min | 2-4 slime, 1-2 cristaux de prismarine, 2-4 émeraudes | 160 |
+| Racine-mère | 15 min | 22 min | 18 min | 2-3 lingots de paladium, 1-3 rayons de miel, 2-4 blocs de mousse | 260 |
+| Mèche-épine | 10 min | 15 min | 12 min | 3-5 baies sucrées, 1-3 fils, 1-2 bâtons | 100 |
+| Lys chantant | 11 min | 15 min | 12 min | 2-4 éclats d'améthyste, 0-1 poche d'encre | 100 |
+| Aurelys | 12 min | 18 min | 14 min | 6-12 pépites d'or, 1-2 lingots d'or | 160 |
+| Arcanium | 15 min | 22 min | 18 min | 6-12 lapis, 3-5 éclats d'améthyste, 0-1 membrane de phantom | 260 |
+| Fleur solaire | 10 min | 16 min | 12 min | 3-6 pépites d'or, 2-4 glowstone, 0-1 rayon de miel | 100 |
+| Cosse fumante | 10 min | 15 min | 13 min | 2-4 charbons, 1-2 poudres à canon | 100 |
+| Fleur des miasmes | 13 min | 18 min | 14 min | 2-3 yeux d'araignée, 2-4 verrues du Nether, 0-1 slime | 160 |
+| Orchidée de braise | 16 min | 22 min | 18 min | 2-3 bâtons de blaze, 1-3 crèmes de magma, 0-1 lingot d'or | 260 |
+
+- **Les besoins** : les plantes rares et au-delà peuvent aussi réclamer des nibblers ; les objets
+  réclamés montent avec la rareté (le lingot de paladium dès l'épique).
+- **Le scanner** : 15 secondes pour une plante déjà dans le codex, 45 pour une découverte ; un
+  charbon par scan. Seul celui qui l'a posé s'en sert (comme le pot) : le codex est le sien. Le
+  scan n'avance que son maître en ligne, dans la dimension du scanner.
+- **Les nibblers** apparaissent à 2 à 4 blocs du pot, vivent le temps du besoin plus 30 secondes
+  (pour finir de les relâcher), et restent à 10 blocs du pot au plus.
+- Chiffres et revenus : `BALANCE.md` § 6 septtrigesies.
+
+### Fermier
+
+- Verrous (`data/jobs.json`) : le scanner au **niveau 10**, le filet et les graines rares au
+  **25**, les épiques au **45**, les légendaires au **70**.
+- Récompenses : un scanner au niveau 10, un filet au niveau 25 ; rattrapage à la connexion pour qui
+  a déjà passé ces niveaux (drapeau `palamod:botanist_lab2_caught_up`).
+- Les graines des douze plantes ne s'obtiennent qu'en mutation, puis au scanner ; une plante fanée
+  rend ses graines comme au lot 2a.
+
+### Code
+
+- `palamod/botanist/` : `Rarity`, `Mutation` (les quinze plantes, leur fiche, leurs cibles),
+  `UnknownMutationItem`, `NetItem` (composant `palamod:net_nibblers`), `Nibbler`,
+  `GeneScannerBlock` (deux blocs, comme une porte), `GeneScannerBlockEntity` (sur
+  `MachineBlockEntity` : cases, scan, maître, animation), `BotanistCodex` (pièce jointe
+  `palamod:botanist_codex`, gardée à la mort, et son envoi au client), `BotanistBlockItem`.
+- `BotanistPotBlockEntity` : la mutation à la floraison, la récolte mutée, le besoin de nibblers.
+- `client/botanist/` : `GeneScannerRenderer`, `NibblerRenderer`, `GeneScannerScreen` (sur
+  `MachineMenu`, `MachineLayout.GENE_SCANNER`), `CodexScreen`, `ClientCodex` ; `BotanistPotRenderer`
+  dessine la fleur mutée et place les étiquettes à la hauteur de chaque plante.
+- Assets : `tools/botanist_lab_assets.py` (`--import` reprend aussi les modèles du scanner et du
+  nibbler, leurs animations, les icônes et les sons ; `--check` en CI), `sounds.json` (treize sons
+  `botanist.*`).
+
+### Écarts
+
+- **Pas de laboratoire ni de centrifugeuse** : le pot et le scanner se posent dans le monde ; la
+  centrifugeuse, la réserve de graines et le centre de contrôle sont le lot 2c. Le scanner se
+  fabrique (`TGT / GLG / TRT` : lingot de titane, verre, longue-vue, redstone), comme le filet
+  (`_SB / _KS / K__` : fil de diamant, boule de slime, bâton de paladium) : JobsReborn n'en donne
+  pas de recette.
+- **Le scanner est réduit à deux blocs** : son modèle fait plus de quatre blocs de haut dans le
+  laboratoire de JobsReborn.
+- **Le codex n'a pas l'aperçu 3D** de la plante : la fiche montre sa graine en grand, dans le
+  losange du kit.
+- **Le filet est une icône plate en main**, comme l'arrosoir et la guitare.
+- **Les nibblers restent près du pot** (à 10 blocs au plus) : dans JobsReborn, ils apparaissent au
+  hasard dans les murs du laboratoire, qui les retiennent.
+- **Niveaux, chances et XP par rareté**, et non par plante comme dans la configuration de
+  JobsReborn ; les noms français, les familles, variétés et rôles sont à nous.
