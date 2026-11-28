@@ -1114,7 +1114,8 @@ spawners pour les mobs des métiers de chasseur et alchimiste), un taux assez co
   pas. Sortie d'un spawner, elle n'avait donc pas de type : la Mine la refusait (salle vide en jeu,
   toutes les autres peuplées), et le Chasseur la payait plein tarif au lieu du quarantième, partout,
   spawners customisés compris. Toute créature de spawner porte désormais l'étiquette
-  `dohy.spawner`, posée à la fin de son apparition.
+  `dohy.spawner`, posée à la fin de son apparition ; la Mine, la dimension du Mineur et l'XP de
+  métier la lisent.
 - **Les matériaux** évitent la pierre, l'ardoise des abîmes, l'andésite, la diorite, le granite, le
   tuf et la calcite : les minerais, posés après les salles, les remplaceraient, et le lichen
   luisant y pousserait, dont la lumière suffit à éteindre une salle à monstres.

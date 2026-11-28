@@ -19,7 +19,8 @@ import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
  *
  * <p>La marque est posee a la fin de l'apparition ({@link FinalizeSpawnEvent}), que tout spawner
  * declenche avant de faire entrer sa creature dans le monde, et se garde dans la sauvegarde de la
- * creature.
+ * creature. La lisent : la Mine et la dimension du Mineur (les seuls monstres admis), et l'XP de
+ * metier (le quarantieme d'une creature de spawner).
  */
 @EventBusSubscriber
 public final class SpawnerBirth {
@@ -39,7 +40,7 @@ public final class SpawnerBirth {
 
     /** Vrai pour une creature nee d'un spawner : marquee, ou de type d'apparition {@code SPAWNER}. */
     public static boolean of(Entity entity) {
-        return entity.getTags().contains(TAG)
+        return entity.entityTags().contains(TAG)
                 || entity instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER;
     }
 }
