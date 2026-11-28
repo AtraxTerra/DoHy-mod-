@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import fr.atraxterra.dohy.client.ui.screen.KitInventoryScreen;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.FriendToast;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.gui.components.toasts.TutorialToast;
@@ -11,6 +12,7 @@ import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.GameType;
 import org.slf4j.Logger;
 
@@ -62,7 +64,7 @@ final class ShotSamples {
     }
 
     private static ToastManager toasts() {
-        return Minecraft.getInstance().getToastManager();
+        return Minecraft.getInstance().gui.toastManager();
     }
 
     static void register() {
@@ -106,6 +108,18 @@ final class ShotSamples {
                 Component.translatable("resourcePack.load_fail"),
                 Component.literal("Le pack exemple n'a pas pu etre charge."))));
         pause(7);
+        ShotHarness.SHOTS.add(client("t11_ami", 40, () -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            FriendToast.add(toasts(), minecraft.font, ResolvableProfile.createResolved(minecraft.player.getGameProfile()),
+                    Component.literal("Atrax a rejoint ton monde"));
+        }));
+        pause(11);
+        ShotHarness.SHOTS.add(client("t12_ami_long", 40, () -> {
+            Minecraft minecraft = Minecraft.getInstance();
+            toasts().addToast(new FriendToast(minecraft.font, null,
+                    Component.literal("Une invitation t'attend : rejoins le monde de ton ami depuis le menu Social.")));
+        }));
+        pause(12);
         ShotHarness.SHOTS.add(server("t8_pile", 60, player -> {
             command(player, "advancement grant @a only minecraft:story/smelt_iron");
             command(player, "recipe give @a minecraft:golden_apple");
