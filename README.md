@@ -63,8 +63,8 @@ Le script vérifie au passage que le revenu horaire reste constant à l'intérie
   les textures.
 - **Botaniste** (graines minérales et leurs plants, endium organique ; puis pot, les quinze plantes
   du laboratoire, arrosoir, guitare, filet, mutation inconnue, icônes des besoins ; le scanner de
-  Genis et le nibbler) : textures, modèles 3D, animations et sons du jar JobsReborn 1.92.0, de
-  Paladium Games.
+  Genis et le nibbler ; la centrifugeuse, la réserve de graines et le centre de contrôle) :
+  textures, modèles 3D, animations et sons du jar JobsReborn 1.92.0, de Paladium Games.
 - **Familiers** (les vingt et un familiers, leurs modèles 3D et animations, la cage, l'appât ; les
   portraits des menus sont rendus depuis ces modèles) : le jar PalaPet 7.12.0, de Paladium Games.
 - **Withers du pillage** (les cinq withers de PalaWither, leurs modèles 3D, animations et sons, les

@@ -280,6 +280,20 @@ pixel d'interface). Le fond passe avant les objets, les bulles après.
   découverte passent par les valeurs libres du menu, « LANCER LE SCAN » par un bouton du menu.
   Le bouton **LE CODEX** ouvre `CodexScreen` (à la taille de la coque) : les quinze plantes en
   losanges par rareté, et la fiche de la plante choisie. Botaniste, `PALAMOD.md` § 49.
+- **Centrifugeuse** (`CentrifugeScreen`, 262 x 236, sur `MachineMenu`) : la graine au centre d'un
+  hexagone de six cases d'objets, reliées par des rayons ; à côté, le cœur donne la chance de
+  mutation (le pourcentage, un anneau de seize points qui suit la centrifugation, violet à 100 %) ;
+  « CENTRIFUGER » par un bouton du menu, puis le résultat à droite. L'état et la chance passent par les valeurs libres
+  du menu. Les onglets « CLASSIQUE » et « BOOST » (« Bientôt disponible ») sont ceux du jar ; la
+  bulle du cœur liste les objets acceptés et leur chance.
+- **Réserve de graines** (`SeedReserveScreen`, sur `MachineMenu`) : trois rangées de cinq losanges
+  (normal, glacial, désertique), teintés de la rareté de la plante ; une case vide montre sa graine
+  givrée, une case remplie son compte sur dix. La bulle dit si la première graine a déjà rapporté
+  son XP (un masque de bits dans une valeur libre du menu).
+- **Centre de contrôle** (`LabControlMenu`, un menu du kit) : un onglet par module (climat) avec
+  son état, la fiche du module (pousse moyenne, pots, besoins, fleurs, mutations, niveau), les
+  cartes « BOOSTER LE MODULE » et « AMÉLIORER LE MODULE », et la liste « TES POTS », les besoins en
+  premier. Botaniste, `PALAMOD.md` § 50.
 - **Coffres en paladium** : la grille de 12 x 9, les anneaux teintés du métal, le titre au-dessus.
 - **Inventaires en coffre** : coffre de vente, guichet du musée, sac de la monture, coffre et
   gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir

@@ -1920,6 +1920,83 @@ relève d'abord.
 Leviers : `Rarity` (niveau, chance, XP de découverte, nibblers), `Mutation` (durées, XP, récoltes,
 besoins, cibles), `GeneScannerBlockEntity.KNOWN_TICKS` / `DISCOVERY_TICKS`, `NetItem.CAPACITY`.
 
+## 6 octotrigesies. Centrifugeuse, réserve et centre de contrôle — ce que coûte une mutation (2026-11-28)
+
+Description : `docs/PALAMOD.md` § 50. Les objets de centrifugation, l'XP de la réserve, les
+boosts et les améliorations de JobsReborn sont dans la configuration de son serveur : tout est
+calibré ici.
+
+**La centrifugeuse change de l'argent et des graines en mutations.** Une centrifugation prend une
+graine de mutation et un objet par case ; sa chance `c` est la somme de celles des six cases. Elle
+réussit avec `c` (une mutation inconnue), sinon rend la graine une fois sur deux : elle use
+(1 + c) / 2 graine en moyenne. La mutation inconnue passe au scanner, qui en tire une plante au
+hasard parmi celles que le joueur peut planter (§ 49) :
+
+| Fermier | Plantes à tirer | Rare | Épique | Légendaire |
+|---|---|---|---|---|
+| 25 à 44 | 9 | 67 % | — | — |
+| 45 à 69 | 12 | 50 % | 25 % | — |
+| 70 et plus | 15 | 40 % | 20 % | 20 % |
+
+Les objets : 1 % par case pour les objets bon marché (redstone, glowstone, lapis, émeraude, poudre
+d'os, déchet de mutation), 2 % l'améthyste, 3 % le titane, 5 % le paladium, 8 % le diamant, 10 % le
+paladium vert, 20 % l'endium organique. Une case ne comptant qu'une fois, c'est la qualité de
+l'objet qui fait la chance, pas la quantité. Six cases, aux prix du chapitre économique :
+
+| Six cases de | Chance | Coût | Une rare au 25 | Une épique au 45 | Une légendaire au 70 |
+|---|---|---|---|---|---|
+| Redstone | 6 % | ~6 $ | 25 essais, 13 graines | 67 essais, 36 graines | 83 essais, 44 graines |
+| Paladium | 30 % | ~430 $ | 5 essais (~2 200 $), 3,3 graines | 13 essais (~5 800 $), 9 graines | 17 essais (~7 200 $), 11 graines |
+| Paladium vert | 60 % | 3 000 $ | 2,5 essais (~7 500 $), 2 graines | 6,7 essais (~20 000 $), 5,3 graines | 8,3 essais (~25 000 $), 6,7 graines |
+| Endium organique (cinq) | 100 % | cinq pépites d'endium (~200 000 $) | 1,5 essai | 4 essais | 5 essais (~1 M$) |
+
+- **Comparé au pot** (§ 6 septtrigesies) : par la floraison, une commune donne une rare en ~3 h de
+  présence, et la première légendaire vient en ~5 h avec dix pots. Au Fermier 70, la centrifugeuse
+  au paladium la donne pour ~11 graines et ~7 200 $ ; dix pots de communes rendent ~21 graines par
+  heure de présence, ~7 de plus qu'il n'en faut pour les replanter, soit ~1 h 30 de présence au
+  lieu de ~5 h. C'est le raccourci voulu de la fin du jeu, payé en graines et en argent.
+- **Le vrai verrou reste le niveau** : le scanner ne tire qu'une plante que le joueur peut planter.
+  La centrifugeuse accélère le codex (XP de découverte une fois par plante, § 6 septtrigesies), pas
+  l'XP de Fermier : elle ne rapporte pas d'XP, et la graine centrifugée n'est pas plantée (~240 à
+  840 XP la vie).
+- **L'endium organique** (graine minérale du Fermier 100, § 47) donne la seule graine boostée : un
+  luxe, une pépite valant ~40 000 $.
+- **Le temps** : dix secondes par centrifugation, puis 15 à 45 s de scan : la machine ne borne pas.
+
+**La réserve** rapporte une fois 50, 100, 250 ou 600 XP par plante : 3 × 50 + 6 × 100 + 3 × 250 +
+3 × 600 = **3 300 XP** pour les quinze, ~4 % d'un niveau de Fermier au 70. Dix graines par plante,
+150 au plus, gardées à la mort : un coffre sûr pour les graines rares, pas un stock.
+
+**Le centre de contrôle** :
+
+- **Le boost** (5 000 $ et quatre poudres d'os, un par jour et par module) : pendant 30 minutes, la
+  graine et le bourgeon poussent × 1,5, soit jusqu'à 15 minutes de pousse gagnées par pot du
+  module, et la floraison mute avec 2 points de plus : 10 % au lieu de 8 % pour une commune, 7 au
+  lieu de 5 pour une rare, **5 au lieu de 3 pour une épique** (le gain le plus fort). 5 000 $,
+  c'est douze minutes de revenu du début de partie (24 000 $ par heure, § 3).
+- **Les améliorations** (+10 % de pousse par niveau, trois niveaux) :
+
+| Niveau | Fermier | Coût | Construction | XP à la fin | En revenu (§ 3) |
+|---|---|---|---|---|---|
+| 1 | 25 | 50 000 $, 16 poudres d'os | 1 h | 500 | 2 h du début de partie |
+| 2 | 45 | 200 000 $, 16 glowstone, 4 émeraudes | 4 h | 1 500 | 1 h du milieu (200 000 $ par heure) |
+| 3 | 70 | 750 000 $, 2 diamants, 8 lingots de paladium | 12 h | 4 000 | 45 min de la fin (1 M$ par heure) |
+
+  Un module au niveau 3 coûte ~1 M$ et 17 h de construction (en temps réel, hors ligne compris) ;
+  les trois, ~3 M$. +30 % de pousse sur la graine et le bourgeon, c'est jusqu'à +30 % d'XP par
+  heure de présence quand on récolte sans attendre (la fleur, elle, attend sa récolte) : ~+1 500 XP
+  par heure pour dix pots.
+  C'est un puits d'argent de long terme pour le Fermier, qui rend un peu d'XP (6 000 par module).
+
+**À surveiller** : si les légendaires arrivent trop vite par la centrifugeuse, le levier le plus
+doux est la chance du paladium (`Catalysts`), puis le tirage du scanner (uniforme parmi les plantes
+à portée). Si les modules au niveau 3 font des pots une ferme d'XP, c'est `GROWTH_PER_LEVEL` ; si le
+boost fait muter les épiques trop souvent, `BOOST_MUTATION`.
+
+Leviers : `Catalysts` (objets et chances), `CentrifugeBlockEntity.DURATION` et `SEED_BACK`,
+`SeedReserve.LIMIT` et `rewardXp`, `BotanistLab` (`UNLOCK_LEVEL`, `GROWTH_PER_LEVEL`, `BOOST_*`,
+`UPGRADE_*`, les objets des coûts).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

@@ -124,6 +124,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 26 | **Botaniste de JobsReborn, lot 1** : huit graines minérales (améthyste, titane, paladium, paladium vert, findium, trixium, invoker, endium) et leurs plants à quatre stades, vitesse et pousse hors ligne tirées à la récolte, endium organique ; au Fermier (verrous, récompenses, XP), rattrapage des graines à la connexion — voir § 47 | fait (en validation) |
 | 27 | **Botaniste de JobsReborn, lot 2a** : pot du botaniste, trois plantes de base (blé de fer, givrelune, corail des sables, une par climat), cycle bourgeon, fleur, fanée, trois récoltes et graines rendues, besoins (arroser, jouer un air, secouer, percer la boule, donner un objet), arrosoir et guitare ; la plante ne pousse que près de son maître ; au Fermier (niveau 10) — voir § 48 | fait (en validation) |
 | 28 | **Botaniste de JobsReborn, lot 2b** : douze plantes de plus (quinze, cinq par climat, sur quatre raretés), mutation à la floraison vers une plante plus rare, mutation inconnue, scanner de Genis (charbon, scan de 15 ou 45 s, découverte et XP), codex des mutations, nibblers (panique, fuite) et filet pour les attraper et les relâcher ; au Fermier (niveaux 10, 25, 45, 70) — voir § 49 | fait (en validation) |
+| 29 | **Botaniste de JobsReborn, lot 2c** : centrifugeuse (une graine de mutation et six objets de centrifugation, chacun sa chance ; réussite : une mutation inconnue, à 100 % la graine boostée), réserve de graines (dix par plante, la même depuis n'importe quel bloc, XP à la première graine rangée), centre de contrôle (un module par climat : les pots suivis, leurs besoins, un boost par jour, trois améliorations de pousse) ; au Fermier (niveaux 10 et 25) — voir § 50 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -195,6 +196,31 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-28 — le laboratoire du botaniste, lot 2c : centrifugeuse, réserve, centre de contrôle
+
+**Demande** : « continue botaniste », la fin du laboratoire de JobsReborn.
+
+- **Centrifugeuse** (deux blocs de haut, le modèle de JobsReborn, ses sept animations et ses
+  sons) : une graine de mutation au centre, jusqu'à six objets de centrifugation autour, chacun
+  ajoute sa chance (de 1 % la redstone à 20 % l'endium organique) ; « CENTRIFUGER », dix
+  secondes. Réussite : une mutation inconnue, que le scanner change en une plante au niveau du
+  joueur ; échec : la graine rendue ou un déchet de mutation. À 100 %, la graine est boostée.
+- **Réserve de graines** (deux sur deux) : dix graines par plante, la même réserve depuis
+  n'importe quel bloc ; la première graine rangée d'une plante rapporte de l'XP de Fermier.
+- **Centre de contrôle** (deux sur deux, ses animations d'alerte et de construction) : un module
+  par climat suit les pots du joueur où qu'ils soient (stade, besoin, avancement), avec un boost par
+  jour (pousse × 1,5, +2 % de mutations, 30 minutes) et trois améliorations de pousse (+10 %
+  chacune, construites en temps réel).
+- Le scanner de Genis et la centrifugeuse partagent `TallMachineBlock`, la réserve et le centre
+  `WideMachineBlock`.
+- **Fermier** : réserve et centre au niveau 10, centrifugeuse au 25, en récompense avec rattrapage.
+  Chiffres : `PALAMOD.md` § 50, `BALANCE.md` § 6 octotrigesies ; la fiche « Le botaniste » de
+  l'encyclopédie a ses trois sections de plus.
+
+**Vérifié** : (captures en cours)
+
+**Non vérifié en jeu** : les sons (le client de la CI joue sans son).
 
 ### 2026-11-28 — le laboratoire du botaniste, lot 2b : mutations, scanner, codex, nibblers
 

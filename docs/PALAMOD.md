@@ -5107,3 +5107,123 @@ que son maître peut planter (son niveau de Fermier).
   hasard dans les murs du laboratoire, qui les retiennent.
 - **Niveaux, chances et XP par rareté**, et non par plante comme dans la configuration de
   JobsReborn ; les noms français, les familles, variétés et rôles sont à nous.
+
+## 50. Le Botaniste, lot 2c : centrifugeuse, réserve de graines et centre de contrôle (2026-11-28)
+
+Fin du laboratoire de JobsReborn 1.92.0, toujours au bytecode : `BlockBotanistCentrifuge`,
+`TileEntityBotanistCentrifuge`, `UIBotanistCentrifuge`, `BotanistCentrifugeItemConfig`,
+`BlockBotanistReserve`, `InventoryBotanistReserve`, `JobBotanistMutationReserveEvent`,
+`MutationReserveJobExperience`, `TileEntityBotanistControl`, `BotanistModuleManager`,
+`BotanistModuleConfig`, `BotanistModuleView`, `UIBotanistControl` et
+`ModuleUpgradeJobExperience`.
+
+### Ce qui vient du jar
+
+- **La centrifugeuse** (`TileEntityBotanistCentrifuge`) : une case pour la graine de mutation, six
+  pour les objets de centrifugation, une pour le résultat. La chance est la somme de celles des
+  objets posés, au plus 100 % : chaque case compte une fois, quelle que soit sa pile, et la
+  centrifugation en prend un. Elle est prête (`isReady`) avec une graine, la case du résultat vide
+  et une chance au-dessus de zéro ; « CENTRIFUGER » la lance (`request`), dix secondes. Réussite :
+  une **mutation inconnue sans plante** (`UnknownMutation.create()`), que le scanner change en une
+  plante à la portée du joueur (§ 49). Échec : la graine rendue une fois sur deux
+  (`SEED_BACK`), sinon un déchet de mutation. À 100 %, la graine est **boostée**. Ses animations
+  (l'attente en boucle ; la mutation directe et la graine boostée, six secondes ; les quatre fins,
+  normale, mutée, boostée, boostée et mutée), ses sept sons, son modèle et sa texture. Les textes
+  de l'écran : « GRAINE À CENTRIFUGER », « OBJET DE CENTRIFUGATION », « CHANCE DE MUTATION »,
+  « Chaque objet posé ajoute sa chance de réussite. », « Objets acceptés », « Centrifugation en
+  cours », « Récupère le résultat », et les onglets « CLASSIQUE » et « BOOST » (« Bientôt
+  disponible », comme dans le jar).
+- **La réserve de graines** (`InventoryBotanistReserve`) : une case par plante, dix graines au
+  plus, la même réserve pour le joueur depuis n'importe quel bloc de réserve (elle est sur lui, pas
+  dans le bloc). La première graine rangée d'une plante (`hasReserveReward`, `rewardReserve`)
+  rapporte de l'XP de Fermier selon sa rareté (`MutationReserveJobExperience`). Les textes :
+  « RÉSERVE », « RANGEZ VOS ÉCHANTILLONS », « NOMBRE DE SLOTS », « Capacité : 10 graines ».
+  Son modèle (quinze bocaux), sa texture.
+- **Le centre de contrôle** (`TileEntityBotanistControl`, `UIBotanistControl`) : les modules du
+  laboratoire, chacun avec son état (`BotanistModuleView` : en construction, verrouillé, libre,
+  besoin en attente, boosté, actif, dans cet ordre de priorité), sa pousse moyenne (`getGrowth`),
+  ses besoins en attente, son **boost du jour** (multiplicateur de pousse, durée, chance de muter en
+  plus, nombre par jour : `getMutationBoost`, « Reste aujourd'hui », « Boost du jour déjà
+  utilisé ») et ses **améliorations** (durée, prérequis, coût, construction : « Amélioration en
+  construction », « Niveau maximum atteint », « Il te manque »), l'XP de fin de construction
+  (`ModuleUpgradeJobExperience`). Toutes les secondes, son animation passe en alerte s'il y a des
+  besoins en attente, en construction pendant une amélioration, normale sinon ; les sons d'alerte
+  et de construction tournent en boucle (volume 0,5). Son modèle, sa texture, ses trois animations.
+- Les icônes des trois machines en objet.
+
+### Ce qui est calibré
+
+Les objets de centrifugation, les XP de la réserve, les boosts et les améliorations sont dans la
+configuration du serveur de Paladium. Ici :
+
+| Objet de centrifugation | Chance par case | Six cases |
+|---|---|---|
+| Déchet de mutation, poudre d'os, redstone, glowstone, lapis, émeraude | 1 % | 6 % |
+| Éclat ou lingot d'améthyste | 2 % | 12 % |
+| Lingot de titane | 3 % | 18 % |
+| Lingot de paladium | 5 % | 30 % |
+| Diamant | 8 % | 48 % |
+| Lingot de paladium vert | 10 % | 60 % |
+| Pépite d'endium organique | 20 % | 100 % dès cinq (graine boostée) |
+
+- **La réserve** : 50 XP pour la première graine d'une commune, 100 d'une rare, 250 d'une épique,
+  600 d'une légendaire.
+- **Les modules sont les trois climats** (normal, glacial, désertique) : un module suit les pots
+  de son maître dont la plante est de son climat, où qu'ils soient (256 pots au plus).
+- **Le boost** : un par jour et par module (le jour bascule à 5 h), pousse × 1,5 et +2 points de
+  chance de muter à la floraison pendant 30 minutes ; 5 000 $ et quatre poudres d'os.
+- **Les améliorations** : trois niveaux par module, +10 % de pousse chacun ; le niveau 1 (Fermier 25,
+  50 000 $, seize poudres d'os, une heure de construction, 500 XP), le 2 (Fermier 45, 200 000 $,
+  seize poudres de glowstone et quatre émeraudes, quatre heures, 1 500 XP), le 3 (Fermier 70,
+  750 000 $, deux diamants et huit lingots de paladium, douze heures, 4 000 XP).
+- **La pousse accélérée** ne joue que sur les stades qui poussent (la graine, le bourgeon) : la
+  fleur fane au même rythme, et le temps pour répondre à un besoin ne raccourcit pas.
+- Chiffres et revenus : `BALANCE.md` § 6 octotrigesies.
+
+### Fermier
+
+- Verrous (`data/jobs.json`) : la réserve et le centre de contrôle au **niveau 10**, la
+  centrifugeuse au **25**.
+- Récompenses : une réserve et un centre au niveau 10, une centrifugeuse au 25 ; rattrapage à la
+  connexion pour qui a déjà passé ces niveaux (drapeau `palamod:botanist_lab3_caught_up`).
+- Recettes (JobsReborn n'en donne pas) : la centrifugeuse `TGT / PCP / TRT` (titane, verre,
+  piston, chaudron, bloc de redstone), la réserve `BIB / BCB / PPP` (fioles, glace compactée,
+  coffre, fer), le centre de contrôle `CBC / TRT / TTT` (comparateurs, cloche, titane, bloc de
+  redstone).
+
+### Code
+
+- `palamod/botanist/` : `TallMachineBlock` (deux blocs de haut, comme une porte : le scanner de
+  Genis et la centrifugeuse) et `WideMachineBlock` (deux sur deux : la réserve et le centre de
+  contrôle, propriété `side`), `Catalysts`, `CentrifugeBlock`, `CentrifugeBlockEntity` (sur
+  `MachineBlockEntity` : cases, centrifugation, animation, sons), `SeedReserve` (la réserve, pièces
+  jointes `palamod:botanist_seed_reserve` et `palamod:botanist_seed_reserve_rewards`, son conteneur
+  `Storage`), `SeedReserveBlock`, `BotanistLab` (modules, pots suivis, boost, améliorations ;
+  pièce jointe `palamod:botanist_lab`), `LabControlBlock`, `LabControlBlockEntity`,
+  `LabControlMenu` (sur `MenuController`).
+- `BotanistPotBlockEntity` : la pousse accélérée, la chance de muter du boost, et chaque pot dit
+  au centre de son maître où il en est (`BotanistLab.track`).
+- `client/botanist/` : `LabMachineRenderer` et ses trois rendus, `CentrifugeScreen` et
+  `SeedReserveScreen` (sur `MachineMenu`, `MachineLayout.CENTRIFUGE` et `SEED_RESERVE`).
+- Assets : `tools/botanist_lab_assets.py` (`--import` reprend aussi les trois machines, leurs
+  animations, leurs icônes et leurs sons), `sounds.json` (neuf sons `botanist.centrifuge.*` et
+  `botanist.control_center.*`).
+
+### Écarts
+
+- **Les modules sont les climats**, pas des salles : dans JobsReborn, le laboratoire est une
+  structure aux modules à emplacements de pots, et ses améliorations ajoutent des pots
+  (« Gain + N pots ») ; ici les pots se posent librement dans le monde, et une amélioration
+  accélère la pousse du module. Pas de fin de construction aux PB (la monnaie de la boutique de
+  Paladium).
+- **Pas de téléportation dans le module** : la liste « TES POTS » donne la plante, le stade, le
+  besoin et l'avancement de chaque pot ; un clic écrit ses coordonnées dans le chat.
+- **Les machines sont réduites** : la centrifugeuse à deux blocs de haut sur un de large, la
+  réserve et le centre de contrôle à deux sur deux.
+- **La réserve ne range pas par « scores »** : dans JobsReborn, une case regroupe les graines de
+  mêmes scores (poids, quantité) ; nos graines n'en ont pas.
+- **La centrifugeuse sert à tous** (le centre de contrôle reste à son maître) : dans JobsReborn,
+  elle est dans le laboratoire du joueur. Les entonnoirs y mettent graines et objets et en sortent
+  le résultat ; seul le bouton la lance.
+- **Les durées sont en temps réel** (boost, constructions), comme le pass et l'Avent : elles
+  avancent hors ligne.

@@ -5559,10 +5559,10 @@
       "title": "Le botaniste",
       "card": [
         "Pots, plantes, mutations",
-        "Scanner de Genis, codex"
+        "Scanner, centrifugeuse, centre"
       ],
       "summary": [
-        "Le laboratoire du botaniste : des plantes en pot qui reclament des soins, mutent en fleurissant et se decouvrent au scanner de Genis. Tout rapporte au Fermier."
+        "Le laboratoire du botaniste : des plantes en pot qui reclament des soins, mutent en fleurissant et se decouvrent au scanner de Genis. La centrifugeuse, la reserve de graines et le centre de controle completent le laboratoire. Tout rapporte au Fermier."
       ],
       "sections": [
         {
@@ -5597,6 +5597,31 @@
             "- 15 secondes pour une plante deja connue, 45 pour une decouverte : il rend sa graine et l'ajoute a ton codex (XP de decouverte).",
             "- LE CODEX : les quinze plantes, leur fiche, leurs variantes et d'ou elles viennent."
           ]
+        },
+        {
+          "title": "La centrifugeuse",
+          "text": [
+            "- Fermier 25 : une graine de mutation au centre, jusqu'a six objets autour, puis CENTRIFUGER (10 secondes).",
+            "- Chaque case ajoute la chance de son objet (une fois, quelle que soit la pile) : 1 % pour la poudre d'os ou la redstone, 5 % pour un lingot de paladium, 20 % pour une pepite d'endium organique.",
+            "- Reussite : une mutation inconnue, que le scanner change en une plante a ton niveau. Echec : ta graine rendue, ou un dechet de mutation.",
+            "! La centrifugation prend la graine et un objet de chaque case."
+          ]
+        },
+        {
+          "title": "La reserve de graines",
+          "text": [
+            "- Fermier 10 : dix graines par plante, une case par plante. Ta reserve est la meme depuis n'importe quel bloc de reserve.",
+            "- La premiere graine rangee d'une plante rapporte de l'XP de Fermier : 50 pour une commune, 100 pour une rare, 250 pour une epique, 600 pour une legendaire."
+          ]
+        },
+        {
+          "title": "Le centre de controle",
+          "text": [
+            "- Fermier 10 : un module par climat (normal, glacial, desertique) suit tes pots, ou qu'ils soient : stade, besoins en attente, fleurs a recolter, pousse moyenne. Un clic sur un pot donne ses coordonnees.",
+            "- BOOSTER LE MODULE : une fois par jour, pousse x1,5 et +2 % de chance de muter pendant 30 minutes (5 000 $ et quatre poudres d'os).",
+            "- AMELIORER LE MODULE : trois niveaux, +10 % de pousse chacun (argent, objets, niveau de Fermier, une construction de 1, 4 puis 12 heures).",
+            "! Le centre passe en alerte quand une de tes plantes reclame quelque chose, et en construction pendant une amelioration."
+          ]
         }
       ],
       "see": [
@@ -5608,6 +5633,9 @@
         "items": [
           "palamod:botanist_pot",
           "palamod:gene_scanner",
+          "palamod:mutation_centrifuge",
+          "palamod:seed_reserve",
+          "palamod:lab_control",
           "palamod:net",
           "palamod:unknown_mutation",
           "palamod:ironwheat_seed",

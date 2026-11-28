@@ -487,6 +487,9 @@ public final class BotanistLab {
     }
 
     public static boolean upgrade(ServerPlayer player, Module module) {
+        // Une construction finie depuis le dernier passage compte d'abord : sinon la suivante
+        // repartirait du meme niveau et la premiere serait perdue.
+        update(player);
         String missing = upgradeMissing(player, module);
         if (missing != null) {
             refuse(player, missing);

@@ -26,18 +26,20 @@ public final class Catalysts {
     private static final Map<String, Double> CHANCES = new LinkedHashMap<>();
 
     static {
+        // Une case ne compte qu'une fois : les objets bon marche plafonnent a 6 %, le paladium a
+        // 30 %, et seul l'endium organique (cinq pepites) atteint les 100 % de la graine boostee.
         CHANCES.put("palamod:mutation_waste", 0.01d);
         CHANCES.put("minecraft:bone_meal", 0.01d);
-        CHANCES.put("minecraft:redstone", 0.02d);
-        CHANCES.put("minecraft:glowstone_dust", 0.02d);
-        CHANCES.put("minecraft:lapis_lazuli", 0.02d);
-        CHANCES.put("minecraft:amethyst_shard", 0.03d);
-        CHANCES.put("palamod:amethyst_ingot", 0.05d);
-        CHANCES.put("minecraft:emerald", 0.06d);
-        CHANCES.put("palamod:titane_ingot", 0.06d);
+        CHANCES.put("minecraft:redstone", 0.01d);
+        CHANCES.put("minecraft:glowstone_dust", 0.01d);
+        CHANCES.put("minecraft:lapis_lazuli", 0.01d);
+        CHANCES.put("minecraft:emerald", 0.01d);
+        CHANCES.put("minecraft:amethyst_shard", 0.02d);
+        CHANCES.put("palamod:amethyst_ingot", 0.02d);
+        CHANCES.put("palamod:titane_ingot", 0.03d);
+        CHANCES.put("palamod:paladium_ingot", 0.05d);
         CHANCES.put("minecraft:diamond", 0.08d);
-        CHANCES.put("palamod:paladium_ingot", 0.10d);
-        CHANCES.put("palamod:green_paladium_ingot", 0.12d);
+        CHANCES.put("palamod:green_paladium_ingot", 0.10d);
         CHANCES.put("palamod:organic_endium_nugget", 0.20d);
     }
 

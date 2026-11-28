@@ -85,7 +85,7 @@ public final class LabControlMenu extends MenuController {
             totalNeeds += needs;
             BotanistLab.State state = BotanistLab.state(player, each);
             tabs.add(new MenuView.Tab(each.label(), "module:" + each.key(), each == module,
-                    state == BotanistLab.State.ACTION ? needs + " !" : state.label()));
+                    state == BotanistLab.State.ACTION ? needs + (needs > 1 ? " BESOINS" : " BESOIN") : state.label()));
         }
         List<MenuView.Stat> stats = List.of(
                 new MenuView.Stat("SOLDE", MoneyFormat.shortForm(Economy.balance(player)), GOLD),
@@ -93,10 +93,9 @@ public final class LabControlMenu extends MenuController {
                 new MenuView.Stat("BESOINS EN ATTENTE", Integer.toString(totalNeeds), totalNeeds > 0 ? RED : GREEN));
 
         List<MenuView.Section> sections = new ArrayList<>();
-        sections.add(new MenuView.Section("BOOSTER LE MODULE", "upgrade", MenuView.GRID | MenuView.HALF,
-                List.of(boostCard(player, module))));
-        sections.add(new MenuView.Section("AMELIORER LE MODULE", "upgrade", MenuView.GRID | MenuView.HALF,
-                List.of(upgradeCard(player, module))));
+        // Le boost et l'amelioration en lignes sur toute la largeur : leurs couts y tiennent en entier.
+        sections.add(new MenuView.Section("BOOSTER ET AMELIORER LE MODULE", "upgrade", MenuView.ROWS,
+                List.of(boostCard(player, module), upgradeCard(player, module))));
         sections.add(new MenuView.Section("TES POTS|" + pots.size(), "resources", MenuView.ROWS, potRows(player, pots,
                 module)));
         return new MenuView(id(), "Laboratoire Genis", "Centre de controle", stats, sections, false, tabs)
@@ -112,15 +111,14 @@ public final class LabControlMenu extends MenuController {
         int speed = (int) Math.round(BotanistLab.growth(player, module.climate()) * 100.0d);
         List<String> lines = new ArrayList<>();
         lines.add("#CLIMAT " + Mutation.climateLabel(module.climate()).toUpperCase(Locale.ROOT));
-        lines.add("Les pots dont la plante est d'un climat " + Mutation.climateLabel(module.climate())
-                + ", ou qu'ils soient.");
+        lines.add("Tes pots de ce climat, ou qu'ils soient.");
         if (state == BotanistLab.State.LOCKED) {
             lines.add("#VERROUILLE");
             lines.add("Niveau " + BotanistLab.UNLOCK_LEVEL + " de Fermier requis.");
         }
         if (BotanistLab.boosted(player, module)) {
             lines.add("#BOOST ACTIF");
-            lines.add("Pousse x1,5 et +2 % de mutations, encore "
+            lines.add("x1,5 et +2 % de mutations, encore "
                     + BotanistLab.duration(BotanistLab.boostMinutesLeft(player, module)) + ".");
         }
         if (BotanistLab.building(player, module)) {
@@ -128,8 +126,12 @@ public final class LabControlMenu extends MenuController {
             lines.add("Niveau " + (level + 1) + " dans "
                     + BotanistLab.duration(BotanistLab.buildingMinutesLeft(player, module)) + ".");
         }
+        // La pastille et le halo prennent la couleur de l'etat quand il se passe quelque chose
+        // (besoin, construction, boost, verrou), celle du climat sinon.
+        int accent = state == BotanistLab.State.ACTIVE || state == BotanistLab.State.FREE ? module.color()
+                : state.color();
         return new MenuView.Hero(seed(module.icon()), "", module.label().toUpperCase(Locale.ROOT), state.label(),
-                module.color(), growth, "POUSSE MOYENNE|" + growth / 10 + " %", List.of(
+                accent, growth, "POUSSE MOYENNE|" + growth / 10 + " %", List.of(
                 new MenuView.Stat("POTS", Integer.toString(pots.size()), 0xFFFFFFFF),
                 new MenuView.Stat("BESOINS EN ATTENTE", Integer.toString(BotanistLab.needs(pots)),
                         BotanistLab.needs(pots) > 0 ? RED : GREEN),
@@ -156,9 +158,8 @@ public final class LabControlMenu extends MenuController {
             lines.add("Revient dans " + BotanistLab.duration(RealClock.minutesUntilNextDay(BotanistLab.RESET_HOUR)));
             badge = "0 / " + BotanistLab.BOOSTS_PER_DAY;
         } else {
-            lines.add("Pousse x1,5 pendant " + BotanistLab.BOOST_MINUTES + " min");
-            lines.add("Mutations +2 % · Cout : " + BotanistLab.costLabel(BotanistLab.BOOST_MONEY,
-                    BotanistLab.boostItems()));
+            lines.add("Pousse x1,5 et +2 % de mutations pendant " + BotanistLab.BOOST_MINUTES + " min");
+            lines.add(BotanistLab.costLabel(BotanistLab.BOOST_MONEY, BotanistLab.boostItems()));
             badge = left + " / " + BotanistLab.BOOSTS_PER_DAY;
         }
         Card card = Card.of(new ItemStack(Items.GLOWSTONE_DUST), "Booster le module", lines).badge(badge)
@@ -200,8 +201,9 @@ public final class LabControlMenu extends MenuController {
             progress = (int) Math.max(0L, (total - left) * 1000L / total);
         } else {
             int next = level + 1;
-            lines.add("Gain : +" + Math.round(BotanistLab.GROWTH_PER_LEVEL * 100) + " % de pousse");
-            lines.add("Cout : " + BotanistLab.costLabel(BotanistLab.upgradeMoney(next), BotanistLab.upgradeItems(next)));
+            lines.add("Niveau " + next + " : +" + Math.round(BotanistLab.GROWTH_PER_LEVEL * 100) + " % de pousse");
+            lines.add(BotanistLab.costLabel(BotanistLab.upgradeMoney(next), BotanistLab.upgradeItems(next)));
+            lines.add(BotanistLab.duration(BotanistLab.upgradeMinutes(next)) + " de construction");
             tooltip.add("Construction : " + BotanistLab.duration(BotanistLab.upgradeMinutes(next)) + " (horloge reelle)");
             tooltip.add("Prerequis : niveau " + BotanistLab.upgradeFarmer(next) + " de Fermier");
             tooltip.add("A la fin : +" + BotanistLab.upgradeXp(next) + " XP de Fermier");
@@ -209,8 +211,8 @@ public final class LabControlMenu extends MenuController {
         if (missing != null && !lines.contains(missing)) {
             tooltip.add(missing);
         }
-        Card card = Card.of(new ItemStack(Items.ANVIL), "Niveau " + level + " / " + BotanistLab.MAX_LEVEL, lines)
-                .accent(GOLD).badge(level >= BotanistLab.MAX_LEVEL ? "MAX" : "NIV. " + (level + 1)).tooltip(tooltip);
+        Card card = Card.of(new ItemStack(Items.ANVIL), "Ameliorer le module", lines)
+                .accent(GOLD).badge("NIV. " + level + " / " + BotanistLab.MAX_LEVEL).tooltip(tooltip);
         if (progress >= 0) {
             card = card.progress(progress, 1000);
         }
