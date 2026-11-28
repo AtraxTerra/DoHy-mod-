@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TGT",
+    "GLG",
+    "TRT"
+  ],
+  "key": {
+    "T": "palamod:titane_ingot",
+    "G": "minecraft:glass",
+    "L": "minecraft:spyglass",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "palamod:gene_scanner",
+    "count": 1
+  }
+}

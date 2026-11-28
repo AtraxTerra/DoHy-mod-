@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "facing=north,half=lower,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=north,half=lower,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=north,half=upper,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=north,half=upper,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=south,half=lower,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=south,half=lower,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=south,half=upper,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=south,half=upper,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=west,half=lower,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=west,half=lower,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=west,half=upper,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=west,half=upper,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=east,half=lower,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=east,half=lower,side=right": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=east,half=upper,side=left": {
+      "model": "palamod:block/lab_control"
+    },
+    "facing=east,half=upper,side=right": {
+      "model": "palamod:block/lab_control"
+    }
+  }
+}

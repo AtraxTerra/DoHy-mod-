@@ -5,6 +5,7 @@ import fr.atraxterra.dohy.job.Job;
 import fr.atraxterra.dohy.job.JobApi;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,6 +23,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -31,6 +33,8 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -44,6 +48,12 @@ import java.util.UUID;
  *
  * <p>Le client recoit l'etat a chaque changement, avec l'heure du jeu a l'envoi :
  * il deduit les chronos sans paquet par seconde ({@link #remaining(long)}).
+ *
+ * <p>Lot 2b : a chaque floraison, la plante peut muter ({@code BotanistMutationManager.stage}
+ * de JobsReborn) — une chance selon sa rarete, s'il existe une plante vers laquelle muter a la
+ * portee du maitre. Le pot le montre (anneaux, etincelles, terre cuite mutee) ; sa recolte rend
+ * alors une mutation inconnue, qui porte l'une de ces plantes, et la plante disparait
+ * ({@code BotanistMutationRemoveCause.MUTATED}). Les nibblers reclames apparaissent pres du pot.
  */
 public class BotanistPotBlockEntity extends BlockEntity {
 
@@ -56,6 +66,8 @@ public class BotanistPotBlockEntity extends BlockEntity {
     private static final int SYNC_EVERY = 30;
     /** Deux clics accroupi, a trois secondes au plus, pour deraciner. */
     private static final int UPROOT_WINDOW = 3 * 20;
+    /** Les nibblers survivent trente secondes au besoin : le temps de relacher les derniers. */
+    private static final int NIBBLER_GRACE = 30 * 20;
 
     private UUID owner;
     private String ownerName = "";
@@ -74,10 +86,14 @@ public class BotanistPotBlockEntity extends BlockEntity {
     private boolean outOfClimate;
     /** Fanee hors climat : elle ne rend que sa graine. */
     private boolean barren;
+    /** La fleur a mute : sa recolte rend une mutation inconnue. */
+    private boolean mutated;
     /** Le maitre est pres d'elle : les chronos avancent. */
     private boolean active;
     /** L'heure du jeu a l'envoi (lue par le client). */
     private long syncedAt;
+    /** Le reste d'une pousse acceleree (ameliorations, boost du centre de controle), pour ne rien perdre. */
+    private float carry;
     private long uprootArmedUntil;
     private int passes;
     /** Cote client, pour le rendu : le dernier stade vu, celui d'avant, et quand il a change. */
@@ -117,6 +133,10 @@ public class BotanistPotBlockEntity extends BlockEntity {
 
     public boolean outOfClimate() {
         return outOfClimate;
+    }
+
+    public boolean mutated() {
+        return mutated;
     }
 
     public boolean active() {
@@ -179,6 +199,10 @@ public class BotanistPotBlockEntity extends BlockEntity {
 
     // -- Le maitre ---------------------------------------------------------------------------------
 
+    public UUID ownerId() {
+        return owner;
+    }
+
     void setOwner(ServerPlayer player) {
         owner = player.getUUID();
         ownerName = player.getGameProfile().name();
@@ -234,6 +258,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
         length = seed.budTicks();
         harvestsLeft = Mutation.HARVESTS;
         barren = false;
+        mutated = false;
         clearNeed();
         scheduleNeed(server.getRandom());
         Climate here = Climate.at(server, worldPosition);
@@ -273,6 +298,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
         needAt = -1;
         outOfClimate = false;
         barren = false;
+        mutated = false;
         active = false;
     }
 
@@ -291,7 +317,16 @@ public class BotanistPotBlockEntity extends BlockEntity {
         if (!near) {
             return;
         }
-        progress += PASS;
+        // Le centre de controle : ameliorations et boost du module de ce climat accelerent la pousse
+        // (pas les fleurs qui fanent, ni le temps laisse pour repondre a un besoin).
+        if (stage.growing()) {
+            float step = (float) (PASS * BotanistLab.growth(player, mutation.climate())) + carry;
+            int whole = (int) step;
+            carry = step - whole;
+            progress += whole;
+        } else {
+            progress += PASS;
+        }
         boolean changed = false;
         if (need != null) {
             needLeft -= PASS;
@@ -331,6 +366,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
                     progress = 0;
                     length = mutation.bloomTicks();
                     scheduleNeed(server.getRandom());
+                    server.playSound(null, worldPosition, PalaBotanist.PLANT_BUD.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 }
             }
             case BUD -> {
@@ -339,13 +375,28 @@ public class BotanistPotBlockEntity extends BlockEntity {
                 length = Mutation.WILT_TICKS;
                 clearNeed();
                 needAt = -1;
-                server.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0f,
-                        1.3f);
-                say(player, prefix().append(Component.literal(mutation.label() + " est en fleur (" + where()
-                        + ") : un clic droit pour la recolter, avant qu'elle ne fane (" + clock(length) + ").")
-                        .withStyle(ChatFormatting.LIGHT_PURPLE)));
+                server.playSound(null, worldPosition, PalaBotanist.PLANT_BLOOMING.get(), SoundSource.BLOCKS, 1.0f,
+                        1.0f);
+                // Le boost du module ajoute ses points de chance ({@code getMutationBoost}).
+                double chance = mutation.mutationChance() + BotanistLab.mutationBonus(player, mutation.climate());
+                mutated = !targets(player).isEmpty() && server.getRandom().nextDouble() < chance;
+                if (mutated) {
+                    server.playSound(null, worldPosition, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS,
+                            1.0f, 0.8f);
+                    burst(server, ParticleTypes.WITCH, 16);
+                    burst(server, ParticleTypes.END_ROD, 10);
+                    say(player, prefix().append(Component.literal(mutation.label() + " (" + where() + ") a mute en "
+                            + "fleurissant ! Recolte-la : elle rendra une mutation inconnue, a reveler au scanner "
+                            + "de Genis.").withStyle(ChatFormatting.AQUA)));
+                } else {
+                    say(player, prefix().append(Component.literal(mutation.label() + " est en fleur (" + where()
+                            + ") : un clic droit pour la recolter, avant qu'elle ne fane (" + clock(length) + ").")
+                            .withStyle(ChatFormatting.LIGHT_PURPLE)));
+                }
             }
             case BLOOMING -> {
+                mutated = false;
+                server.playSound(null, worldPosition, PalaBotanist.PLANT_WILTED.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 wilt(false);
                 say(player, prefix().append(Component.literal(mutation.label() + " a fane sans etre recoltee. "
                         + "Recupere ses graines avant qu'elle ne disparaisse (" + clock(length) + ").")
@@ -368,8 +419,27 @@ public class BotanistPotBlockEntity extends BlockEntity {
         length = Mutation.GONE_TICKS;
         harvestsLeft = 0;
         this.barren = barren;
+        mutated = false;
         clearNeed();
         needAt = -1;
+    }
+
+    /**
+     * Les plantes vers lesquelles la fleur peut muter pour ce maitre ({@code getTargets}) : celles
+     * de la plante, a son niveau de Fermier ({@code isEligible}).
+     */
+    private List<Mutation> targets(ServerPlayer player) {
+        List<Mutation> eligible = new ArrayList<>();
+        if (player == null || mutation == null) {
+            return eligible;
+        }
+        int level = JobApi.level(player, Job.FARMER);
+        for (Mutation target : mutation.targets()) {
+            if (target.level() <= level) {
+                eligible.add(target);
+            }
+        }
+        return eligible;
     }
 
     // -- Les besoins -------------------------------------------------------------------------------
@@ -382,6 +452,10 @@ public class BotanistPotBlockEntity extends BlockEntity {
         if (need == Need.ITEM) {
             needItem = mutation.pickItem(random);
             needCount = Mth.nextInt(random, 1, 3);
+        } else if (need == Need.NIBBLER) {
+            needItem = "";
+            needCount = Math.max(1, mutation.rarity().nibblers());
+            spawnNibblers(server, needCount, needLeft);
         } else {
             needItem = "";
             needCount = 0;
@@ -394,7 +468,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
         sync();
     }
 
-    /** « de l'eau », ou « 2 x Charbon ». */
+    /** « de l'eau », « 2 x Charbon », ou « 2 nibblers ». */
     public MutableComponent needText() {
         if (need == null) {
             return Component.empty();
@@ -403,7 +477,52 @@ public class BotanistPotBlockEntity extends BlockEntity {
             Item item = Mutation.item(needItem);
             return Component.literal(needCount + " x ").append(new ItemStack(item).getHoverName());
         }
+        if (need == Need.NIBBLER) {
+            return Component.literal(needCount + (needCount > 1 ? " nibblers" : " nibbler"));
+        }
         return Component.literal(need.label());
+    }
+
+    /**
+     * Les nibblers du besoin ({@code NibblerBotanistNeed.start}) : autant que la plante en reclame,
+     * poses au hasard autour du pot (dans le laboratoire de JobsReborn, au hasard dans ses murs),
+     * et qui vivent le temps du besoin, plus une marge pour finir de les relacher.
+     */
+    private void spawnNibblers(ServerLevel server, int count, int lifetime) {
+        RandomSource random = server.getRandom();
+        for (int index = 0; index < count; index++) {
+            BlockPos at = nibblerSpot(server, random);
+            Nibbler nibbler = PalaBotanist.NIBBLER.get().create(server, EntitySpawnReason.EVENT);
+            if (nibbler == null) {
+                continue;
+            }
+            nibbler.lifetime(lifetime + NIBBLER_GRACE).home(worldPosition);
+            nibbler.snapTo(at.getX() + 0.5d, at.getY(), at.getZ() + 0.5d, random.nextFloat() * 360.0f, 0.0f);
+            server.addFreshEntity(nibbler);
+            server.sendParticles(ParticleTypes.POOF, at.getX() + 0.5d, at.getY() + 0.2d, at.getZ() + 0.5d, 4,
+                    0.15d, 0.1d, 0.15d, 0.01d);
+        }
+    }
+
+    /** Un endroit ou poser un nibbler, a quelques blocs du pot : de l'air au-dessus d'un sol ferme. */
+    private BlockPos nibblerSpot(ServerLevel server, RandomSource random) {
+        for (int attempt = 0; attempt < 16; attempt++) {
+            int dx = random.nextInt(9) - 4;
+            int dz = random.nextInt(9) - 4;
+            if (Math.abs(dx) < 2 && Math.abs(dz) < 2) {
+                continue;
+            }
+            for (int dy = 2; dy >= -3; dy--) {
+                BlockPos at = worldPosition.offset(dx, dy, dz);
+                if (server.getBlockState(at.below()).isFaceSturdy(server, at.below(), Direction.UP)
+                        && server.getBlockState(at).getCollisionShape(server, at).isEmpty()
+                        && server.getBlockState(at.above()).getCollisionShape(server, at.above()).isEmpty()
+                        && server.getFluidState(at).isEmpty()) {
+                    return at;
+                }
+            }
+        }
+        return worldPosition.above();
     }
 
     private void failNeed(ServerLevel server, ServerPlayer player) {
@@ -431,7 +550,8 @@ public class BotanistPotBlockEntity extends BlockEntity {
      * l'arrosoir, la guitare ou l'objet reclame. Rend vrai si le clic a servi.
      */
     boolean answer(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        boolean tool = stack.getItem() instanceof WateringCanItem || stack.getItem() instanceof GuitarItem;
+        boolean tool = stack.getItem() instanceof WateringCanItem || stack.getItem() instanceof GuitarItem
+                || stack.getItem() instanceof NetItem;
         boolean wanted = need == Need.ITEM && stack.is(Mutation.item(needItem));
         if (!tool && !wanted) {
             return false;
@@ -467,6 +587,32 @@ public class BotanistPotBlockEntity extends BlockEntity {
             stack.hurtAndBreak(1, player, hand);
             GuitarItem.strum(server, worldPosition, server.getRandom());
             fulfil(server, player, SoundEvents.NOTE_BLOCK_GUITAR.value(), 1.0f, ParticleTypes.NOTE);
+            return true;
+        }
+        if (stack.getItem() instanceof NetItem) {
+            if (need != Need.NIBBLER) {
+                refuse(player);
+                return true;
+            }
+            int held = NetItem.nibblers(stack);
+            if (held <= 0) {
+                say(player, Component.literal("Ton filet est vide, attrape des nibblers.")
+                        .withStyle(ChatFormatting.GOLD), true);
+                return true;
+            }
+            // NibblerBotanistNeed.consume : le filet relache ce qu'il a, au plus ce que la plante reclame.
+            int released = Math.min(held, needCount);
+            NetItem.setNibblers(stack, held - released);
+            stack.hurtAndBreak(1, player, hand);
+            needCount -= released;
+            server.playSound(null, worldPosition, PalaBotanist.NET_WHOOSH.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+            if (needCount <= 0) {
+                // Le besoin « Relacher les nibblers » de JobsReborn : son mob.slime.small, particules happyVillager.
+                fulfil(server, player, SoundEvents.SLIME_SQUISH_SMALL, 1.0f, ParticleTypes.HAPPY_VILLAGER);
+            } else {
+                say(player, Component.literal("Encore ").append(needText()).withStyle(ChatFormatting.YELLOW), true);
+                sync();
+            }
             return true;
         }
         int given = Math.min(needCount, stack.getCount());
@@ -539,6 +685,11 @@ public class BotanistPotBlockEntity extends BlockEntity {
     }
 
     private void harvest(ServerLevel server, ServerPlayer player) {
+        List<Mutation> targets = mutated ? targets(player) : List.of();
+        if (!targets.isEmpty()) {
+            harvestMutated(server, player, targets);
+            return;
+        }
         for (ItemStack drop : mutation.roll(server.getRandom())) {
             Block.popResource(server, worldPosition.above(), drop);
         }
@@ -559,6 +710,25 @@ public class BotanistPotBlockEntity extends BlockEntity {
             say(player, prefix().append(Component.literal("Derniere recolte de " + mutation.label()
                     + " : un clic droit rend ses graines.").withStyle(ChatFormatting.GREEN)));
         }
+        sync();
+    }
+
+    /**
+     * La recolte d'une fleur mutee ({@code BotanistMutationManager.harvest}) : une mutation inconnue
+     * qui porte l'une des plantes vers lesquelles elle pouvait muter, a la place de la recolte ; la
+     * plante disparait. L'XP de la recolte reste.
+     */
+    private void harvestMutated(ServerLevel server, ServerPlayer player, List<Mutation> targets) {
+        Mutation target = targets.get(server.getRandom().nextInt(targets.size()));
+        Block.popResource(server, worldPosition.above(), UnknownMutationItem.create(target));
+        JobApi.grant(player, Job.FARMER, mutation.xp());
+        server.playSound(null, worldPosition, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
+        burst(server, ParticleTypes.WITCH, 14);
+        burst(server, ParticleTypes.HAPPY_VILLAGER, 8);
+        say(player, prefix().append(Component.literal(mutation.label() + " a donne une mutation inconnue : "
+                + "porte-la au scanner de Genis pour la reveler. La plante a disparu.")
+                .withStyle(ChatFormatting.AQUA)));
+        clear();
         sync();
     }
 
@@ -629,6 +799,33 @@ public class BotanistPotBlockEntity extends BlockEntity {
         if (level != null && !level.isClientSide()) {
             BlockState state = getBlockState();
             level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_CLIENTS);
+            if (level instanceof ServerLevel server) {
+                track(server);
+            }
+        }
+    }
+
+    /** Le centre de controle de son maitre apprend ou en est le pot (s'il est en ligne). */
+    private void track(ServerLevel server) {
+        ServerPlayer player = ownerOnline(server);
+        if (player == null) {
+            return;
+        }
+        BotanistLab.Pot snapshot = stage == PotStage.EMPTY || mutation == null ? null
+                : new BotanistLab.Pot(mutation.id(), stage.getSerializedName(), need == null ? "" : needText().getString(),
+                mutated, length <= 0 ? 0 : (int) Math.min(1000L, progress * 1000L / length));
+        BotanistLab.track(player, server, worldPosition, snapshot);
+    }
+
+    /** Casse, le pot n'est plus suivi par le centre de controle de son maitre. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+        if (level instanceof ServerLevel server) {
+            ServerPlayer player = ownerOnline(server);
+            if (player != null) {
+                BotanistLab.track(player, server, worldPosition, null);
+            }
         }
     }
 
@@ -664,6 +861,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
         needAt = input.getIntOr("need_at", -1);
         outOfClimate = input.getBooleanOr("out_of_climate", false);
         barren = input.getBooleanOr("barren", false);
+        mutated = input.getBooleanOr("mutated", false);
         active = input.getBooleanOr("active", false);
         syncedAt = input.getLongOr("synced_at", 0L);
     }
@@ -685,6 +883,7 @@ public class BotanistPotBlockEntity extends BlockEntity {
         output.putInt("need_at", needAt);
         output.putBoolean("out_of_climate", outOfClimate);
         output.putBoolean("barren", barren);
+        output.putBoolean("mutated", mutated);
         output.putBoolean("active", active);
         output.putLong("synced_at", level == null ? 0L : level.getGameTime());
     }

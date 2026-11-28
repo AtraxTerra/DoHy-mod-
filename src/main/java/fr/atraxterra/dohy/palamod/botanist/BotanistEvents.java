@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Le rattrapage des graines minerales, puis du laboratoire, une fois par joueur.
+ * Le rattrapage des graines minerales, puis du laboratoire (lots 2a et 2b), une fois par joueur.
  *
  * <p>Les graines sont des recompenses de niveau de Fermier ({@code data/jobs.json}),
  * versees en montant de niveau. Un joueur qui avait deja passe ces niveaux avant
@@ -56,6 +56,18 @@ public final class BotanistEvents {
                 lab.add("palamod:" + mutation.seedName());
             }
             catchUp(player, lab, "message.palamod.botanist_lab.catch_up", "Laboratoire du botaniste");
+        }
+        // Le lot 2b (scanner de Genis au Fermier 10, filet au 25) : meme regle, drapeau a part.
+        if (!player.getData(PalaBotanist.LAB2_CAUGHT_UP.get())) {
+            player.setData(PalaBotanist.LAB2_CAUGHT_UP.get(), Boolean.TRUE);
+            catchUp(player, Set.of("palamod:gene_scanner", "palamod:net"), "message.palamod.botanist_lab2.catch_up",
+                    "Scanner et filet du botaniste");
+        }
+        // Le lot 2c (reserve et centre de controle au Fermier 10, centrifugeuse au 25) : meme regle.
+        if (!player.getData(PalaBotanist.LAB3_CAUGHT_UP.get())) {
+            player.setData(PalaBotanist.LAB3_CAUGHT_UP.get(), Boolean.TRUE);
+            catchUp(player, Set.of("palamod:seed_reserve", "palamod:lab_control", "palamod:mutation_centrifuge"),
+                    "message.palamod.botanist_lab3.catch_up", "Laboratoire du botaniste, lot 2c");
         }
     }
 

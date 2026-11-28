@@ -138,8 +138,28 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   survol) et sa barre de défilement. Clics, molette, barre tirée et bulles restent ceux du jeu.
   Ces écrans lisent quelques champs privés du jeu par leur nom (les noms de Mojang, gardés à
   l'exécution par NeoForge) ; s'il en manquait un, l'écran reprendrait son dessin du jeu.
-- Restent à l'écran du jeu : le métier à tisser et la table de cartographie (rares, et dont
-  l'aperçu — bannière, carte — est dessiné par le jeu lui-même).
+- **Métier à tisser, table de cartographie** (`KitStations`, 2026-11-28, les deux derniers écrans
+  du jeu) : le métier à tisser montre la bannière, la teinture et le motif à gauche (les
+  silhouettes du jeu dans les cases vides), la grille des motifs au milieu (quatre par rangée,
+  le choisi en rouge, curseur main et bulle du jeu au survol, barre de défilement du kit), et à
+  droite la bannière telle qu'elle sortira (l'aperçu du jeu) au-dessus du résultat cerclé ; une
+  croix rouge sur le résultat quand la bannière porte déjà ses six motifs, et une consigne dans
+  la grille quand le jeu la cache (pas de bannière ou de teinture, ou bannière pleine). La table
+  de cartographie montre la carte, le plus et ce qu'on lui ajoute, la flèche (barrée d'une croix
+  rouge quand l'ajout ne se peut pas : carte verrouillée, ou déjà à sa plus grande échelle),
+  l'aperçu du jeu dans son creux (agrandie, en deux exemplaires ou cadenassée) et le résultat ;
+  sans carte, l'aperçu dit ce que fait chaque ajout. Clics, molette, barre tirée et bulles
+  restent ceux du jeu.
+- **Notifications du jeu** (`KitToasts`, 2026-11-28) : progrès, objectifs et défis, recettes
+  débloquées, tutoriel, messages du système (sauvegarde, échec de chargement...), amis et musique
+  en cours prennent la carte des notifications du kit (`ToastLayer`) : fond en dégradé, filet,
+  coins arrondis, voyant de couleur à gauche, l'icône dans sa tuile teintée, et les trois lignes
+  du kit (la nature en police pixel, le titre, le détail). Couleurs : jaune pour les progrès et
+  objectifs, rose pour les défis (celles du jeu), vert pour les recettes, cyan pour le tutoriel
+  (avec sa barre de progression), bleu pour le système (rouge pour un échec), orange pour un ami
+  (son visage dans la tuile), la couleur changeante des notes pour la musique. Le jeu garde la
+  place, l'entrée en glissant, la pile, la durée et le son ; les crochets sont dans
+  `mixin/*ToastMixin`, et si l'un échouait, la notification reprendrait son dessin du jeu.
 - **Cartouches du HUD** : celui des finders (`FinderHudLayer`) et la barre du réceptacle à wither
   (`ReceptacleHudLayer`) quittent l'ancien panneau pour les cartes du HUD (`HudKit.card`, ombre,
   fond, filet, coins arrondis), une tuile à la couleur du finder ou du réceptacle et les barres du
@@ -254,6 +274,27 @@ pixel d'interface). Le fond passe avant les objets, les bulles après.
   bulle sur chaque case vide qui dit ce qu'on y pose.
 - **Crusher** : les quatre recettes et leurs bacs, synchronisés par quatre valeurs libres du menu
   (`DATA_EXTRA`) et la recette mise en avant (`DATA_SELECTED`).
+- **Scanner de Genis** (`GeneScannerScreen`, 262 x 236, sur `MachineMenu`) : la graine et le
+  carburant à gauche, la chambre du scan au milieu (losange, laser, pourcentage, état), le
+  résultat à droite ; en tête, les découvertes du codex et le prochain déblocage. L'état et la
+  découverte passent par les valeurs libres du menu, « LANCER LE SCAN » par un bouton du menu.
+  Le bouton **LE CODEX** ouvre `CodexScreen` (à la taille de la coque) : les quinze plantes en
+  losanges par rareté, et la fiche de la plante choisie. Botaniste, `PALAMOD.md` § 49.
+- **Centrifugeuse** (`CentrifugeScreen`, 262 x 236, sur `MachineMenu`) : la graine au centre d'un
+  hexagone de six cases d'objets, reliées par des rayons ; à côté, le cœur donne la chance de
+  mutation (le pourcentage, un anneau de seize points qui suit la centrifugation, violet à 100 %) ;
+  « CENTRIFUGER » par un bouton du menu, puis le résultat à droite. L'état et la chance passent par les valeurs libres
+  du menu. Les onglets « CLASSIQUE » et « BOOST » (« Bientôt disponible ») sont ceux du jar ; la
+  bulle du cœur liste les objets acceptés et leur chance.
+- **Réserve de graines** (`SeedReserveScreen`, sur `MachineMenu`) : trois rangées de cinq losanges
+  (normal, glacial, désertique), teintés de la rareté de la plante ; une case vide montre sa graine
+  givrée, une case remplie son compte sur dix. La bulle dit si la première graine a déjà rapporté
+  son XP (un masque de bits dans une valeur libre du menu).
+- **Centre de contrôle** (`LabControlMenu`, un menu du kit) : un onglet par module (climat) avec
+  son état, la fiche du module (pousse moyenne, pots, besoins, fleurs, mutations, niveau), les
+  lignes « Booster le module » et « Améliorer le module » (sur toute la largeur, pour que les coûts
+  tiennent ; coche verte pendant un boost, barre pendant une construction), et la liste « TES
+  POTS », les besoins en premier. Botaniste, `PALAMOD.md` § 50.
 - **Coffres en paladium** : la grille de 12 x 9, les anneaux teintés du métal, le titre au-dessus.
 - **Inventaires en coffre** : coffre de vente, guichet du musée, sac de la monture, coffre et
   gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir

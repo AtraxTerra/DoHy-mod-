@@ -3,11 +3,12 @@ package fr.atraxterra.dohy.palamod.botanist;
 /**
  * Ce qu'une plante en pot reclame ({@code IBotanistNeed} de JobsReborn).
  *
- * <p>Les cinq besoins de ce lot, avec les textes de JobsReborn : arroser
- * (« Remplir l'arrosoir »), jouer un air (« Jouer un air »), secouer
- * (« Secoue-la d'un clic droit, main vide »), percer la boule de spores
- * (« Perce sa boule d'un clic droit, main vide ») et donner un objet
- * (« Donner un objet »). Les nibblers, attrapes au filet, sont du lot suivant.
+ * <p>Les six besoins de JobsReborn, avec ses textes : arroser (« Remplir l'arrosoir »),
+ * jouer un air (« Jouer un air »), secouer (« Secoue-la d'un clic droit, main vide »),
+ * percer la boule de spores (« Perce sa boule d'un clic droit, main vide »), donner un
+ * objet (« Donner un objet ») et, au lot 2b, relacher des nibblers (« Relache des nibblers
+ * du filet ») : des nibblers apparaissent pres du pot, on les attrape au filet et on les
+ * relache sur la plante.
  *
  * <p>Un besoin se remplit dans les 90 secondes (temps passe pres de la plante) ;
  * rate, il la ralentit d'une minute ({@code BotanistNeedFailure.SLOW}).
@@ -17,7 +18,9 @@ public enum Need {
     MUSIC("music", "un air de musique", "Joue-lui un air : clic droit avec une guitare."),
     SHAKE("shake", "une secousse", "Secoue-la d'un clic droit, main vide."),
     BURST("burst", "qu'on perce sa boule", "Perce sa boule de spores d'un clic droit, main vide."),
-    ITEM("item", "un objet", "Donne-le-lui : clic droit avec l'objet en main.");
+    ITEM("item", "un objet", "Donne-le-lui : clic droit avec l'objet en main."),
+    NIBBLER("nibbler", "des nibblers", "Attrape les nibblers apparus pres d'elle au filet, puis relache-les sur la "
+            + "plante d'un clic droit.");
 
     /** Le temps pour repondre, en ticks passes pres de la plante. */
     public static final int TIMEOUT = 90 * 20;

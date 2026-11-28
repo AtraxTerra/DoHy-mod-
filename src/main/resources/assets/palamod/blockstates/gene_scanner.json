@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=north,half=upper": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=south,half=lower": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=south,half=upper": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=west,half=lower": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=west,half=upper": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=east,half=lower": {
+      "model": "palamod:block/gene_scanner"
+    },
+    "facing=east,half=upper": {
+      "model": "palamod:block/gene_scanner"
+    }
+  }
+}
