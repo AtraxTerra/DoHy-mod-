@@ -45,12 +45,18 @@ public final class ClientCodex {
 
     /** Reste-t-il une plante a decouvrir a son niveau ? (« A decouvrir a ton niveau ».) */
     public static boolean somethingToDiscover() {
+        return toDiscover() > 0;
+    }
+
+    /** Les plantes qui restent a decouvrir a son niveau. */
+    public static int toDiscover() {
+        int left = 0;
         for (Mutation mutation : Mutation.values()) {
             if (mutation.level() <= level && !has(mutation)) {
-                return true;
+                left++;
             }
         }
-        return false;
+        return left;
     }
 
     /** Le prochain niveau ou de nouvelles plantes s'ouvrent (« Prochain deblocage »), ou -1. */

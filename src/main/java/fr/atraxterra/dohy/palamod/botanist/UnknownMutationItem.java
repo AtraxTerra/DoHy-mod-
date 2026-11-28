@@ -15,7 +15,8 @@ import java.util.function.Consumer;
  * qui a mute en fleurissant. Elle porte la plante vers laquelle la floraison a mute (composant
  * {@code palamod:botanist_mutation_target}, le NBT {@code mutation} de JobsReborn), que seul le
  * scanner de Genis revele (« A analyser au Scanner de Genis »). Sans plante portee, le scanner en
- * tire une au hasard parmi celles que le joueur n'a pas decouvertes, a son niveau.
+ * tire une au hasard parmi celles a la portee du joueur, a son niveau de Fermier
+ * ({@code TileEntityBotanistScanner.draw}).
  */
 public class UnknownMutationItem extends Item {
 

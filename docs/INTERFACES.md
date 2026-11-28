@@ -274,6 +274,12 @@ pixel d'interface). Le fond passe avant les objets, les bulles après.
   bulle sur chaque case vide qui dit ce qu'on y pose.
 - **Crusher** : les quatre recettes et leurs bacs, synchronisés par quatre valeurs libres du menu
   (`DATA_EXTRA`) et la recette mise en avant (`DATA_SELECTED`).
+- **Scanner de Genis** (`GeneScannerScreen`, 262 x 236, sur `MachineMenu`) : la graine et le
+  carburant à gauche, la chambre du scan au milieu (losange, laser, pourcentage, état), le
+  résultat à droite ; en tête, les découvertes du codex et le prochain déblocage. L'état et la
+  découverte passent par les valeurs libres du menu, « LANCER LE SCAN » par un bouton du menu.
+  Le bouton **LE CODEX** ouvre `CodexScreen` (à la taille de la coque) : les quinze plantes en
+  losanges par rareté, et la fiche de la plante choisie. Botaniste, `PALAMOD.md` § 49.
 - **Coffres en paladium** : la grille de 12 x 9, les anneaux teintés du métal, le titre au-dessus.
 - **Inventaires en coffre** : coffre de vente, guichet du musée, sac de la monture, coffre et
   gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir
