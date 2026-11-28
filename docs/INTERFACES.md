@@ -150,6 +150,16 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   l'aperçu du jeu dans son creux (agrandie, en deux exemplaires ou cadenassée) et le résultat ;
   sans carte, l'aperçu dit ce que fait chaque ajout. Clics, molette, barre tirée et bulles
   restent ceux du jeu.
+- **Notifications du jeu** (`KitToasts`, 2026-11-28) : progrès, objectifs et défis, recettes
+  débloquées, tutoriel, messages du système (sauvegarde, échec de chargement...), amis et musique
+  en cours prennent la carte des notifications du kit (`ToastLayer`) : fond en dégradé, filet,
+  coins arrondis, voyant de couleur à gauche, l'icône dans sa tuile teintée, et les trois lignes
+  du kit (la nature en police pixel, le titre, le détail). Couleurs : jaune pour les progrès et
+  objectifs, rose pour les défis (celles du jeu), vert pour les recettes, cyan pour le tutoriel
+  (avec sa barre de progression), bleu pour le système (rouge pour un échec), orange pour un ami
+  (son visage dans la tuile), la couleur changeante des notes pour la musique. Le jeu garde la
+  place, l'entrée en glissant, la pile, la durée et le son ; les crochets sont dans
+  `mixin/*ToastMixin`, et si l'un échouait, la notification reprendrait son dessin du jeu.
 - **Cartouches du HUD** : celui des finders (`FinderHudLayer`) et la barre du réceptacle à wither
   (`ReceptacleHudLayer`) quittent l'ancien panneau pour les cartes du HUD (`HudKit.card`, ombre,
   fond, filet, coins arrondis), une tuile à la couleur du finder ou du réceptacle et les barres du

@@ -195,6 +195,21 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-28 — les notifications du jeu au style du kit
+
+**Demande** : finir l'épuration des écrans (avec le Botaniste, lot 2b, ensuite).
+
+- **`KitToasts`** et six crochets (`mixin/*ToastMixin`, client seulement) : progrès et défis,
+  recettes, tutoriel, messages du système, amis et musique prennent la carte des notifications du
+  kit. Le jeu garde tout le reste (place, glissement, pile, durée, son). `INTERFACES.md`,
+  « L'épuration des écrans ».
+
+**Vérifié** : captures d'un progrès, d'un objectif, d'un défi, d'une recette, du tutoriel (barre à
+45 %), d'une sauvegarde, d'un échec de chargement, d'un ami (avec et sans visage), d'une pile de
+trois, et par-dessus l'inventaire ; aucun crochet en échec au journal. La musique n'a pas pu être
+capturée (le client de la CI joue sans son) : son crochet s'applique au démarrage, son dessin
+passe par le même chemin que les autres.
+
 ### 2026-11-28 — métier à tisser et table de cartographie au style du kit
 
 **Demande** : finir l'épuration des écrans (avec le Botaniste, lot 2b, ensuite).
