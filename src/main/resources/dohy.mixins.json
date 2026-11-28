@@ -12,8 +12,14 @@
     "ArrakisTerraceMixin"
   ],
   "client": [
+    "AdvancementToastMixin",
     "BiomeColorsMixin",
-    "ChatComponentMixin"
+    "ChatComponentMixin",
+    "NowPlayingToastMixin",
+    "RecipeToastEntryAccessor",
+    "RecipeToastMixin",
+    "SystemToastMixin",
+    "TutorialToastMixin"
   ],
   "server": [
     "DedicatedServerPauseMixin"
