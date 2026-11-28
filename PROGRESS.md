@@ -125,6 +125,7 @@ Sources : dépôt `AtraxTerra/PalaV26` (7 mods + le pack de textures officiel) e
 | 27 | **Botaniste de JobsReborn, lot 2a** : pot du botaniste, trois plantes de base (blé de fer, givrelune, corail des sables, une par climat), cycle bourgeon, fleur, fanée, trois récoltes et graines rendues, besoins (arroser, jouer un air, secouer, percer la boule, donner un objet), arrosoir et guitare ; la plante ne pousse que près de son maître ; au Fermier (niveau 10) — voir § 48 | fait (en validation) |
 | 28 | **Botaniste de JobsReborn, lot 2b** : douze plantes de plus (quinze, cinq par climat, sur quatre raretés), mutation à la floraison vers une plante plus rare, mutation inconnue, scanner de Genis (charbon, scan de 15 ou 45 s, découverte et XP), codex des mutations, nibblers (panique, fuite) et filet pour les attraper et les relâcher ; au Fermier (niveaux 10, 25, 45, 70) — voir § 49 | fait (en validation) |
 | 29 | **Botaniste de JobsReborn, lot 2c** : centrifugeuse (une graine de mutation et six objets de centrifugation, chacun sa chance ; réussite : une mutation inconnue, à 100 % la graine boostée), réserve de graines (dix par plante, la même depuis n'importe quel bloc, XP à la première graine rangée), centre de contrôle (un module par climat : les pots suivis, leurs besoins, un boost par jour, trois améliorations de pousse) ; au Fermier (niveaux 10 et 25) — voir § 50 | fait (en validation) |
+| 30 | **Aventurier de JobsReborn** : ses deux XP de fin de palier vont au métier du donjon ; terminer un palier rapporte 10 % de plus en note A et 25 % en S, et la première victoire d'un palier (tous modes confondus) rapporte son XP une seconde fois ; paliers conquis sur l'écran des paliers, dans l'onglet XP des métiers et l'encyclopédie — voir § 51 | fait (en validation) |
 | 8 | **Mineur** : excavatrices, outils de construction, aimant, Dollars Stone, Voidstone minage, compresseur à cobblestone, entonnoir, coffres, Palafurnace, Palaforge, cave blocks, God Villager, pioche et minerai d'endium — sans `/nether` ni trône | fait |
 
 **Décisions prises avec le joueur** (2026-11-07) :
@@ -196,6 +197,28 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ---
 
 ## Journal des sessions
+
+### 2026-11-28 — l'Aventurier de JobsReborn : terminer et conquérir les paliers
+
+**Demande** : « continue », puis, au choix proposé (Mineur, finitions du Botaniste, Aventurier),
+l'Aventurier de JobsReborn.
+
+- **Le module du jar** (dix classes, au bytecode) : deux XP de fin de palier de donjon,
+  « Terminer » à chaque palier réussi, « Conquérir » à la première victoire d'un palier.
+- **Pas de métier Aventurier** : les deux XP vont au métier du donjon (Talikus au Fermier,
+  Nimbria au Mineur, Vitalys au Chasseur, Manelios à l'Alchimiste), qui en recevait déjà une.
+- **Terminer** : l'XP des donjons, plus 10 % en note A et 25 % en S (une note médiocre ne retire
+  rien).
+- **Conquérir** : la première victoire d'un palier, tous modes confondus, rapporte son XP une
+  seconde fois ; titre « Palier 12 conquis ! », message dans le chat, un seul versement.
+- **Où le voir** : « CONQUIS 12 / 100 » et l'XP de chaque palier sur l'écran des paliers, les
+  lignes « Donjon … réussi » et « Palier … conquis » de l'onglet XP des métiers, la fiche « Les
+  donjons ». Chiffres : `PALAMOD.md` § 51, `BALANCE.md` § 6 novotrigesies.
+
+**Vérifié** : compilation CI, contrôles locaux (encyclopédie, initialisations statiques, verrous
+de métier).
+
+**Non vérifié en jeu** : un palier réussi de bout en bout (la conquête et la note dans le chat).
 
 ### 2026-11-28 — le laboratoire du botaniste, lot 2c : centrifugeuse, réserve, centre de contrôle
 

@@ -2283,7 +2283,8 @@
           "title": "Les recompenses",
           "text": [
             "- Un coffre par salle ; une note de D a S ameliore le coffre.",
-            "- XP de metier et XP RPG.",
+            "- XP de metier et XP RPG ; la note A ajoute 10 % d'XP de metier, la note S 25 %.",
+            "- Conquete : la premiere victoire d'un palier, tous modes confondus, rapporte son XP de metier une seconde fois.",
             "- Les sacs de donjon gardent le butin.",
             "- Coffres de boss : parfois Double XP, Triple des le palier 50."
           ]

@@ -387,7 +387,9 @@ construction »). Elle passe par `MenuView`, avec une mise en page de plus :
   « CHOISI » en pastille sur le mode retenu, un clic change de mode et les vignettes suivent), puis
   « Avant d'entrer », puis les cent paliers du mode. En Difficile, les paliers en 0 montrent une rose
   du wither et « Boss Dark : … » ; le cartouche dit le métier, le mode et le dernier palier réussi
-  (le record en Difficile).
+  (le record en Difficile). Depuis l'Aventurier (`PALAMOD.md` § 51), il compte aussi les paliers
+  conquis (« CONQUIS 12 / 100 »), et la bulle de chaque palier donne son XP de métier, « le double à
+  la conquête » tant qu'il n'a été réussi dans aucun mode.
 - **L'autel des offrandes** (`JobBossMenu`, vue `dohy:autel`) : les quatre gardiens en `GRID`
   (niveau, état — offrande en %, « Arrive dans 42 min », « T'attend dans l'arène » —, pastille PRET
   ou EN ROUTE, barre de l'offrande sur celui qu'on regarde), son offrande en `TILES` (déposé / requis,

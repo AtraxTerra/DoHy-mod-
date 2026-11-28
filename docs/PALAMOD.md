@@ -5227,3 +5227,58 @@ configuration du serveur de Paladium. Ici :
   le résultat ; seul le bouton la lance.
 - **Les durées sont en temps réel** (boost, constructions), comme le pass et l'Avent : elles
   avancent hors ligne.
+
+## 51. L'Aventurier de JobsReborn : terminer et conquérir les paliers (2026-11-28)
+
+Choisi le 2026-11-28 après le Botaniste : le troisième métier de **JobsReborn 1.92.0**, au
+bytecode : `JobsAdventurerCommonProxy` (le métier `adventurer`, « Aventurier »),
+`JobsAdventurerServerProxy` (deux sources d'XP, écoutées sur le serveur RPG seulement),
+`ADungeonJobExperience`, `DungeonFinishJobExperience`, `DungeonFirstFinishJobExperience` et leurs
+écouteurs de `DungeonFinishEvent.Pre` (PalaRPG). Le module ne compte que dix classes : pas de
+bloc, pas d'objet, pas d'écran.
+
+### Ce qui vient du jar
+
+- **Terminer** (`dungeon_finish`, titre « Terminer », sous-titre « Paliers ») : quand un palier
+  est réussi, chaque joueur encore dans le donjon gagne de l'XP.
+- **Conquérir** (`dungeon_first_finish`, « Conquérir ») : en plus, s'il réussit ce palier pour la
+  première fois (`getUnlockedLevel` au plus ce palier, et la difficulté débloquée pour lui encore
+  la plus facile).
+- **Ce dont dépend l'XP** (`JobExperienceContext`) : le donjon et le palier (clés
+  `dungeon:<donjon>`, `dungeon:<donjon>:<palier>`, `dungeon:*:<palier>`), et quatre variables
+  bornées : le palier (1 à 100), la durée (60 à 3 600 s), la difficulté et la performance (0 à
+  100). Les formules sont dans la configuration du serveur de Paladium.
+
+### Ce qui est adapté
+
+- **L'Aventurier n'est pas un métier ici**, comme le Botaniste (§ 47) : ses deux XP vont au
+  métier du donjon (Talikus au Fermier, Nimbria au Mineur, Vitalys au Chasseur, Manelios à
+  l'Alchimiste), qui en recevait déjà une à chaque palier réussi (§ 22).
+- **Terminer** garde l'XP des donjons (600, plus 40 par palier ; Facile × 0,5, Normal × 1,
+  Difficile × 1,5), et la note de fin de palier y entre comme la performance : **+10 % en A,
+  +25 % en S**, rien de D à B (une mauvaise note ne retire rien à ce qu'on gagnait).
+- **Conquérir** : la première victoire d'un palier, **tous modes confondus**, rapporte son XP une
+  seconde fois, au mode joué. Un palier est conquis s'il a été réussi dans au moins un mode ; les
+  progressions avancent palier par palier, et celle du Facile compte aussi les deux autres : les
+  paliers conquis vont de 1 au meilleur palier du Facile (`DungeonManager.conquered`). Rien à
+  sauvegarder de plus.
+- Les boss de métier (l'autel des offrandes) ne sont pas des paliers : ils n'en rapportent pas.
+
+### Ce qu'on voit
+
+- En fin de palier : « Palier 12 conquis ! » en titre (violet) au lieu de « réussi », et dans le
+  chat « Note S : +25 % d'XP de métier. » et « Palier 12 conquis, première victoire : +1 080 XP de
+  Fermier en plus. ». Un seul versement, donc une seule notification.
+- L'écran des paliers compte les paliers conquis (« CONQUIS 12 / 100 ») ; la bulle de chaque
+  palier donne son XP, « le double à la conquête » tant qu'il n'est pas conquis.
+- L'onglet XP de chaque métier : « Donjon Talikus réussi » (avec le bonus de la note) et
+  « Palier Talikus conquis ». La fiche « Les donjons » de l'encyclopédie.
+- Chiffres : `BALANCE.md` § 6 novotrigesies.
+
+### Écarts
+
+- **Pas de métier Aventurier** : l'XP va au métier du donjon.
+- **La durée n'entre pas dans le calcul** : JobsReborn la passe à sa formule (de 60 à 3 600 s),
+  dont on ne sait rien ; nos paliers n'ont pas de chrono, et récompenser la vitesse pousserait à
+  courir dans les salles.
+- **La difficulté** passe par le facteur du mode, déjà appliqué à l'XP des donjons.

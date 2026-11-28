@@ -1997,6 +1997,45 @@ Leviers : `Catalysts` (objets et chances), `CentrifugeBlockEntity.DURATION` et `
 `SeedReserve.LIMIT` et `rewardXp`, `BotanistLab` (`UNLOCK_LEVEL`, `GROWTH_PER_LEVEL`, `BOOST_*`,
 `UPGRADE_*`, les objets des coûts).
 
+## 6 novotrigesies. L'Aventurier — ce que rapporte une conquête (2026-11-28)
+
+Description : `docs/PALAMOD.md` § 51. JobsReborn passe le palier, la durée, la difficulté et la
+performance à des formules qui sont dans la configuration de son serveur : tout est calibré ici,
+sur l'XP des donjons qui existait déjà (600 + 40 par palier, × 0,5 en Facile, × 1,5 en Difficile).
+
+**Terminer** ne change pas pour une note de D à B, et monte de 10 % en A, de 25 % en S. Au palier 50
+en Normal : 2 600 XP, 2 860 en A, 3 250 en S.
+
+**Conquérir** rapporte une fois l'XP du palier, au mode de la première victoire :
+
+| | Palier 1 | Palier 50 | Palier 100 | Les cent paliers d'un donjon |
+|---|---|---|---|---|
+| Facile | +320 | +1 300 | +2 300 | 131 000 |
+| Normal | +640 | +2 600 | +4 600 | 262 000 |
+| Difficile | +960 | +3 900 | +6 900 | 393 000 |
+
+- **En tout**, un donjon conquis en Normal rapporte 262 000 XP de plus à son métier, soit
+  ~1 M$ au cours de l'XP (10 000 XP pour 40 000 $, § 6 duovicies) ; les quatre, ~1 M d'XP
+  répartis sur les quatre métiers. C'est ~11 % de l'XP qui mène un métier du niveau 1 au 70
+  (~2,4 M), ou environ trois niveaux au 70 (89 600 XP le niveau).
+- **À l'heure**, au rythme de quatre paliers (§ 6 nonies, coffre de la note) : le premier passage
+  rapporte le double, ~21 000 XP par heure au palier 50 (~26 000 en S) et ~37 000 au palier 100,
+  contre 15 000 au rythme de référence de la courbe (§ 2). Un passage seulement : la conquête
+  récompense la progression, pas la répétition.
+- **Le mode** : conquérir en Facile ne rapporte que la moitié, et le palier n'est plus à conquérir
+  ensuite en Normal ; le Difficile paie la moitié de plus. La récompense suit l'effort, sans
+  obliger à rien : on peut conquérir au mode qu'on tient.
+- **La note** : un joueur seul a vite ses dégâts et son implication pleins ; c'est la survie qui
+  fait le S (`PALAMOD.md` § 23). Le bonus reste petit à côté de la conquête, et une note médiocre
+  ne retire rien.
+
+**À surveiller** : si les métiers montent trop vite au premier passage des donjons, le levier le
+plus doux est la conquête (`DungeonManager.conquestXp`, aujourd'hui l'XP du palier entière), puis
+le bonus de la note (`Grade.xpBonus`).
+
+Leviers : `DungeonManager.jobXp`, `finishXp`, `conquestXp`, `Grade.xpBonus`, `DungeonMode` (le
+facteur des récompenses).
+
 ## 7. Ce qui n'est pas encore chiffré
 
 - **NTM NEXT** : la grille est cohérente, pas éprouvée. Les cotes que le wiki ne donne pas

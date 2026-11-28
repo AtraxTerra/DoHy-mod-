@@ -46,6 +46,22 @@ public final class DungeonManager {
         return Math.round((600L + 40L * palier) * mode.rewards());
     }
 
+    /**
+     * Terminer ({@code DungeonFinishJobExperience}, l'Aventurier de JobsReborn) : l'XP du palier,
+     * plus le bonus de la note.
+     */
+    public static long finishXp(int palier, DungeonMode mode, Grade grade) {
+        return Math.round(jobXp(palier, mode) * (1.0d + grade.xpBonus()));
+    }
+
+    /**
+     * Conquerir ({@code DungeonFirstFinishJobExperience}) : la premiere victoire d'un palier, tous
+     * modes confondus, rapporte son XP une seconde fois.
+     */
+    public static long conquestXp(int palier, DungeonMode mode) {
+        return jobXp(palier, mode);
+    }
+
     private static final Map<Integer, DungeonRun> RUNS = new HashMap<>();
     private static final Map<UUID, DungeonRun> BY_PLAYER = new HashMap<>();
     /** Monstre de partie -> sa partie. */
@@ -73,6 +89,20 @@ public final class DungeonManager {
     /** Le dernier palier reussi en Normal ou en Difficile : la progression du donjon. */
     public static int cleared(ServerPlayer player, Dungeon dungeon) {
         return best(player, dungeon, DungeonMode.NORMAL);
+    }
+
+    /**
+     * Les paliers conquis, de 1 a ce nombre : chacun a ete reussi au moins une fois, dans un mode ou
+     * un autre. Chaque progression avance palier par palier, et celle du Facile compte aussi les deux
+     * autres : son meilleur palier est le plus haut jamais reussi.
+     */
+    public static int conquered(ServerPlayer player, Dungeon dungeon) {
+        return best(player, dungeon, DungeonMode.FACILE);
+    }
+
+    /** Reussir ce palier le conquiert : il ne l'a encore ete dans aucun mode. */
+    public static boolean conquers(ServerPlayer player, Dungeon dungeon, int palier) {
+        return palier > conquered(player, dungeon);
     }
 
     private static int raw(ServerPlayer player, Dungeon dungeon, DungeonMode mode) {

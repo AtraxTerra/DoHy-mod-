@@ -39,6 +39,19 @@ public enum Grade {
         this.color = color;
     }
 
+    /**
+     * Le bonus d'XP de metier de la note : rien jusqu'a B, +10 % en A, +25 % en S. C'est la
+     * {@code performance} que l'Aventurier de JobsReborn passe a son XP de fin de palier ; une
+     * mauvaise note ne retire rien.
+     */
+    public double xpBonus() {
+        return switch (this) {
+            case A -> 0.10d;
+            case S -> 0.25d;
+            default -> 0.0d;
+        };
+    }
+
     /** Les tirages du coffre de la note. */
     public int extraRolls() {
         return extraRolls;
