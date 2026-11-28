@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=north,half=upper": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=south,half=lower": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=south,half=upper": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=west,half=lower": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=west,half=upper": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=east,half=lower": {
+      "model": "palamod:block/mutation_centrifuge"
+    },
+    "facing=east,half=upper": {
+      "model": "palamod:block/mutation_centrifuge"
+    }
+  }
+}

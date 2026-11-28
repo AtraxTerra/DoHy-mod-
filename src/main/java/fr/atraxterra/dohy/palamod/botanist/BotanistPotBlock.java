@@ -106,7 +106,8 @@ public class BotanistPotBlock extends BaseEntityBlock {
             }
             return InteractionResult.SUCCESS;
         }
-        boolean tool = stack.getItem() instanceof WateringCanItem || stack.getItem() instanceof GuitarItem;
+        boolean tool = stack.getItem() instanceof WateringCanItem || stack.getItem() instanceof GuitarItem
+                || stack.getItem() instanceof NetItem;
         boolean wanted = pot.need() == Need.ITEM && stack.is(Mutation.item(pot.needItem()));
         if (!tool && !wanted) {
             return InteractionResult.TRY_WITH_EMPTY_HAND;

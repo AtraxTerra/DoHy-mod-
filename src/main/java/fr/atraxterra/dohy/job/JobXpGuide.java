@@ -16,6 +16,7 @@ import fr.atraxterra.dohy.palamod.dungeon.CandyItem;
 import fr.atraxterra.dohy.palamod.dungeon.Dungeon;
 import fr.atraxterra.dohy.palamod.dungeon.DungeonManager;
 import fr.atraxterra.dohy.palamod.dungeon.DungeonMode;
+import fr.atraxterra.dohy.palamod.dungeon.Grade;
 import fr.atraxterra.dohy.palamod.dungeon.JobBosses;
 import fr.atraxterra.dohy.palamod.dungeon.JobBottleItem;
 import fr.atraxterra.dohy.palamod.dungeon.PalaDungeon;
@@ -368,7 +369,21 @@ public final class JobXpGuide {
             section.add(new ItemStack(Items.WITHER_SKELETON_SKULL), "Donjon " + dungeon.display() + " reussi",
                     "+" + MoneyFormat.exact(low) + " a " + MoneyFormat.exact(high) + " XP", "par palier", 0, 6,
                     MoneyFormat.exact(base) + " XP, plus " + step + " par palier (1 a " + DungeonManager.MAX_PALIER + ")",
-                    "Selon le mode : " + modes);
+                    "Selon le mode : " + modes,
+                    "Note A : +" + Math.round(Grade.A.xpBonus() * 100) + " %, note S : +"
+                            + Math.round(Grade.S.xpBonus() * 100) + " %");
+            // Conquerir (l'Aventurier de JobsReborn) : la premiere victoire d'un palier compte double.
+            long conquestLow = Long.MAX_VALUE;
+            long conquestHigh = 0L;
+            for (DungeonMode mode : DungeonMode.values()) {
+                conquestLow = Math.min(conquestLow, DungeonManager.conquestXp(1, mode));
+                conquestHigh = Math.max(conquestHigh, DungeonManager.conquestXp(DungeonManager.MAX_PALIER, mode));
+            }
+            section.add(new ItemStack(Items.NETHER_STAR), "Palier " + dungeon.display() + " conquis",
+                    "+" + MoneyFormat.exact(conquestLow) + " a " + MoneyFormat.exact(conquestHigh) + " XP",
+                    "en plus", 0, 5.5d,
+                    "Premiere victoire d'un palier, tous modes confondus",
+                    "Son XP une seconde fois, une fois par palier");
         }
 
         long bossLow = JobBossApi.xpReward(1);

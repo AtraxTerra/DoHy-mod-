@@ -91,6 +91,7 @@ public final class DungeonMenus {
             DungeonMode mode = here == null ? DungeonMode.NORMAL : here.mode();
             int done = DungeonManager.best(player, dungeon, mode);
             int highest = DungeonManager.highest(player, dungeon, mode);
+            int conquered = DungeonManager.conquered(player, dungeon);
             List<ServerPlayer> party = DungeonManager.party(player);
             List<String> members = new ArrayList<>();
             for (ServerPlayer member : party) {
@@ -128,6 +129,9 @@ public final class DungeonMenus {
                 if (boss != null) {
                     lines.add((dark ? "Boss Dark : " : palier % 10 == 0 ? "Boss : " : "Mini-boss : ") + boss.name());
                 }
+                long xp = DungeonManager.jobXp(palier, mode);
+                lines.add("XP de " + dungeon.job().display() + " : +" + MoneyFormat.exact(xp)
+                        + (palier > conquered ? ", le double a la conquete" : ""));
                 Card card = Card.of(icon, "Palier " + palier, lines).badge(String.valueOf(palier));
                 if (cleared) {
                     card = card.state(MenuView.DONE).action("palier:" + palier + "|rejouer");
@@ -144,7 +148,8 @@ public final class DungeonMenus {
                     new MenuView.Stat("METIER", dungeon.job().display().toUpperCase(), 0xFFFFFFFF),
                     new MenuView.Stat("MODE", mode.label().toUpperCase(), color(mode.color())),
                     new MenuView.Stat(mode == DungeonMode.DIFFICILE ? "RECORD" : "DERNIER REUSSI",
-                            done == 0 ? "-" : String.valueOf(done), 0xFF22E558));
+                            done == 0 ? "-" : String.valueOf(done), 0xFF22E558),
+                    new MenuView.Stat("CONQUIS", conquered + " / " + DungeonManager.MAX_PALIER, 0xFFB07CFF));
             return new MenuView(id(), "Donjon " + dungeon.display(), "", stats, List.of(
                     new MenuView.Section("MODE", "armor", MenuView.GRID, modes),
                     new MenuView.Section("AVANT D'ENTRER", "resources", MenuView.GRID, info),

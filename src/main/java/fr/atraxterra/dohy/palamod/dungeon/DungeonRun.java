@@ -1636,7 +1636,6 @@ final class DungeonRun {
     /** La porte de sortie : sacs livres, XP de metier, progression. */
     private void succeed() {
         phase = Phase.ENDED;
-        long jobXp = DungeonManager.jobXp(palier, mode);
         List<ServerPlayer> party = onlineMembers();
         for (ServerPlayer player : party) {
             List<ItemStack> delivered = new ArrayList<>(bags.getOrDefault(player.getUUID(), List.of()));
@@ -1649,6 +1648,8 @@ final class DungeonRun {
                 }
             }
             Mark mark = mark(player, party);
+            // Conquerir : lu avant que la victoire ne compte dans la progression.
+            boolean conquest = jobBoss == null && DungeonManager.conquers(player, dungeon, palier);
             List<ItemStack> graded = DungeonRewards.gradeChest(level, random, dungeon, palier, mark.grade());
             DungeonManager.message(player, mark.grade().color(), "grade",
                     Component.literal(mark.grade().name()).withStyle(mark.grade().color(), ChatFormatting.BOLD),
@@ -1667,10 +1668,22 @@ final class DungeonRun {
                 player.sendSystemMessage(Component.literal("Butin du gardien livre : " + delivered.size()
                         + " pile(s).").withStyle(ChatFormatting.GOLD));
             } else {
+                // Terminer et Conquerir, les deux XP de l'Aventurier de JobsReborn, vont au metier du
+                // donjon ; un seul versement, pour une seule notification.
+                long finish = DungeonManager.finishXp(palier, mode, mark.grade());
+                long conquestXp = conquest ? DungeonManager.conquestXp(palier, mode) : 0L;
                 DungeonManager.message(player, ChatFormatting.GREEN, "success", palier, dungeon.display());
-                DungeonManager.message(player, ChatFormatting.GOLD, "delivered", delivered.size(), jobXp,
+                DungeonManager.message(player, ChatFormatting.GOLD, "delivered", delivered.size(), finish,
                         dungeon.job().display());
-                JobApi.grant(player, dungeon.job(), jobXp);
+                if (mark.grade().xpBonus() > 0.0d) {
+                    DungeonManager.message(player, mark.grade().color(), "grade_bonus", mark.grade().name(),
+                            Math.round(mark.grade().xpBonus() * 100.0d));
+                }
+                if (conquest) {
+                    DungeonManager.message(player, ChatFormatting.LIGHT_PURPLE, "conquest", palier, conquestXp,
+                            dungeon.job().display());
+                }
+                JobApi.grant(player, dungeon.job(), finish + conquestXp);
                 DungeonManager.recordCleared(player, dungeon, palier, mode);
             }
             removeBoosts(player);
@@ -1678,8 +1691,8 @@ final class DungeonRun {
             player.connection.send(new ClientboundSetTitleTextPacket(jobBoss != null
                     ? Component.literal(jobBoss.spec().name() + " vaincu !").withStyle(ChatFormatting.GOLD,
                     ChatFormatting.BOLD)
-                    : Component.literal("Palier " + palier + " reussi !").withStyle(ChatFormatting.GREEN,
-                    ChatFormatting.BOLD)));
+                    : Component.literal("Palier " + palier + (conquest ? " conquis !" : " reussi !"))
+                    .withStyle(conquest ? ChatFormatting.LIGHT_PURPLE : ChatFormatting.GREEN, ChatFormatting.BOLD)));
             player.connection.send(new ClientboundSetSubtitleTextPacket(
                     Component.literal((jobBoss != null ? "Boss de metier" : dungeon.display() + " · "
                                     + mode.label()) + " — note ").withStyle(dungeon.color())

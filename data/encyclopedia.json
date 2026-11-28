@@ -2283,7 +2283,8 @@
           "title": "Les recompenses",
           "text": [
             "- Un coffre par salle ; une note de D a S ameliore le coffre.",
-            "- XP de metier et XP RPG.",
+            "- XP de metier et XP RPG ; la note A ajoute 10 % d'XP de metier, la note S 25 %.",
+            "- Conquete : la premiere victoire d'un palier, tous modes confondus, rapporte son XP de metier une seconde fois.",
             "- Les sacs de donjon gardent le butin.",
             "- Coffres de boss : parfois Double XP, Triple des le palier 50."
           ]
@@ -5548,6 +5549,99 @@
           "dohy:hemp_fiber",
           "dohy:hemp_seeds",
           "dohy:hemp_canvas"
+        ]
+      }
+    },
+    {
+      "id": "botaniste",
+      "category": "agriculture",
+      "order": 6,
+      "icon": "palamod:botanist_pot",
+      "title": "Le botaniste",
+      "card": [
+        "Pots, plantes, mutations",
+        "Scanner, centrifugeuse, centre"
+      ],
+      "summary": [
+        "Le laboratoire du botaniste : des plantes en pot qui reclament des soins, mutent en fleurissant et se decouvrent au scanner de Genis. La centrifugeuse, la reserve de graines et le centre de controle completent le laboratoire. Tout rapporte au Fermier."
+      ],
+      "sections": [
+        {
+          "title": "Le pot",
+          "text": [
+            "- Fermier 10 : pots, arrosoir, guitare, scanner et trois graines (ble de fer, givrelune, corail des sables : une par climat).",
+            "- Une graine de mutation dans un pot : bourgeon, fleur (clic droit pour recolter), trois floraisons, puis fanee : un clic droit rend une ou deux graines.",
+            "- Hors de son climat, une plante fane au bourgeon.",
+            "! Elle ne pousse que si tu es a moins de 48 blocs."
+          ]
+        },
+        {
+          "title": "Les besoins",
+          "text": [
+            "Une fois par stade, la plante reclame de l'eau (arrosoir), un air (guitare), d'etre secouee ou percee (clic droit main vide), un objet ou des nibblers. 90 secondes pour repondre, sinon elle ralentit d'une minute.",
+            "- Les nibblers apparaissent pres du pot. Approche : ils se figent en criant, puis fuient.",
+            "- Filet (Fermier 25) : clic droit sur un nibbler pour l'attraper (huit au plus), puis sur la plante pour les relacher."
+          ]
+        },
+        {
+          "title": "Les mutations",
+          "text": [
+            "- En fleurissant, une plante peut muter vers une plante plus rare de son climat : 8 % pour une commune, 5 % pour une rare, 3 % pour une epique.",
+            "- Recoltee, une fleur mutee rend une mutation inconnue, et la plante disparait.",
+            "- Rares au Fermier 25, epiques au 45, legendaires au 70 : sous ce niveau, une plante ne mute pas vers elles."
+          ]
+        },
+        {
+          "title": "Le scanner de Genis",
+          "text": [
+            "- Une mutation inconnue (ou une graine absente de ton codex) et du charbon, puis LANCER LE SCAN.",
+            "- 15 secondes pour une plante deja connue, 45 pour une decouverte : il rend sa graine et l'ajoute a ton codex (XP de decouverte).",
+            "- LE CODEX : les quinze plantes, leur fiche, leurs variantes et d'ou elles viennent."
+          ]
+        },
+        {
+          "title": "La centrifugeuse",
+          "text": [
+            "- Fermier 25 : une graine de mutation au centre, jusqu'a six objets autour, puis CENTRIFUGER (10 secondes).",
+            "- Chaque case ajoute la chance de son objet (une fois, quelle que soit la pile) : 1 % pour la poudre d'os ou la redstone, 5 % pour un lingot de paladium, 20 % pour une pepite d'endium organique.",
+            "- Reussite : une mutation inconnue, que le scanner change en une plante a ton niveau. Echec : ta graine rendue, ou un dechet de mutation.",
+            "! La centrifugation prend la graine et un objet de chaque case."
+          ]
+        },
+        {
+          "title": "La reserve de graines",
+          "text": [
+            "- Fermier 10 : dix graines par plante, une case par plante. Ta reserve est la meme depuis n'importe quel bloc de reserve.",
+            "- La premiere graine rangee d'une plante rapporte de l'XP de Fermier : 50 pour une commune, 100 pour une rare, 250 pour une epique, 600 pour une legendaire."
+          ]
+        },
+        {
+          "title": "Le centre de controle",
+          "text": [
+            "- Fermier 10 : un module par climat (normal, glacial, desertique) suit tes pots, ou qu'ils soient : stade, besoins en attente, fleurs a recolter, pousse moyenne. Un clic sur un pot donne ses coordonnees.",
+            "- BOOSTER LE MODULE : une fois par jour, pousse x1,5 et +2 % de chance de muter pendant 30 minutes (5 000 $ et quatre poudres d'os).",
+            "- AMELIORER LE MODULE : trois niveaux, +10 % de pousse chacun (argent, objets, niveau de Fermier, une construction de 1, 4 puis 12 heures).",
+            "! Le centre passe en alerte quand une de tes plantes reclame quelque chose, et en construction pendant une amelioration."
+          ]
+        }
+      ],
+      "see": [
+        "fermier",
+        "cultures",
+        "agriculture"
+      ],
+      "discover": {
+        "items": [
+          "palamod:botanist_pot",
+          "palamod:gene_scanner",
+          "palamod:mutation_centrifuge",
+          "palamod:seed_reserve",
+          "palamod:lab_control",
+          "palamod:net",
+          "palamod:unknown_mutation",
+          "palamod:ironwheat_seed",
+          "palamod:moonfrost_seed",
+          "palamod:sand_coral_seed"
         ]
       }
     },

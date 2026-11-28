@@ -13,7 +13,8 @@ import java.util.function.Consumer;
  * Une graine de mutation ({@code ItemBotanistMutationSeed}) : elle se plante dans
  * un pot du botaniste, pas en terre. L'infobulle dit son climat, ses temps de
  * pousse et ses recoltes (« Temps de pousse », « Recoltable au clic droit a
- * chaque floraison » dans JobsReborn).
+ * chaque floraison » dans JobsReborn), sa rarete et le niveau de Fermier pour la
+ * planter.
  */
 public class MutationSeedItem extends Item {
 
@@ -31,6 +32,11 @@ public class MutationSeedItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
+        Rarity rarity = mutation.rarity();
+        tooltip.accept(Component.translatable("tooltip.palamod.mutation_seed.rarity",
+                Component.translatable("tooltip.palamod.botanist.rarity." + rarity.key())
+                        .withColor(rarity.color() & 0xFFFFFF))
+                .withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltip.palamod.mutation_seed.climate",
                 Component.translatable("tooltip.palamod.botanist.climate." + mutation.climate().key())
                         .withStyle(ChatFormatting.AQUA))
@@ -42,6 +48,9 @@ public class MutationSeedItem extends Item {
         tooltip.accept(Component.translatable("tooltip.palamod.mutation_seed.harvests",
                 Component.literal(String.valueOf(Mutation.HARVESTS)).withStyle(ChatFormatting.WHITE),
                 Component.literal(MineralSeedItem.duration(mutation.rebloomTicks())).withStyle(ChatFormatting.WHITE))
+                .withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltip.palamod.mutation_seed.level",
+                Component.literal(String.valueOf(mutation.level())).withStyle(ChatFormatting.WHITE))
                 .withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltip.palamod.mutation_seed.pot")
                 .withStyle(ChatFormatting.DARK_GRAY));

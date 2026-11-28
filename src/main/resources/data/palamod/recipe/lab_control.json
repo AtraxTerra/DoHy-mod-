@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CBC",
+    "TRT",
+    "TTT"
+  ],
+  "key": {
+    "C": "minecraft:comparator",
+    "B": "minecraft:bell",
+    "T": "palamod:titane_ingot",
+    "R": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "palamod:lab_control",
+    "count": 1
+  }
+}
