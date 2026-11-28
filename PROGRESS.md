@@ -195,6 +195,19 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-28 — métier à tisser et table de cartographie au style du kit
+
+**Demande** : finir l'épuration des écrans (avec le Botaniste, lot 2b, ensuite).
+
+- **`KitStations`** gagne le métier à tisser (grille des motifs, aperçu de la bannière, croix sur
+  une bannière pleine) et la table de cartographie (aperçu de la carte du jeu, croix sur la
+  flèche quand l'ajout ne se peut pas). Plus aucun conteneur du jeu ne garde l'écran gris.
+  `INTERFACES.md`, « L'épuration des écrans ».
+
+**Vérifié** : captures du métier vide, avec ses motifs, un motif choisi, la grille déroulée, un
+motif d'objet (fleur), une bannière pleine ; de la table vide, avec une carte, l'agrandissement,
+la copie, le verrou et le refus (carte à l'échelle 4) ; et de l'écran du jeu sur le même menu.
+
 ### 2026-11-28 — les salles à spawner de la Mine
 
 - `MineSpawnerRoomFeature` : des salles closes de 7 × 7 dans la roche de la Mine, une chance sur six

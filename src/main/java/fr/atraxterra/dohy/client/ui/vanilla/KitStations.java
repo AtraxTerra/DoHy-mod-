@@ -895,8 +895,10 @@ public final class KitStations {
                     }
                 }
             } else {
-                g.wrapped(Ui.BODY, "Pose une banniere et une teinture : ses motifs viennent ici.", 62.0f, 30.0f,
-                        4.6f, 52.0f, 6.6f, Ui.Theme.MUTED, 4);
+                // Le jeu cache la grille sans banniere ou sans teinture, et sur une banniere pleine.
+                String hint = max ? "Cette banniere porte deja ses six motifs : rien de plus ne s'y tisse."
+                        : "Pose une banniere et une teinture : ses motifs viennent ici.";
+                g.wrapped(Ui.BODY, hint, 62.0f, 30.0f, 4.6f, 52.0f, 6.6f, Ui.Theme.MUTED, 5);
             }
 
             // La barre de defilement : le jeu la tire et la fait rouler, on la dessine.
