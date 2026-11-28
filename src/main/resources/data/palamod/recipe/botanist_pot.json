@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    "TDT",
+    "TTT"
+  ],
+  "key": {
+    "T": "minecraft:terracotta",
+    "D": "minecraft:dirt"
+  },
+  "result": {
+    "id": "palamod:botanist_pot",
+    "count": 1
+  }
+}

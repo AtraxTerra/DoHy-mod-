@@ -156,6 +156,42 @@
       "label": "Houe en amethyste"
     },
     {
+      "id": "palamod:botanist_pot",
+      "job": "farmer",
+      "level": 10,
+      "label": "Pot de botaniste"
+    },
+    {
+      "id": "palamod:watering_can",
+      "job": "farmer",
+      "level": 10,
+      "label": "Arrosoir"
+    },
+    {
+      "id": "palamod:guitar",
+      "job": "farmer",
+      "level": 10,
+      "label": "Guitare"
+    },
+    {
+      "id": "palamod:ironwheat_seed",
+      "job": "farmer",
+      "level": 10,
+      "label": "Graine de ble de fer"
+    },
+    {
+      "id": "palamod:moonfrost_seed",
+      "job": "farmer",
+      "level": 10,
+      "label": "Graine de givrelune"
+    },
+    {
+      "id": "palamod:sand_coral_seed",
+      "job": "farmer",
+      "level": 10,
+      "label": "Graine de corail des sables"
+    },
+    {
       "id": "palamod:amethyst_seedplanter",
       "job": "farmer",
       "level": 15,
@@ -1073,6 +1109,34 @@
     },
     {
       "job": "farmer",
+      "level": 10,
+      "id": "palamod:botanist_pot",
+      "count": 2,
+      "label": "Pots de botaniste"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:ironwheat_seed",
+      "count": 2,
+      "label": "Graines de ble de fer"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:moonfrost_seed",
+      "count": 2,
+      "label": "Graines de givrelune"
+    },
+    {
+      "job": "farmer",
+      "level": 10,
+      "id": "palamod:sand_coral_seed",
+      "count": 2,
+      "label": "Graines de corail des sables"
+    },
+    {
+      "job": "farmer",
       "level": 15,
       "id": "palamod:paladium_ingot",
       "count": 15,
@@ -1091,6 +1155,13 @@
       "id": "palamod:findium",
       "count": 2,
       "label": "Findium"
+    },
+    {
+      "job": "farmer",
+      "level": 15,
+      "id": "palamod:botanist_pot",
+      "count": 2,
+      "label": "Pots de botaniste"
     },
     {
       "job": "farmer",
