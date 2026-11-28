@@ -6,6 +6,7 @@ import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -14,15 +15,17 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
 import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 /**
  * Les notifications du jeu au style de celles du kit ({@link ToastLayer}) : progres et defis,
  * recettes debloquees, tutoriel, messages du systeme (sauvegarde, echecs de chargement...),
- * musique en cours.
+ * amis, musique en cours.
  *
  * <p>Le jeu garde tout le reste : la place en haut a droite, l'entree et la sortie en glissant,
  * la pile, la duree, le son, les mises a jour (une recette de plus, la progression du tutoriel).
@@ -33,7 +36,8 @@ import java.util.Locale;
  * garde le dessin du jeu.
  *
  * <p>Couleurs : progres et objectifs en jaune, defis en rose (celles du jeu), recettes en vert,
- * tutoriel en cyan, systeme en bleu (en rouge pour un echec), musique a la couleur des notes.
+ * tutoriel en cyan, systeme en bleu (en rouge pour un echec), amis en orange, musique a la couleur
+ * des notes.
  */
 public final class KitToasts {
 
@@ -105,7 +109,7 @@ public final class KitToasts {
             icon.extractRenderState(graphics, 0, 0);
             pose.popMatrix();
             float bottom = progressable ? height - 7.0f : height;
-            stacked(g, width, bottom, "Tutoriel", accent, content, TUTORIAL_TITLE);
+            stacked(g, TEXT_X, width, bottom, "Tutoriel", accent, content, line -> color(line) == TUTORIAL_TITLE);
             if (progressable) {
                 boolean rising = progress >= smoothed;
                 int top = rising ? Paint.mix(Ui.Theme.GREEN, 0xFFFFFFFF, 0.25f) : Paint.mix(Ui.Theme.RED, 0xFFFFFFFF, 0.2f);
@@ -136,6 +140,24 @@ public final class KitToasts {
             if (count == 0) {
                 g.text(Ui.PIXEL, "SYSTEME", x, (height - KEY) / 2.0f, KEY, accent);
             }
+        });
+    }
+
+    /**
+     * Un ami (il rejoint ton monde, t'invite...) : son visage dans la tuile quand le jeu le
+     * connait, puis le message, deja coupe par le jeu a sa largeur.
+     */
+    public static boolean friend(GuiGraphicsExtractor graphics, int width, int height, ResolvableProfile profile,
+                                 List<FormattedCharSequence> message) {
+        int accent = Ui.Theme.ORANGE;
+        return draw(graphics, width, height, accent, (g, p) -> {
+            float x = 10.0f;
+            if (profile != null) {
+                float tileY = tile(p, Math.min(height, 32), accent);
+                PlayerFaceExtractor.extractRenderState(graphics, profile, 9, Math.round(tileY + 2.0f), 16);
+                x = TEXT_X;
+            }
+            stacked(g, x, width, height, "Ami", accent, message, line -> true);
         });
     }
 
@@ -219,24 +241,24 @@ public final class KitToasts {
     }
 
     /**
-     * La nature, puis des lignes deja coupees par le jeu : celles a la couleur {@code titleColor}
-     * en titre, les autres en detail.
+     * La nature, puis des lignes deja coupees par le jeu, a partir de {@code x} : celles que
+     * {@code heading} retient en titre, les autres en detail.
      */
-    private static void stacked(UiGraphics g, float width, float height, String key, int keyColor,
-                                List<FormattedCharSequence> content, int titleColor) {
-        float max = width - TEXT_X - 6.0f;
+    private static void stacked(UiGraphics g, float x, float width, float height, String key, int keyColor,
+                                List<FormattedCharSequence> content, Predicate<FormattedCharSequence> heading) {
+        float max = width - x - 6.0f;
         float total = KEY + 1.8f;
         for (FormattedCharSequence line : content) {
-            total += (color(line) == titleColor ? TITLE : LINE) + 1.4f;
+            total += (heading.test(line) ? TITLE : LINE) + 1.4f;
         }
         float y = Math.max(3.0f, (height - total + 1.4f) / 2.0f);
-        g.text(Ui.PIXEL, plain(key).toUpperCase(Locale.ROOT), TEXT_X, y, KEY, keyColor);
+        g.text(Ui.PIXEL, plain(key).toUpperCase(Locale.ROOT), x, y, KEY, keyColor);
         y += KEY + 1.8f;
         for (FormattedCharSequence line : content) {
-            boolean heading = color(line) == titleColor;
-            float size = heading ? TITLE : LINE;
-            g.text(heading ? Ui.BOLD : Ui.BODY, g.fit(heading ? Ui.BOLD : Ui.BODY, plain(text(line)), size, max),
-                    TEXT_X, y, size, heading ? Ui.Theme.TEXT : Ui.Theme.TEXT2);
+            boolean title = heading.test(line);
+            float size = title ? TITLE : LINE;
+            g.text(title ? Ui.BOLD : Ui.BODY, g.fit(title ? Ui.BOLD : Ui.BODY, plain(text(line)), size, max),
+                    x, y, size, title ? Ui.Theme.TEXT : Ui.Theme.TEXT2);
             y += size + 1.4f;
         }
     }

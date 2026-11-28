@@ -15,6 +15,7 @@
     "AdvancementToastMixin",
     "BiomeColorsMixin",
     "ChatComponentMixin",
+    "FriendToastMixin",
     "NowPlayingToastMixin",
     "RecipeToastEntryAccessor",
     "RecipeToastMixin",
