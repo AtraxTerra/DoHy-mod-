@@ -72,8 +72,12 @@ public final class KitToasts {
         });
     }
 
-    /** Des recettes debloquees : la derniere en icone (le poste de travail en pastille), son nom. */
-    public static boolean recipe(GuiGraphicsExtractor graphics, int width, int height, Component title,
+    /**
+     * Des recettes debloquees : celle que le jeu montre en icone (le poste de travail en pastille),
+     * son nom. La nature est dite par le kit, au singulier ou au pluriel : le titre du jeu
+     * (« Nouvelle(s) recette(s) ! ») a des parentheses que la police pixel n'a pas.
+     */
+    public static boolean recipe(GuiGraphicsExtractor graphics, int width, int height, int count,
                                  Component description, ItemStack unlocked, ItemStack category) {
         int accent = Ui.Theme.GREEN;
         return draw(graphics, width, height, accent, (g, p) -> {
@@ -87,8 +91,8 @@ public final class KitToasts {
                 graphics.fakeItem(category, 0, 0);
                 pose.popMatrix();
             }
-            lines(g, width, height, title.getString(), accent, unlocked.getHoverName().getString(),
-                    description.getString());
+            lines(g, width, height, count > 1 ? "Nouvelles recettes" : "Nouvelle recette", accent,
+                    unlocked.getHoverName().getString(), description.getString());
         });
     }
 
@@ -231,7 +235,7 @@ public final class KitToasts {
         String detail = plain(line).trim();
         float total = KEY + 1.8f + TITLE + (detail.isEmpty() ? 0.0f : 1.4f + LINE);
         float y = (height - total) / 2.0f;
-        g.text(Ui.PIXEL, g.fit(Ui.PIXEL, plain(key).toUpperCase(Locale.ROOT), KEY, max), TEXT_X, y, KEY, keyColor);
+        g.text(Ui.PIXEL, g.fit(Ui.PIXEL, key(key), KEY, max), TEXT_X, y, KEY, keyColor);
         y += KEY + 1.8f;
         g.text(Ui.BOLD, g.fit(Ui.BOLD, plain(title), TITLE, max), TEXT_X, y, TITLE, Ui.Theme.TEXT);
         if (!detail.isEmpty()) {
@@ -252,7 +256,7 @@ public final class KitToasts {
             total += (heading.test(line) ? TITLE : LINE) + 1.4f;
         }
         float y = Math.max(3.0f, (height - total + 1.4f) / 2.0f);
-        g.text(Ui.PIXEL, plain(key).toUpperCase(Locale.ROOT), x, y, KEY, keyColor);
+        g.text(Ui.PIXEL, g.fit(Ui.PIXEL, key(key), KEY, max), x, y, KEY, keyColor);
         y += KEY + 1.8f;
         for (FormattedCharSequence line : content) {
             boolean title = heading.test(line);
@@ -268,6 +272,14 @@ public final class KitToasts {
     /** Un texte sans accents : les polices du kit n'en ont pas. */
     private static String plain(String text) {
         return ContainerStyle.plain(text);
+    }
+
+    /**
+     * La nature d'une notification, en capitales et sans la ponctuation finale : le « ! » des
+     * progres du jeu (« Progres realise ! ») est un trait penche dans la police pixel.
+     */
+    private static String key(String key) {
+        return plain(key).replaceAll("[\\s!?.:]+$", "").toUpperCase(Locale.ROOT);
     }
 
     /** Le texte d'une ligne deja coupee par le jeu. */

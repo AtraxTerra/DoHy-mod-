@@ -25,10 +25,6 @@ public abstract class RecipeToastMixin {
 
     @Shadow
     @Final
-    private static Component TITLE_TEXT;
-
-    @Shadow
-    @Final
     private static Component DESCRIPTION_TEXT;
 
     @Shadow
@@ -46,7 +42,7 @@ public abstract class RecipeToastMixin {
             return;
         }
         Toast self = (Toast) (Object) this;
-        if (KitToasts.recipe(graphics, self.width(), self.height(), TITLE_TEXT, DESCRIPTION_TEXT,
+        if (KitToasts.recipe(graphics, self.width(), self.height(), recipeItems.size(), DESCRIPTION_TEXT,
                 entry.dohy$unlocked(), entry.dohy$category())) {
             callback.cancel();
         }
