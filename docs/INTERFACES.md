@@ -140,6 +140,10 @@ menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
   l'exécution par NeoForge) ; s'il en manquait un, l'écran reprendrait son dessin du jeu.
 - Restent à l'écran du jeu : le métier à tisser et la table de cartographie (rares, et dont
   l'aperçu — bannière, carte — est dessiné par le jeu lui-même).
+- **Cartouches du HUD** : celui des finders (`FinderHudLayer`) et la barre du réceptacle à wither
+  (`ReceptacleHudLayer`) quittent l'ancien panneau pour les cartes du HUD (`HudKit.card`, ombre,
+  fond, filet, coins arrondis), une tuile à la couleur du finder ou du réceptacle et les barres du
+  HUD (`HudKit.bar`). Mêmes informations, mêmes places.
 - **Palette d'armement** (`PaletteScreen`) : elle quitte l'ancien panneau (cases grises à bord
   clair, titre kaki) pour le style des coffres du kit : la fenêtre et son en-tête (la palette, son
   nom, la croix), « GROUPE 3 X 3 » et le compte par famille (obus, munitions, missiles) dans la

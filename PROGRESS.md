@@ -195,6 +195,12 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — les cartouches du HUD en cartes du kit
+
+- Le cartouche des finders et la barre du réceptacle à wither passent aux cartes et barres du HUD
+  (`HudKit` rendu public pour eux). Vérifié en captures (finder bleu, finder de spawners,
+  réceptacle visé).
+
 ### 2026-11-27 — la palette d'armement au style des coffres du kit
 
 - `PaletteScreen` : fenêtre et en-tête du kit (icône, nom, croix), groupe et compte par famille
