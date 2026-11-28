@@ -4667,10 +4667,27 @@ l'escargot comme sources d'appât). Règles : le wiki de Paladium (« Java | Fam
 `MiningFortuneListener`, `PortableCoffinListener`). Le reste du système de Paladium (le plugin
 `fr.paladium.pet`) n'est pas dans le jar : il est refait d'après le wiki.
 
-**Les trois familiers sont propres au mod** : Paladium a les siens (noms et dessins), ils ne sont
-pas repris. **Pyrolynx** (un petit lynx gris cendre aux pointes couleur braise), **Mordillon** (un
-chiot brun et crème au foulard rouge) et **Feu-follet** (une flammèche bleue qui flotte). Boîtes,
-couleurs et portraits : `tools/pet_assets.py`.
+**Les vingt et un familiers de Paladium**, depuis le 2026-11-27, à la demande du joueur, d'après le
+jar **PalaPet 7.12.0** (Paladium Games, crédit dans le README) : modèles Bedrock (`geo/pets`),
+animations (`idle`, `walk`, `swim`, `fall`, `skill`), textures, place sur l'épaule (`data/*.json`).
+Ils remplacent les trois créatures dessinées pour le mod à l'origine (Pyrolynx, Mordillon,
+Feu-follet), qui deviennent dans les sauvegardes le renard patronus, le chien et la fée de l'hiver.
+Le jar ne donne ni les noms (ils viennent du serveur de Paladium) ni la rareté : les noms sont
+traduits des identifiants, et la cage tire au hasard **pondéré** :
+
+| Rareté (poids) | Familiers |
+|---|---|
+| Commun (10) | chien, chat, lapin, pingouin, caméléon, poisson-blob, mini-golem |
+| Peu commun (5) | dragon, carpe koï, Arty, main de zombie, main de Nimbria, renne |
+| Rare (2) | renard patronus, OVNI, chauve-souris de Saharia, moustique de Talikus, Feng Uang, fée de l'hiver, wither bulle |
+| Légendaire (1) | dragon de l'End |
+
+Sur un total de 115, soit 61 % pour un commun, 26 % pour un peu commun, 12 % pour un rare et
+0,9 % pour le dragon de l'End. Les modèles sont lus par le moteur des monstres de donjon (`client/rpg/BedrockModel`), mis à
+l'échelle d'une même place (les tailles du jar vont de 10 à 48 pixels), animés en mêlant attente et
+marche selon le pas du maître. Les portraits des menus sont rendus depuis le modèle et la texture du
+jar (`tools/palapet_assets.py`). **La cage** et **l'appât** sont aussi ceux de PalaPet : une caisse
+dont la porte, tenue par un bâton, tombe quand un familier entre (animation `closing`).
 
 ### Le serpent et l'escargot
 
@@ -4692,7 +4709,8 @@ sons du serpent du jar.
 - **Cage à familier** : `STS / TCT / STS` (bâtons et lingots de titane, améthyste compressée),
   Chasseur niveau 15 (le 3 de PalaJobs). Seul celui qui l'a posée s'en sert.
 - **Appât** : la cage est chargée 5 minutes ; toutes les 2 minutes, 5 % de chances qu'un familier
-  (tiré parmi les trois) y entre. Le maître est prévenu où qu'il soit et a 5 minutes pour venir.
+  (tiré parmi les vingt et un, voir plus haut) y entre. Le maître est prévenu où qu'il soit et a
+  5 minutes pour venir.
 - **Apprivoisement** : un mini-jeu proche de la pêche. Vert +50, jaune +25, rouge −50, noir −150 ;
   trois paliers de 100, 200 et 400 points ; 2 minutes entre deux paliers, puis 7 minutes pour
   revenir. Retombé à 0 au palier 1, la cage casse ; aux paliers 2 et 3, retour au palier d'avant.
@@ -4740,13 +4758,19 @@ R tenue, viser, relâcher).
   (crusher, cobblebreaker, croquettes, totem, portail, chaudron, extracteur, pierres légendaires,
   pioche des dieux, deltaplane, knocker, spawners, étable, table d'écriture).
 - Client : `client/pet/` (modèles, rendus, épaule, cage, menus, roue, apprivoisement).
-- Assets : `tools/pet_assets.py` (`--check` en CI, `--jar` recopie textures et sons de PalaMod) ;
-  XP de Chasseur : `tools/bedrock_jobs.py`.
+- Assets : `tools/palapet_assets.py` (`--check` en CI, `--import` reprend du jar de PalaPet les
+  familiers, la cage et l'appât, et rend les portraits) ; `tools/pet_assets.py` (`--check` en CI,
+  `--jar` recopie textures et sons de PalaMod ; les œufs dessinés) ; XP de Chasseur :
+  `tools/bedrock_jobs.py`.
 - Encyclopédie : la fiche « Les familiers ».
 
 ### Écarts
 
-- **Les trois familiers** : créatures propres au mod (voir plus haut).
+- **Les noms et la rareté des familiers** ne sont pas dans le jar : traduits et calibrés (voir plus
+  haut).
+- **La place sur l'épaule** : celle du jar (`shoulderPosition`, `scaleFactor`) suit le rendu de
+  1.7.10 ; ici chaque familier est mis à l'échelle de la même place, posé sur l'épaule (les
+  volants à côté).
 - **La roue** : touche R par défaut ; le wiki dit MAJ, qui fait déjà s'accroupir (réglable).
 - **Les points de départ** : le wiki ne les donne pas ; chaque palier part de 50.
 - **Nuage électrique** : comme le pont de PalaMod, des éclairs autour du joueur ; casque en fer ou

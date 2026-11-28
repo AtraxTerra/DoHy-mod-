@@ -2,6 +2,8 @@ package fr.atraxterra.dohy.client.pet;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import fr.atraxterra.dohy.client.rpg.BedrockModel;
+import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.pet.Familiar;
 import fr.atraxterra.dohy.palamod.pet.PalaPets;
 import fr.atraxterra.dohy.palamod.pet.PetCageBlock;
@@ -20,6 +22,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -28,19 +31,41 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * La cage posee : le familier entre, assis sur la paille, ou l'appat qui
- * l'attend ; et, visee de pres, ce qui se passe (appat, palier, temps qui reste).
+ * La cage posee, celle de PalaPet (sa caisse, sa porte tenue par un baton, qui
+ * tombe quand un familier entre) : le familier entre, ou l'appat qui l'attend ;
+ * et, visee de pres, ce qui se passe (appat, palier, temps qui reste).
  */
 public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, PetCageRenderer.State> {
 
     private static final double LABEL_RANGE = 8.0d;
+    private static final Identifier CAGE_TEXTURE =
+            Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "textures/entity/pet_cage.png");
+
+    private static BedrockModel cage;
+    private static boolean cageLoaded;
 
     private final FamiliarModels models;
     private final ItemModelResolver items;
 
     public PetCageRenderer(BlockEntityRendererProvider.Context context) {
-        this.models = new FamiliarModels(context.entityModelSet());
+        this.models = new FamiliarModels();
         this.items = context.itemModelResolver();
+    }
+
+    /** Le modele de la cage de PalaPet ({@code assets/palamod/pet/cage}), lu au premier dessin. */
+    private static synchronized BedrockModel cage() {
+        if (!cageLoaded) {
+            cageLoaded = true;
+            cage = BedrockModel.load(Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "pet/cage/model.json"),
+                    Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "pet/cage/animation.json"));
+        }
+        return cage;
+    }
+
+    /** Au rechargement des ressources. */
+    static synchronized void clear() {
+        cage = null;
+        cageLoaded = false;
     }
 
     public static final class State extends BlockEntityRenderState {
@@ -49,6 +74,9 @@ public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, 
         float age;
         final ItemStackRenderState bait = new ItemStackRenderState();
         boolean baited;
+        /** La porte : fermee depuis l'arrivee du familier (en secondes), ouverte sinon. */
+        boolean closed;
+        float doorSeconds;
         Component line;
     }
 
@@ -69,6 +97,8 @@ public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, 
         long now = cage.getLevel() == null ? 0L : cage.getLevel().getGameTime();
         state.age = now + partialTick;
         state.occupant = Familiar.byId(cage.occupant());
+        state.closed = state.occupant != null;
+        state.doorSeconds = (now - cage.occupantSince(now) + partialTick) / 20.0f;
         state.baited = cage.baited(now);
         if (state.baited) {
             items.updateForTopItem(state.bait, new ItemStack(PalaPets.PET_BAIT.get()), ItemDisplayContext.GROUND,
@@ -105,6 +135,23 @@ public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, 
     @Override
     public void submit(State state, PoseStack pose, SubmitNodeCollector collector, CameraRenderState camera) {
         int light = state.lightCoords;
+        BedrockModel model = cage();
+        if (model != null) {
+            String clip = state.closed ? "closing" : "idle";
+            float seconds = state.closed ? state.doorSeconds : state.age / 20.0f;
+            pose.pushPose();
+            pose.translate(0.5f, 0.0f, 0.5f);
+            pose.mulPose(Axis.YP.rotationDegrees(state.facing));
+            // Le repere des modeles Bedrock du moteur des monstres : retourne, sol a 24 pixels.
+            pose.scale(-1.0f, -1.0f, 1.0f);
+            pose.translate(0.0f, -1.501f, 0.0f);
+            collector.submitCustomGeometry(pose, model.renderType(CAGE_TEXTURE), (last, buffer) -> {
+                model.resetPose();
+                model.animate(clip, seconds);
+                model.draw(last, buffer, light, OverlayTexture.NO_OVERLAY);
+            });
+            pose.popPose();
+        }
         if (state.occupant != null) {
             pose.pushPose();
             pose.translate(0.5f, 0.0625f, 0.5f);
@@ -123,13 +170,15 @@ public class PetCageRenderer implements BlockEntityRenderer<PetCageBlockEntity, 
             pose.popPose();
         }
         if (state.line != null) {
-            collector.submitNameTag(pose, new Vec3(0.5d, 1.25d, 0.5d), 0, state.line, false, light, camera);
+            collector.submitNameTag(pose, new Vec3(0.5d, 1.45d, 0.5d), 0, state.line, false, light, camera);
         }
     }
 
     @Override
     public AABB getRenderBoundingBox(PetCageBlockEntity cage) {
         BlockPos pos = cage.getBlockPos();
-        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0d, pos.getY() + 1.6d, pos.getZ() + 1.0d);
+        // Le baton qui tient la porte depasse d'un bloc devant la cage.
+        return new AABB(pos.getX() - 1.0d, pos.getY(), pos.getZ() - 1.0d, pos.getX() + 2.0d, pos.getY() + 1.8d,
+                pos.getZ() + 2.0d);
     }
 }

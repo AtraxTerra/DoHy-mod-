@@ -1,0 +1,115 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.main_zombie",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "hand",
+					"pivot": [0, 4, 0]
+				},
+				{
+					"name": "bone3",
+					"parent": "hand",
+					"pivot": [-1.5, 12, 2],
+					"rotation": [7.5, 0, -5],
+					"cubes": [
+						{"origin": [-3.5, 2.25, -4], "size": [6, 4, 6], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "bone",
+					"parent": "bone3",
+					"pivot": [-1.5, 6.25, 0],
+					"rotation": [45, 0, 0],
+					"cubes": [
+						{"origin": [-3.5, 3.25, 0], "size": [5, 3, 6], "inflate": -0.01, "uv": [0, 10]}
+					]
+				},
+				{
+					"name": "doigt2",
+					"parent": "hand",
+					"pivot": [4, 3, 1.25]
+				},
+				{
+					"name": "bone4",
+					"parent": "doigt2",
+					"pivot": [4, 3, 1.25],
+					"rotation": [-2.5, -10, -57.5]
+				},
+				{
+					"name": "bone10",
+					"parent": "bone4",
+					"pivot": [5, 2, 1.25],
+					"rotation": [0, 0, 30],
+					"cubes": [
+						{"origin": [3, -1, 0.25], "size": [2, 4, 2], "inflate": 0.001, "uv": [16, 10]}
+					]
+				},
+				{
+					"name": "bone2",
+					"parent": "doigt2",
+					"pivot": [-2, 3, -2.5],
+					"rotation": [-80, 22.5, 0]
+				},
+				{
+					"name": "bone5",
+					"parent": "bone2",
+					"pivot": [-2, 1, -3.5],
+					"rotation": [45, 0, 0],
+					"cubes": [
+						{"origin": [-3, -2, -3.5], "size": [2, 4, 2], "inflate": 0.001, "uv": [0, 19], "mirror": true}
+					]
+				},
+				{
+					"name": "bone11",
+					"parent": "doigt2",
+					"pivot": [2, 3, -2.5],
+					"rotation": [-80, -22.5, 0]
+				},
+				{
+					"name": "bone12",
+					"parent": "bone11",
+					"pivot": [2, 1, -3.5],
+					"rotation": [45, 0, 0],
+					"cubes": [
+						{"origin": [1, -2, -3.5], "size": [2, 4, 2], "inflate": 0.001, "uv": [8, 19]}
+					]
+				},
+				{
+					"name": "bone8",
+					"parent": "doigt2",
+					"pivot": [0, 3.25, -3],
+					"rotation": [-70, 0, 0]
+				},
+				{
+					"name": "bone9",
+					"parent": "bone8",
+					"pivot": [0, 1.25, -4],
+					"rotation": [45, 0, 0],
+					"cubes": [
+						{"origin": [-1, -1.75, -4], "size": [2, 4, 2], "inflate": 0.001, "uv": [8, 19]}
+					]
+				},
+				{
+					"name": "flower",
+					"parent": "hand",
+					"pivot": [-10.5, 0.25, -1],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{"origin": [-11.5, 0.25, -2], "size": [1, 5, 1], "pivot": [-11, 2.75, -1.5], "rotation": [0, -135, 0], "uv": [16, 26]},
+						{"origin": [-10.5, 2.25, -3], "size": [2, 0, 2], "pivot": [-11, 2.75, -1.5], "rotation": [0, -135, 20], "uv": [24, 29]},
+						{"origin": [-14.5, 4.75, -4.5], "size": [6, 0, 6], "pivot": [-10.5, 4.75, -1.5], "rotation": [0, 0, 55], "uv": [14, 21]}
+					]
+				}
+			]
+		}
+	]
+}

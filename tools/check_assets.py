@@ -200,6 +200,9 @@ MODEL_TEXTURES = {
     "item/box_saharia.png": (32, 32),
     "item/box_trixium.png": (32, 32),
     "item/box_halloween.png": (32, 32),
+    # L'icone de la cage a familier : rendue en 32 x 32 depuis le modele 3D de PalaPet
+    # (tools/palapet_assets.py), illisible en 16 x 16.
+    "item/pet_cage.png": (32, 32),
     # Les cles de caisse : l'illustration de PalaShop, reduite de la meme facon.
     "item/crate_key_amethyst.png": (32, 32),
     "item/crate_key_saharia.png": (32, 32),

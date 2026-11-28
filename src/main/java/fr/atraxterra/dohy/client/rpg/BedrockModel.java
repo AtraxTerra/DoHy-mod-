@@ -31,14 +31,43 @@ import java.util.Set;
  */
 public final class BedrockModel {
 
+    /**
+     * L'encombrement des boites du fichier, en pixels, dans le repere Bedrock (y vers le
+     * haut, sol a 0) ; sans les rotations ni le gonflement : de quoi mettre le modele a
+     * l'echelle d'une place, pas une mesure exacte.
+     */
+    public record Bounds(float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
+        public float width() {
+            return Math.max(1.0f, maxX - minX);
+        }
+
+        public float height() {
+            return Math.max(1.0f, maxY - minY);
+        }
+
+        public float length() {
+            return Math.max(1.0f, maxZ - minZ);
+        }
+
+        public float centerX() {
+            return (minX + maxX) / 2.0f;
+        }
+
+        public float centerZ() {
+            return (minZ + maxZ) / 2.0f;
+        }
+    }
+
     private final RpgEntityModel model;
     private final RpgModels.Named clips;
     private final Map<String, ModelPart> parts;
+    private final Bounds bounds;
 
-    private BedrockModel(RpgEntityModel model, RpgModels.Named clips, Map<String, ModelPart> parts) {
+    private BedrockModel(RpgEntityModel model, RpgModels.Named clips, Map<String, ModelPart> parts, Bounds bounds) {
         this.model = model;
         this.clips = clips;
         this.parts = parts;
+        this.bounds = bounds;
     }
 
     /**
@@ -55,7 +84,8 @@ public final class BedrockModel {
             RpgGeometry.Built built = RpgGeometry.build(file, Set.of());
             JsonObject clipsFile = animations == null ? null : RpgModels.read(animations);
             return new BedrockModel(new RpgEntityModel(built),
-                    RpgModels.named(clipsFile == null ? new JsonObject() : clipsFile, built), index(file, built));
+                    RpgModels.named(clipsFile == null ? new JsonObject() : clipsFile, built), index(file, built),
+                    bounds(file));
         } catch (Exception error) {
             DoHy.LOGGER.error("Modele Bedrock illisible : {}", geometry, error);
             return null;
@@ -91,6 +121,35 @@ public final class BedrockModel {
         return parts;
     }
 
+    private static Bounds bounds(JsonObject file) {
+        JsonObject geometry = GsonHelper.getAsJsonArray(file, "minecraft:geometry").get(0).getAsJsonObject();
+        float[] low = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE};
+        float[] high = {-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
+        for (JsonElement element : GsonHelper.getAsJsonArray(geometry, "bones", new JsonArray())) {
+            for (JsonElement cube : GsonHelper.getAsJsonArray(element.getAsJsonObject(), "cubes", new JsonArray())) {
+                JsonArray origin = GsonHelper.getAsJsonArray(cube.getAsJsonObject(), "origin", new JsonArray());
+                JsonArray size = GsonHelper.getAsJsonArray(cube.getAsJsonObject(), "size", new JsonArray());
+                if (origin.size() < 3 || size.size() < 3) {
+                    continue;
+                }
+                for (int axis = 0; axis < 3; axis++) {
+                    float from = origin.get(axis).getAsFloat();
+                    float to = from + size.get(axis).getAsFloat();
+                    low[axis] = Math.min(low[axis], Math.min(from, to));
+                    high[axis] = Math.max(high[axis], Math.max(from, to));
+                }
+            }
+        }
+        if (low[0] > high[0]) {
+            return new Bounds(-8.0f, 8.0f, 0.0f, 16.0f, -8.0f, 8.0f);
+        }
+        return new Bounds(low[0], high[0], low[1], high[1], low[2], high[2]);
+    }
+
+    public Bounds bounds() {
+        return bounds;
+    }
+
     public RenderType renderType(Identifier texture) {
         return model.renderType(texture);
     }
@@ -106,11 +165,19 @@ public final class BedrockModel {
      * ne l'a pas.
      */
     public boolean animate(String name, float seconds) {
+        return animate(name, seconds, 1.0f);
+    }
+
+    /**
+     * Comme {@link #animate(String, float)}, au poids {@code weight} : les animations de
+     * Paladium posent le corps entier, on en melange plusieurs dont les poids font 1.
+     */
+    public boolean animate(String name, float seconds, float weight) {
         RpgModels.Clip clip = clips.get(name);
         if (clip == null) {
             return false;
         }
-        clip.animation().apply((long) (Math.max(0.0f, seconds) * 1000.0f), 1.0f);
+        clip.animation().apply((long) (Math.max(0.0f, seconds) * 1000.0f), weight);
         return true;
     }
 

@@ -1,11 +1,9 @@
 package fr.atraxterra.dohy.client.pet;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import fr.atraxterra.dohy.client.rpg.BedrockModel;
 import fr.atraxterra.dohy.palamod.PalaMod;
 import fr.atraxterra.dohy.palamod.pet.Familiar;
-import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -13,97 +11,95 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
- * Les trois familiers, prets a dessiner : sur l'epaule de leur maitre
+ * Les familiers de PalaPet, prets a dessiner : sur l'epaule de leur maitre
  * ({@link PetShoulderLayer}) et dans la cage ({@link PetCageRenderer}). Pas
- * d'entite : chaque appel pose les angles du moment, puis dessine.
+ * d'entite : chaque dessin pose l'animation du moment, puis dessine.
+ *
+ * <p>Les modeles sont ceux du jar ({@code assets/palamod/pet/<familier>}, lus par
+ * {@link BedrockModel}), aux tailles tres diverses (un pingouin de 14 pixels, une
+ * chauve-souris de 48 d'envergure) : chacun est mis a l'echelle de la meme place,
+ * pose par sa boite la plus basse et centre. Ses animations « idle » et « walk »
+ * se melangent selon la marche du maitre.
  */
 public final class FamiliarModels {
 
-    public static final Map<Familiar, ModelLayerLocation> LAYERS = layers();
+    /** La place d'un familier, en blocs : hauteur, largeur, longueur. */
+    private static final float FIT_HEIGHT = 0.55f;
+    private static final float FIT_WIDTH = 0.7f;
+    private static final float FIT_LENGTH = 0.8f;
 
-    private final Map<Familiar, ModelPart> roots = new EnumMap<>(Familiar.class);
+    /** Les textures du jar qui ont des pixels a demi transparents : le dome de l'OVNI, les ailes du moustique. */
+    private static final Set<Familiar> TRANSLUCENT = EnumSet.of(Familiar.UFO, Familiar.TALIKUS_MOSQUITO);
 
-    private static Map<Familiar, ModelLayerLocation> layers() {
-        Map<Familiar, ModelLayerLocation> layers = new EnumMap<>(Familiar.class);
-        for (Familiar familiar : Familiar.values()) {
-            layers.put(familiar, new ModelLayerLocation(
-                    Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "familiar_" + familiar.id()), "main"));
-        }
-        return layers;
+    private static final Map<Familiar, Optional<BedrockModel>> MODELS = new EnumMap<>(Familiar.class);
+
+    public FamiliarModels() {
     }
 
-    public FamiliarModels(EntityModelSet models) {
-        for (Familiar familiar : Familiar.values()) {
-            roots.put(familiar, models.bakeLayer(LAYERS.get(familiar)));
-        }
+    private static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, path);
+    }
+
+    static synchronized BedrockModel model(Familiar familiar) {
+        return MODELS.computeIfAbsent(familiar, key -> Optional.ofNullable(BedrockModel.load(
+                id("pet/" + key.id() + "/model.json"), id("pet/" + key.id() + "/animation.json")))).orElse(null);
+    }
+
+    /** Au rechargement des ressources. */
+    static synchronized void clear() {
+        MODELS.clear();
     }
 
     public static Identifier texture(Familiar familiar) {
-        return Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE,
-                "textures/entity/familiar/" + familiar.id() + ".png");
+        return id("textures/entity/familiar/" + familiar.id() + ".png");
     }
 
-    /** Le portrait du menu, 96 x 96. */
+    /** Le portrait du menu, 96 x 96 (rendu depuis le modele du jar par tools/palapet_assets.py). */
     public static Identifier portrait(String id) {
-        return Identifier.fromNamespaceAndPath(PalaMod.NAMESPACE, "textures/gui/pet/" + id + ".png");
-    }
-
-    /**
-     * Les angles du moment : la queue et les oreilles bougent, le volant ondule et
-     * fait tourner ses etincelles. {@code walk} : la marche du maitre (0 a 1).
-     */
-    private void animate(Familiar familiar, ModelPart root, float age, float walk) {
-        root.getAllParts().forEach(ModelPart::resetPose);
-        switch (familiar) {
-            case EMBER_LYNX, PUP -> {
-                ModelPart body = root.getChild("body");
-                ModelPart tail = body.getChild("tail");
-                tail.yRot = Mth.sin(age * 0.18f) * 0.35f;
-                tail.xRot += Mth.sin(age * 0.09f) * 0.08f;
-                ModelPart head = body.getChild("head");
-                head.yRot = Mth.sin(age * 0.035f) * 0.3f;
-                head.xRot = Mth.sin(age * 0.05f + 1.0f) * 0.06f;
-                float step = Mth.cos(age * 0.6f) * 0.5f * walk;
-                body.getChild("leg_front_left").xRot = step;
-                body.getChild("leg_back_right").xRot = step;
-                body.getChild("leg_front_right").xRot = -step;
-                body.getChild("leg_back_left").xRot = -step;
-                if (familiar == Familiar.PUP) {
-                    head.getChild("ear_left").zRot += Mth.sin(age * 0.2f) * 0.08f;
-                    head.getChild("ear_right").zRot -= Mth.sin(age * 0.2f) * 0.08f;
-                }
-            }
-            case WISP -> {
-                ModelPart flame = root.getChild("flame");
-                flame.y += Mth.sin(age * 0.12f) * 1.2f;
-                flame.yRot = age * 0.04f;
-                flame.getChild("tip").zRot = Mth.sin(age * 0.3f) * 0.12f;
-                flame.getChild("sparks").yRot = -age * 0.15f;
-            }
-        }
+        Familiar familiar = Familiar.byId(id);
+        return id("textures/gui/pet/" + (familiar == null ? id : familiar.id()) + ".png");
     }
 
     /**
      * Dessine le familier dans le repere courant (pieds a y = 24 unites, la tete vers -z,
-     * comme un modele d'entite deja retourne par son rendu). Le volant brille dans le noir.
+     * comme un modele d'entite deja retourne par son rendu). {@code walk} : la marche du
+     * maitre (0 a 1).
      */
     public void submit(Familiar familiar, PoseStack pose, SubmitNodeCollector collector, int light, float age,
                        float walk) {
-        ModelPart root = roots.get(familiar);
-        if (root == null) {
+        BedrockModel model = model(familiar);
+        if (model == null) {
             return;
         }
-        animate(familiar, root, age, walk);
-        int used = familiar.flying() ? 0xF000F0 : light;
-        collector.submitCustomGeometry(pose, familiar.flying()
-                        ? RenderTypes.entityTranslucent(texture(familiar)) : RenderTypes.entityCutout(texture(familiar)),
+        BedrockModel.Bounds bounds = model.bounds();
+        float scale = Math.min(1.0f, Math.min(FIT_HEIGHT * 16.0f / bounds.height(),
+                Math.min(FIT_WIDTH * 16.0f / bounds.width(), FIT_LENGTH * 16.0f / bounds.length())));
+        pose.pushPose();
+        // A l'echelle de la place, pose par sa boite la plus basse et centre sur ses boites.
+        pose.translate(0.0f, 1.5f, 0.0f);
+        pose.scale(scale, scale, scale);
+        pose.translate(-bounds.centerX() / 16.0f, -1.5f + bounds.minY() / 16.0f, -bounds.centerZ() / 16.0f);
+        float seconds = age / 20.0f;
+        float walking = Mth.clamp(walk, 0.0f, 1.0f);
+        Identifier texture = texture(familiar);
+        collector.submitCustomGeometry(pose, TRANSLUCENT.contains(familiar)
+                        ? RenderTypes.entityTranslucent(texture) : RenderTypes.entityCutout(texture),
                 (last, buffer) -> {
-                    PoseStack stack = new PoseStack();
-                    stack.last().set(last);
-                    root.render(stack, buffer, used, OverlayTexture.NO_OVERLAY);
+                    model.resetPose();
+                    if (walking < 0.999f) {
+                        model.animate("idle", seconds, 1.0f - walking);
+                    }
+                    if (walking > 0.001f) {
+                        model.animate("walk", seconds, walking);
+                    }
+                    model.draw(last, buffer, light, OverlayTexture.NO_OVERLAY);
                 });
+        pose.popPose();
     }
 }

@@ -1,0 +1,75 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "hand",
+					"pivot": [0, 3, 0],
+					"rotation": [15, 0, 0],
+					"cubes": [
+						{"origin": [-5, 1, 0], "size": [3, 3, 2], "uv": [42, 0]},
+						{"origin": [-4, 2, -3], "size": [8, 9, 6], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "thumb",
+					"parent": "hand",
+					"pivot": [5, 7, -1],
+					"cubes": [
+						{"origin": [4, 4, -7], "size": [5, 5, 7], "uv": [0, 15]}
+					]
+				},
+				{
+					"name": "eyes",
+					"parent": "hand",
+					"pivot": [-0.5, 5.5, -3.1],
+					"cubes": [
+						{"origin": [-1, 4, -3.1], "size": [1, 3, 0], "uv": [25, 0]}
+					]
+				},
+				{
+					"name": "finger",
+					"parent": "hand",
+					"pivot": [0, 11, -1],
+					"rotation": [22.5, 0, 0],
+					"cubes": [
+						{"origin": [-2, 11, -4], "size": [4, 7, 6], "uv": [24, 15]},
+						{"origin": [-2.1, 16, 1], "size": [3, 3, 2], "uv": [42, 0]},
+						{"origin": [-2, 15, -7], "size": [4, 3, 3], "uv": [0, 27]}
+					]
+				},
+				{
+					"name": "finger2",
+					"parent": "hand",
+					"pivot": [-3, 9.75, -1],
+					"rotation": [37.5, 0, -37.5],
+					"cubes": [
+						{"origin": [-5, 9.75, -4], "size": [4, 7, 6], "uv": [24, 15]},
+						{"origin": [-6, 14.75, -5], "size": [4, 3, 3], "uv": [28, 7]},
+						{"origin": [-5, 13.75, -7], "size": [4, 3, 3], "uv": [0, 27]}
+					]
+				},
+				{
+					"name": "bone3",
+					"parent": "hand",
+					"pivot": [3, 9.75, -2],
+					"rotation": [-10, 0, 27.5],
+					"cubes": [
+						{"origin": [1, 9.75, -5], "size": [4, 7, 6], "uv": [24, 15]},
+						{"origin": [3, 14.75, -5], "size": [3, 3, 4], "uv": [28, 0]},
+						{"origin": [1, 13.75, -8], "size": [4, 3, 3], "uv": [0, 27]}
+					]
+				}
+			]
+		}
+	]
+}
