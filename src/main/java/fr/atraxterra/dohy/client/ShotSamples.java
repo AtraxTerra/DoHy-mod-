@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 final class ShotSamples {
     private static final Logger LOG = LogUtils.getLogger();
 
-    /** 21 x 21 chunks autour de l'arrivee. */
-    private static final int RADIUS = 10;
+    /** 29 x 29 chunks autour de l'arrivee. */
+    private static final int RADIUS = 14;
 
     private static final String[] TYPES = {"zombie", "skeleton", "spider", "cave_spider", "creeper", "witch",
             "magma_cube", "blaze", "cow", "pig", "sheep", "chicken", "rabbit"};
@@ -129,7 +129,8 @@ final class ShotSamples {
             return;
         }
         // Au bord nord de la salle, face au spawner et au fond.
-        as(player, String.format(Locale.ROOT, "tp @s %.1f %d %.1f 0 28", pos.getX() + 0.5d, pos.getY(), pos.getZ() - 2.5d));
+        command(player, String.format(Locale.ROOT, "execute in dohy:mine run tp @a %.1f %d %.1f 0 28", pos.getX() + 0.5d,
+                pos.getY(), pos.getZ() - 2.5d));
         last = pos;
         lastType = type;
     }
