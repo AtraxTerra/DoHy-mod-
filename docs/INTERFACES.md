@@ -292,8 +292,9 @@ pixel d'interface). Le fond passe avant les objets, les bulles après.
   son XP (un masque de bits dans une valeur libre du menu).
 - **Centre de contrôle** (`LabControlMenu`, un menu du kit) : un onglet par module (climat) avec
   son état, la fiche du module (pousse moyenne, pots, besoins, fleurs, mutations, niveau), les
-  cartes « BOOSTER LE MODULE » et « AMÉLIORER LE MODULE », et la liste « TES POTS », les besoins en
-  premier. Botaniste, `PALAMOD.md` § 50.
+  lignes « Booster le module » et « Améliorer le module » (sur toute la largeur, pour que les coûts
+  tiennent ; coche verte pendant un boost, barre pendant une construction), et la liste « TES
+  POTS », les besoins en premier. Botaniste, `PALAMOD.md` § 50.
 - **Coffres en paladium** : la grille de 12 x 9, les anneaux teintés du métal, le titre au-dessus.
 - **Inventaires en coffre** : coffre de vente, guichet du musée, sac de la monture, coffre et
   gardien du golem, coffre de l'End en paladium ont chacun leur type de menu (`KitMenus`) pour ouvrir

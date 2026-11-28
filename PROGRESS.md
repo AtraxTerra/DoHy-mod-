@@ -218,7 +218,13 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
   Chiffres : `PALAMOD.md` § 50, `BALANCE.md` § 6 octotrigesies ; la fiche « Le botaniste » de
   l'encyclopédie a ses trois sections de plus.
 
-**Vérifié** : (captures en cours)
+**Vérifié** : captures des trois machines posées (face au sud, face à l'est, de dos), de la
+centrifugeuse (écran vide, prête, bulle des objets acceptés, en cours, échec et déchet, graine
+boostée à 100 %, réussite boostée, onglet BOOST ; dans le monde, la centrifugation, la fin, la
+graine boostée et sa fin mutée), de la réserve (vide, remplie avec l'XP des premières graines,
+bulles d'une case), du centre de contrôle (les trois modules, une liste de pots avec besoins,
+fleurs, mutation, fanée ; le boost en cours, l'amélioration en construction ; dans le monde,
+l'alerte et la construction).
 
 **Non vérifié en jeu** : les sons (le client de la CI joue sans son).
 

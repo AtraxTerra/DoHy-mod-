@@ -200,8 +200,8 @@ public final class LabControlMenu extends MenuController {
             int next = level + 1;
             long left = BotanistLab.buildingMinutesLeft(player, module);
             long total = BotanistLab.upgradeMinutes(next);
-            lines.add("Amelioration en construction");
-            lines.add("Temps restant : " + BotanistLab.duration(left));
+            lines.add("En construction");
+            lines.add("encore " + BotanistLab.duration(left));
             progress = (int) Math.max(0L, (total - left) * 1000L / total);
         } else {
             int next = level + 1;
@@ -220,8 +220,15 @@ public final class LabControlMenu extends MenuController {
         if (progress >= 0) {
             card = card.progress(progress, 1000);
         }
+        if (level >= BotanistLab.MAX_LEVEL) {
+            return card.state(MenuView.DONE);
+        }
+        if (BotanistLab.building(player, module)) {
+            // En cours : la barre suit la construction, sans le cadenas d'une action refusee.
+            return card;
+        }
         if (missing != null) {
-            return card.state(level >= BotanistLab.MAX_LEVEL ? MenuView.DONE : MenuView.DISABLED);
+            return card.state(MenuView.DISABLED);
         }
         int next = level + 1;
         return card.action("upgrade|ameliorer le module").confirm("Ameliorer le "
