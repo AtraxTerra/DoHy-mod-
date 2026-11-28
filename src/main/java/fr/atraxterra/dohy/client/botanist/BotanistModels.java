@@ -15,11 +15,17 @@ import java.util.Optional;
  * gardes jusqu'au rechargement des ressources. Un modele illisible est note une
  * fois et n'est plus retente.
  */
-final class BotanistModels {
+public final class BotanistModels {
 
     static final Identifier POT_TEXTURE = id("textures/botanist/pot.png");
+    /** La terre cuite d'une plante qui a mute (lot 2b). */
+    static final Identifier POT_MUTATED_TEXTURE = id("textures/botanist/pot_mutated.png");
+    static final Identifier SCANNER_TEXTURE = id("textures/botanist/scanner.png");
+    static final Identifier NIBBLER_TEXTURE = id("textures/botanist/nibbler.png");
 
     private static Optional<BedrockModel> pot;
+    private static Optional<BedrockModel> scanner;
+    private static Optional<BedrockModel> nibbler;
     private static final Map<Mutation, Optional<BedrockModel>> PLANTS = new EnumMap<>(Mutation.class);
     private static final Map<Mutation, Identifier> TEXTURES = new EnumMap<>(Mutation.class);
 
@@ -37,19 +43,37 @@ final class BotanistModels {
         return pot.orElse(null);
     }
 
-    static synchronized BedrockModel plant(Mutation mutation) {
+    static synchronized BedrockModel scanner() {
+        if (scanner == null) {
+            scanner = Optional.ofNullable(BedrockModel.load(id("botanist/scanner/model.json"),
+                    id("botanist/scanner/animation.json")));
+        }
+        return scanner.orElse(null);
+    }
+
+    static synchronized BedrockModel nibbler() {
+        if (nibbler == null) {
+            nibbler = Optional.ofNullable(BedrockModel.load(id("botanist/nibbler/model.json"),
+                    id("botanist/nibbler/animation.json")));
+        }
+        return nibbler.orElse(null);
+    }
+
+    public static synchronized BedrockModel plant(Mutation mutation) {
         return PLANTS.computeIfAbsent(mutation, key -> Optional.ofNullable(BedrockModel.load(
                 id("botanist/mutation/" + key.id() + "/model.json"),
                 id("botanist/mutation/" + key.id() + "/animation.json")))).orElse(null);
     }
 
-    static synchronized Identifier texture(Mutation mutation) {
+    public static synchronized Identifier texture(Mutation mutation) {
         return TEXTURES.computeIfAbsent(mutation, key -> id("textures/botanist/mutation/" + key.id() + ".png"));
     }
 
     /** Au rechargement des ressources. */
     static synchronized void clear() {
         pot = null;
+        scanner = null;
+        nibbler = null;
         PLANTS.clear();
     }
 }

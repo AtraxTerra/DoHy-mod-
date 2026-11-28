@@ -192,6 +192,90 @@
       "label": "Graine de corail des sables"
     },
     {
+      "id": "palamod:gene_scanner",
+      "job": "farmer",
+      "level": 10,
+      "label": "Scanner de Genis"
+    },
+    {
+      "id": "palamod:net",
+      "job": "farmer",
+      "level": 25,
+      "label": "Filet"
+    },
+    {
+      "id": "palamod:glowbloom_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de luminelle"
+    },
+    {
+      "id": "palamod:puffbloom_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de duvetine"
+    },
+    {
+      "id": "palamod:thornwick_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de meche-epine"
+    },
+    {
+      "id": "palamod:songlily_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de lys chantant"
+    },
+    {
+      "id": "palamod:sunbloom_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de fleur solaire"
+    },
+    {
+      "id": "palamod:smokepod_seed",
+      "job": "farmer",
+      "level": 25,
+      "label": "Graine de cosse fumante"
+    },
+    {
+      "id": "palamod:jade_maw_seed",
+      "job": "farmer",
+      "level": 45,
+      "label": "Graine de gueule de jade"
+    },
+    {
+      "id": "palamod:aurelys_seed",
+      "job": "farmer",
+      "level": 45,
+      "label": "Graine d'aurelys"
+    },
+    {
+      "id": "palamod:miasma_bloom_seed",
+      "job": "farmer",
+      "level": 45,
+      "label": "Graine de fleur des miasmes"
+    },
+    {
+      "id": "palamod:motherroot_seed",
+      "job": "farmer",
+      "level": 70,
+      "label": "Graine de racine-mere"
+    },
+    {
+      "id": "palamod:arcanium_seed",
+      "job": "farmer",
+      "level": 70,
+      "label": "Graine d'arcanium"
+    },
+    {
+      "id": "palamod:ember_orchid_seed",
+      "job": "farmer",
+      "level": 70,
+      "label": "Graine d'orchidee de braise"
+    },
+    {
       "id": "palamod:amethyst_seedplanter",
       "job": "farmer",
       "level": 15,
@@ -1137,6 +1221,13 @@
     },
     {
       "job": "farmer",
+      "level": 10,
+      "id": "palamod:gene_scanner",
+      "count": 1,
+      "label": "Scanner de Genis"
+    },
+    {
+      "job": "farmer",
       "level": 15,
       "id": "palamod:paladium_ingot",
       "count": 15,
@@ -1183,6 +1274,13 @@
       "id": "palamod:amethyst_seed",
       "count": 16,
       "label": "Graines d'amethyste"
+    },
+    {
+      "job": "farmer",
+      "level": 25,
+      "id": "palamod:net",
+      "count": 1,
+      "label": "Filet"
     },
     {
       "job": "farmer",

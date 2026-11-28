@@ -42,14 +42,27 @@ import java.util.Map;
  * vers le joueur ; et, vise de pres, ce que dirait le viseur de JobsReborn
  * (« Bourgeon dans », « Fleurit dans », « Reclame : », « Recoltes restantes »,
  * « Disparait dans », « Hors climat »).
+ *
+ * <p>Une fleur qui a mute (lot 2b) prend la terre cuite mutee du jar, et le pot montre ses
+ * anneaux et ses etincelles, animes par son animation d'attente.
  */
 public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlockEntity, BotanistPotRenderer.State> {
 
     private static final double LABEL_RANGE = 8.0d;
     /** La plante pousse dans le terreau, a 10 pixels du fond du pot. */
     private static final float SOIL = 10.0f / 16.0f;
-    /** L'icone du besoin flotte au-dessus des plus grandes plantes. */
+    /** L'icone du besoin flotte au-dessus de la plante : au plus bas ici, plus haut pour les grandes. */
     private static final float NEED_Y = 1.95f;
+    /**
+     * La hauteur de la plante a son plus grand etat, en pixels au-dessus du terreau (mesuree sur les
+     * modeles du jar) : l'icone du besoin et l'etiquette passent au-dessus.
+     */
+    private static final Map<Mutation, Integer> HEIGHTS = Map.ofEntries(
+            Map.entry(Mutation.IRONWHEAT, 14), Map.entry(Mutation.MOONFROST, 14), Map.entry(Mutation.SAND_CORAL, 18),
+            Map.entry(Mutation.GLOWBLOOM, 17), Map.entry(Mutation.PUFFBLOOM, 20), Map.entry(Mutation.JADE_MAW, 23),
+            Map.entry(Mutation.MOTHERROOT, 26), Map.entry(Mutation.THORNWICK, 16), Map.entry(Mutation.SONGLILY, 25),
+            Map.entry(Mutation.AURELYS, 18), Map.entry(Mutation.ARCANIUM, 14), Map.entry(Mutation.SUNBLOOM, 18),
+            Map.entry(Mutation.SMOKEPOD, 20), Map.entry(Mutation.MIASMA_BLOOM, 27), Map.entry(Mutation.EMBER_ORCHID, 25));
     private static final float BADGE = 0.24f;
     private static final int FULL_BRIGHT = 0xF000F0;
     /** Le fond anthracite et les filets de Paladium-UI : vert, puis rouge dans les vingt dernieres secondes. */
@@ -78,6 +91,9 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
     public static final class State extends BlockEntityRenderState {
         Mutation mutation;
         PotStage stage = PotStage.EMPTY;
+        boolean mutated;
+        /** La hauteur de l'icone du besoin, en blocs ; l'etiquette passe au-dessus. */
+        float top = NEED_Y;
         /** L'animation a jouer et ou on en est, en secondes. */
         String clip;
         float clipSeconds;
@@ -104,6 +120,9 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
         state.age = now + partialTick;
         state.stage = pot.stage();
         state.mutation = pot.stage() == PotStage.EMPTY ? null : pot.mutation();
+        state.mutated = pot.mutated();
+        state.top = state.mutation == null ? NEED_Y
+                : Math.max(NEED_Y, (10.0f + HEIGHTS.getOrDefault(state.mutation, 18) + 7.0f) / 16.0f);
         pot.trackStage(now);
         state.clip = null;
         if (state.mutation != null) {
@@ -152,6 +171,7 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
             case MUSIC -> "music";
             case SHAKE -> "shake";
             case BURST -> "burst";
+            case NIBBLER -> "nibbler";
             case ITEM -> ITEM_ICONS.get(pot.needItem());
         };
         if (icon != null) {
@@ -175,8 +195,10 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
                     .withStyle(ChatFormatting.GREEN);
             case BUD -> Component.literal(mutation.label() + " · fleurit dans " + clock)
                     .withStyle(ChatFormatting.GREEN);
-            case BLOOMING -> Component.literal(mutation.label() + " · en fleur, a recolter")
-                    .withStyle(ChatFormatting.LIGHT_PURPLE);
+            case BLOOMING -> pot.mutated()
+                    ? Component.literal(mutation.label() + " · a mute ! a recolter").withStyle(ChatFormatting.AQUA)
+                    : Component.literal(mutation.label() + " · en fleur, a recolter")
+                            .withStyle(ChatFormatting.LIGHT_PURPLE);
             case WILTED -> Component.literal(mutation.label() + " fanee · disparait dans " + clock)
                     .withStyle(ChatFormatting.GOLD);
             default -> Component.literal(mutation.label()).withStyle(ChatFormatting.GRAY);
@@ -222,12 +244,27 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
         pose.translate(0.0f, -1.501f, 0.0f);
         BedrockModel potModel = BotanistModels.pot();
         if (potModel != null) {
-            collector.submitCustomGeometry(pose, potModel.renderType(BotanistModels.POT_TEXTURE), (last, buffer) -> {
+            boolean mutated = state.mutated;
+            float seconds = state.age / 20.0f;
+            Identifier texture = mutated ? BotanistModels.POT_MUTATED_TEXTURE : BotanistModels.POT_TEXTURE;
+            collector.submitCustomGeometry(pose, potModel.renderType(texture), (last, buffer) -> {
                 potModel.resetPose();
-                // Les anneaux et etincelles d'une plante mutee : pas avant les mutations (lot suivant).
+                potModel.setVisible("pot_body", true);
                 potModel.setVisibleByPrefix("particles_", false);
                 potModel.draw(last, buffer, light, OverlayTexture.NO_OVERLAY);
             });
+            if (mutated) {
+                // Les anneaux et etincelles d'une fleur qui a mute : animes, en pleine lumiere.
+                collector.submitCustomGeometry(pose, potModel.renderType(texture), (last, buffer) -> {
+                    potModel.resetPose();
+                    potModel.setVisible("pot_body", false);
+                    potModel.setVisibleByPrefix("particles_", true);
+                    potModel.animate("idle", seconds);
+                    potModel.draw(last, buffer, FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+                    potModel.setVisible("pot_body", true);
+                    potModel.setVisibleByPrefix("particles_", false);
+                });
+            }
         }
         if (state.mutation != null && state.clip != null) {
             BedrockModel plant = BotanistModels.plant(state.mutation);
@@ -251,7 +288,7 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
         if (state.needIcon != null || state.hasNeedItem) {
             pose.pushPose();
             float bob = (float) Math.sin(state.age / 10.0f) * 0.04f;
-            pose.translate(0.5f, NEED_Y + bob, 0.5f);
+            pose.translate(0.5f, state.top + bob, 0.5f);
             pose.mulPose(Axis.YP.rotationDegrees(state.facing));
             if (state.needIcon != null) {
                 Identifier icon = state.needIcon;
@@ -268,11 +305,12 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
             }
             pose.popPose();
         }
+        double labelY = state.top + 0.4d;
         if (state.line != null) {
-            collector.submitNameTag(pose, new Vec3(0.5d, 2.35d, 0.5d), -10, state.line, false, light, camera);
+            collector.submitNameTag(pose, new Vec3(0.5d, labelY, 0.5d), -10, state.line, false, light, camera);
         }
         if (state.detail != null) {
-            collector.submitNameTag(pose, new Vec3(0.5d, 2.35d, 0.5d), 0, state.detail, false, light, camera);
+            collector.submitNameTag(pose, new Vec3(0.5d, labelY, 0.5d), 0, state.detail, false, light, camera);
         }
     }
 
@@ -293,6 +331,6 @@ public class BotanistPotRenderer implements BlockEntityRenderer<BotanistPotBlock
     @Override
     public AABB getRenderBoundingBox(BotanistPotBlockEntity pot) {
         BlockPos pos = pot.getBlockPos();
-        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0d, pos.getY() + 2.6d, pos.getZ() + 1.0d);
+        return new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0d, pos.getY() + 3.2d, pos.getZ() + 1.0d);
     }
 }

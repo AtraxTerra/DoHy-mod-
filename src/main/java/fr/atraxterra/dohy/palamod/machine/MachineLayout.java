@@ -107,6 +107,15 @@ public record MachineLayout(List<SlotPos> slots) {
             new SlotPos(82, 101, true),
             new SlotPos(196, 79, false)));
 
+    /**
+     * Le scanner de Genis : la graine a analyser et le carburant a gauche, le resultat a droite ;
+     * le scan au milieu ({@code GeneScannerScreen}).
+     */
+    public static final MachineLayout GENE_SCANNER = new MachineLayout(List.of(
+            new SlotPos(40, 64, true),
+            new SlotPos(40, 112, true),
+            new SlotPos(206, 64, false)));
+
     /** Le controleur de spawners : quatre ameliorations en carre, les deux du bas verrouillees. */
     public static final MachineLayout SPAWNER_CONTROLLER = new MachineLayout(List.of(
             new SlotPos(40, 60, true),
