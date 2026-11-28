@@ -94,6 +94,26 @@ Vérifié en captures (CI, rendu logiciel Mesa) : l'accueil, les métiers, le co
 les grades et le HUD, moteur actif puis coupé, sont identiques à l'œil ; seuls les pixels de
 lissage des bords diffèrent de quelques unités.
 
+### L'épuration des écrans (2026-11-27)
+
+Un tour des écrans en captures (trente écrans, ouverts par le vrai serveur intégré) : les menus
+dans la coque sont cohérents ; les écrans qui s'en écartent passent un par un dans le style des
+menus, sans rien perdre (mêmes bulles, mêmes clics, mêmes messages).
+
+- **Familier** (`PetScreen`, `/pet`) : il quitte son cadre à filets pour la coque des menus, avec
+  une entrée **Familier** dans la barre latérale (groupe Personnage). À gauche, la fiche comme
+  celle d'un métier : portrait, nom, pastilles du niveau et de la rareté, barre d'XP, cases
+  BONHEUR (avec sa barre) et COMPETENCES (le multiplicateur), le bouton visible ou caché, les
+  quêtes du jour. À droite, la section EMPLACEMENTS (le prochain s'ouvre au niveau indiqué),
+  la section COMPETENCES : onglets passives et actives dans leur creux, une consigne à côté
+  (« Emplacement 3 : clique une compétence pour l'y poser », ou la touche de la roue pour les
+  actives), les lignes au liseré de leur couleur (posée en jaune, active en bleu, verrouillée en
+  gris avec son niveau et un cadenas), RETIRER au bouton rouge du kit. En en-tête : compétences
+  posées et quêtes du jour. Sans familier : la carte qui le dit, les étapes numérotées, les
+  vingt et un familiers et la légende des raretés.
+- Le **profil RPG**, le **clicker** et le **Lucky Pass** reprennent des écrans de Paladium
+  (capture du joueur, PalaClicker, machine à sous de PalaMod) : ils restent tels quels.
+
 ### Polices
 
 Définies dans `assets/dohy/font/*.json` (TrueType, taille 8, sur-échantillonnées), avec la
