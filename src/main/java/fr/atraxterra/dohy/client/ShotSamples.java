@@ -146,7 +146,7 @@ final class ShotSamples {
         LOG.info("dohy-shots: salle {} : {} creature(s) {}", lastType, inside.size(),
                 inside.stream().map(entity -> BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).getPath() + "/"
                         + (entity instanceof net.minecraft.world.entity.Mob mob ? mob.getSpawnType() : "-")
-                        + (entity.getTags().contains("dohy.spawner") ? "+marque" : "")).toList());
+                        + (entity.entityTags().contains("dohy.spawner") ? "+marque" : "")).toList());
     }
 
     static void register() {
