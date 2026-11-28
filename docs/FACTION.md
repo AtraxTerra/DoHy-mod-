@@ -203,8 +203,10 @@ modificateurs posés, secondes de Fake Water évitées, Unclaim Helmet posé, wi
 
 ## Withers du pillage (22d-bis)
 
-Le module PalaWither n'est pas dans les jars fournis : ses recettes le sont (`PPalaWither.init`), ses
-comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage »).
+Les recettes viennent de PalaMod (`PPalaWither.init`), les comportements du wiki (« Réceptacle à
+Wither », « Pour le pillage ») ; depuis le 2026-11-27, les modèles 3D, animations, textures et sons
+viennent du jar **PalaWither 3.6.0** (Paladium Games, crédit dans le README), repris par
+`tools/palawither_assets.py`.
 
 - **Réceptacle à wither** (3 quartz électrifiés, un crâne de wither, des planches) : clic droit
   avec une gemme, et l'invocation commence. Il faut une faction, la clé de l'arbre de ce wither, le
@@ -222,7 +224,7 @@ comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage 
   bleues qui percent l'obsidienne, n'avance que poussé) ; **prédateur** (600 PV, immobile, va où le
   **laser de ciblage** l'envoie) ; **suprême** (intuable, guidé au laser, éveillé au bout d'une
   minute au lieu de douze heures, appelle un prédateur toutes les deux minutes, saute au bout de
-  15 min).
+  15 min, après les six secondes et demie de son animation de mort, immobile et sans viser).
 - **Améliorations** (une par wither, une heure) : **discrétion** (ni barre de vie ni bruit),
   **résistance** (dégâts hors joueurs divisés par deux), **visqueuse** (casse la slime obsidienne
   sans la déclencher, +20 PV par bloc de slime). Ni discrétion ni résistance sur le suprême.
@@ -236,16 +238,33 @@ comportements viennent du wiki (« Réceptacle à Wither », « Pour le pillage 
   paladium (tête suprême) l'obsidienne compacte. La gemme de base se fabrique dans la forme du
   wither vanilla ; l'amusante (Lucky Blocks sur Paladium) avec du colorant jaune.
 - **TNT à wither** : elle invoque désormais le wither de base du pillage, compté à l'allumeur.
-- **Apparence**, d'après les rendus du wiki (`tools/wither_skins.py`, `PalaWitherGeometry`) :
-  **prédateur** anthracite aux dessus lavande, yeux, bouche et braises des côtes incandescents,
-  deux cornes en L ; **suprême** violet, yeux et croix de poitrine roses lumineux, épines sur les
-  têtes, deux grands bras griffus qui se balancent ; **assoiffé** couleur d'os sec, des flèches
-  plantées dans les crânes et les côtes ; **baby** ardoise aux yeux cyan lumineux ; **passif** os
-  pâle couvert de mousse, des pousses sur les têtes. Le wither de base garde la peau vanilla,
-  l'amusant celle de PalaMod. Pendant la charge, chaque genre clignote dans sa peau bleue.
-  Le **réceptacle** est un autel qui suit sa recette : socle de planches, dalle d'obsidienne, quatre
-  piliers de quartz électrifié coiffés de quartz compressé, et le crâne de wither aux yeux allumés,
-  tourné vers qui l'a posé.
+- **Apparence**, celle de PalaWither : le **baby** ardoise aux yeux cyan, le **passif** couvert de
+  mousse et de fleurs, l'**assoiffé** couleur de sable, le **prédateur** anthracite aux yeux de braise,
+  un anneau rouge sous lui, le **suprême** noir et rose aux deux grands bras griffus. Leurs modèles 3D et textures,
+  l'animation d'attente (`client/wither/PalaWitherRenderer`, sur le moteur des monstres de donjon),
+  aux tailles du jar : 0,6 × 1,8 pour le baby, 1,8 × 6 pour le suprême, celle du vanilla pour les
+  autres. Sous la moitié de leurs PV, l'**armure** de PalaWither, une copie translucide du modèle qui
+  bat (pas le suprême). L'anneau et les éclats du prédateur et du suprême brillent dans le noir. Le
+  suprême dort pendant son éveil, un **compte à rebours** au-dessus de lui (jours, heures, minutes,
+  secondes, comme sur Paladium), joue son animation de **réveil**, puis celle de sa **mort** avant
+  de sauter. Le wither de base garde le vanilla, l'amusant la peau de PalaMod.
+- **Objets** : les gemmes (de base et des cinq genres), les têtes, les améliorations et le laser de
+  ciblage ont les icônes du jar (celles des têtes et du laser, rendues depuis leurs modèles 3D). Le
+  **réceptacle** a son modèle : un socle, un autel bordé de pierre et une dalle inclinée tournée vers
+  qui l'a posé, aux veines d'or allumées pendant l'invocation. La **barre de vie** d'un wither de
+  PalaWither est remplie de la bande de son genre (l'overlay de PalaWither : crânes, herbe fleurie,
+  sable, lave, rose), sa lueur à la couleur du genre.
+- **Sons** de PalaWither : l'alerte d'invocation quand la gemme est posée (entendue à 32 blocs), la
+  musique du wither attendu, en boucle au réceptacle tant que dure l'invocation, sa naissance, et un
+  signal quand l'invocateur quitte la zone.
+- **Écarts** avec PalaWither : sa liste des withers et invocations en cours (jusqu'à sept, en haut de
+  l'écran) devient la barre de vie de chaque wither et la barre du réceptacle quand on le regarde ;
+  la zone de 6 blocs surlignée autour d'un réceptacle actif et ses particules d'invocation ne sont
+  pas reprises ; les têtes de wither tirées restent celles du vanilla (le jar a les siennes pour le
+  baby, le prédateur et le suprême) ; têtes et laser sont des icônes plates en main (le jar les
+  dessine en 3D) ; le point de ciblage (`wither_target_point`) n'existe pas, le laser guide
+  directement. La charge du vanilla à la naissance, absente de PalaWither, est gardée : le wither
+  rétrécit et clignote d'une teinte bleue, faute de peau de charge dans le jar.
 
 | Clé de l'arbre | Ce qu'elle débloque |
 |----------------|---------------------|

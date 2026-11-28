@@ -46,19 +46,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * tout claim</b> : Paladium demandait une zone neutre, et un wither ne nait pas
  * dans sa propre base.
  *
- * <p>Sa forme suit sa recette : un socle de planches, une dalle
- * d'obsidienne, quatre piliers de quartz electrifie coiffes de quartz
- * compresse, et au milieu le crane de wither, tourne vers qui l'a pose.
+ * <p>Son modele est celui de PalaWither, dessine par
+ * {@code WitherReceptacleRenderer} : un socle, un autel borde de pierre et une
+ * dalle inclinee, aux veines d'or allumees pendant l'invocation.
  */
 public class WitherReceptacleBlock extends BaseEntityBlock {
 
     public static final MapCodec<WitherReceptacleBlock> CODEC = simpleCodec(WitherReceptacleBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
-    /** Le socle, la dalle, les quatre piliers et le crane : de quoi viser chaque piece. */
-    private static final VoxelShape SHAPE = Shapes.or(box(0, 0, 0, 16, 4, 16),
-            box(1, 4, 1, 4, 16, 4), box(12, 4, 1, 15, 16, 4),
-            box(1, 4, 12, 4, 16, 15), box(12, 4, 12, 15, 16, 15),
-            box(4, 4, 4, 12, 13, 12));
+    /** Le socle (3 pixels) et l'autel (jusqu'a 10), comme le modele de PalaWither. */
+    private static final VoxelShape SHAPE = Shapes.or(box(0, 0, 0, 16, 3, 16), box(1, 3, 1, 15, 10, 15));
 
     public WitherReceptacleBlock(Properties properties) {
         super(properties);
@@ -145,8 +142,13 @@ public class WitherReceptacleBlock extends BaseEntityBlock {
         }
         receptacle.start(gem.kind(), server);
         stack.consume(1, player);
-        level.playSound(null, pos, gem.kind() == WitherKind.FUNNY ? PalaWithers.FUNNY_WITHER_INVOKE.get()
-                : SoundEvents.WITHER_AMBIENT, SoundSource.BLOCKS, 1.0f, 0.6f);
+        PalaWithers.Sounds sounds = PalaWithers.sounds(gem.kind());
+        if (sounds == null) {
+            level.playSound(null, pos, SoundEvents.WITHER_AMBIENT, SoundSource.BLOCKS, 1.0f, 0.6f);
+        } else {
+            // L'alerte de PalaWither, entendue de loin (32 blocs).
+            level.playSound(null, pos, sounds.invoke().get(), SoundSource.BLOCKS, 2.0f, 1.0f);
+        }
         FactionApi.tell(server, "Invocation lancee : reste a moins de 6 blocs du receptacle pendant "
                 + duration(gem.kind().summonTicks()) + ".", ChatFormatting.GOLD);
         return InteractionResult.SUCCESS;

@@ -75,13 +75,21 @@ public final class BedrockModel {
      * Rend {@code null} (et le note) si le fichier manque ou ne se lit pas.
      */
     public static BedrockModel load(Identifier geometry, Identifier animations) {
+        return load(geometry, animations, Set.of());
+    }
+
+    /**
+     * Comme {@link #load(Identifier, Identifier)}, avec des os lumineux : eux et leurs
+     * enfants ne sont pas dessines par {@link #draw}, mais par {@link #drawGlow}.
+     */
+    public static BedrockModel load(Identifier geometry, Identifier animations, Set<String> glow) {
         try {
             JsonObject file = RpgModels.read(geometry);
             if (file == null) {
                 DoHy.LOGGER.warn("Modele Bedrock absent : {}", geometry);
                 return null;
             }
-            RpgGeometry.Built built = RpgGeometry.build(file, Set.of());
+            RpgGeometry.Built built = RpgGeometry.build(file, glow);
             JsonObject clipsFile = animations == null ? null : RpgModels.read(animations);
             return new BedrockModel(new RpgEntityModel(built),
                     RpgModels.named(clipsFile == null ? new JsonObject() : clipsFile, built), index(file, built),
@@ -206,5 +214,23 @@ public final class BedrockModel {
 
     public void draw(PoseStack.Pose pose, VertexConsumer buffer, int light, int overlay) {
         model.draw(pose, buffer, light, overlay);
+    }
+
+    /** Dessine le modele teinte de {@code color} (ARGB) : l'alpha pour un rendu translucide. */
+    public void draw(PoseStack.Pose pose, VertexConsumer buffer, int light, int overlay, int color) {
+        model.draw(pose, buffer, light, overlay, color);
+    }
+
+    /** Le modele a des os lumineux ({@link #load(Identifier, Identifier, Set)}). */
+    public boolean glows() {
+        return model.glows();
+    }
+
+    /**
+     * Dessine les os lumineux, pour un rendu translucide : en pleine lumiere, sans les
+     * faces qui tournent le dos a la camera (voir {@link RpgEntityModel#drawGlow}).
+     */
+    public void drawGlow(PoseStack.Pose pose, VertexConsumer buffer, int overlay) {
+        model.drawGlow(pose, buffer, overlay);
     }
 }

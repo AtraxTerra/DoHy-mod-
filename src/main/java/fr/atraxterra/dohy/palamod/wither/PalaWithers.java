@@ -41,9 +41,11 @@ import java.util.function.Supplier;
  * la selle et la canne a peche de wither, la fleche de mi-vie, la poudre de
  * wither et le quartz electrifie.
  *
- * <p>Le module PalaWither n'est pas dans les jars fournis : seules ses
- * recettes le sont ({@code PPalaWither.init}). Les comportements viennent du
- * wiki ; les noms sont ecrits en toutes lettres pour {@code check_assets.py}.
+ * <p>Les recettes viennent de PalaMod ({@code PPalaWither.init}), les
+ * comportements du wiki ; les modeles, textures et sons des withers, de leurs
+ * gemmes, tetes et ameliorations, du laser et du receptacle, du jar PalaWither
+ * 3.6.0 ({@code tools/palawither_assets.py}). Les noms sont ecrits en toutes
+ * lettres pour {@code check_assets.py}.
  */
 @EventBusSubscriber
 public final class PalaWithers {
@@ -75,6 +77,43 @@ public final class PalaWithers {
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNY_WITHER_LOOP = sound("funny_wither.loop");
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNY_WITHER_SPAWN = sound("funny_wither.spawn");
     public static final DeferredHolder<SoundEvent, SoundEvent> FUNNY_WITHER_INVOKE = sound("funny_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BABY_WITHER_INVOKE = sound("baby_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BABY_WITHER_SPAWN = sound("baby_wither.spawn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BABY_WITHER_LOOP = sound("baby_wither.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PASSIVE_WITHER_INVOKE = sound("passive_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PASSIVE_WITHER_SPAWN = sound("passive_wither.spawn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PASSIVE_WITHER_LOOP = sound("passive_wither.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THIRSTY_WITHER_INVOKE = sound("thirsty_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THIRSTY_WITHER_SPAWN = sound("thirsty_wither.spawn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THIRSTY_WITHER_LOOP = sound("thirsty_wither.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PREDATOR_WITHER_INVOKE = sound("predator_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PREDATOR_WITHER_SPAWN = sound("predator_wither.spawn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PREDATOR_WITHER_LOOP = sound("predator_wither.loop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SUPREME_WITHER_INVOKE = sound("supreme_wither.invoke");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SUPREME_WITHER_SPAWN = sound("supreme_wither.spawn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SUPREME_WITHER_LOOP = sound("supreme_wither.loop");
+    /** Le signal de PalaWither quand l'invocateur quitte la zone du receptacle. */
+    public static final DeferredHolder<SoundEvent, SoundEvent> RECEPTACLE_ERROR = sound("wither_receptacle.error");
+
+    /**
+     * Les sons d'un genre, ceux de PalaWither : l'invocation (la gemme posee), la
+     * naissance, et la boucle du receptacle tant que dure l'invocation.
+     */
+    public record Sounds(Supplier<SoundEvent> invoke, Supplier<SoundEvent> spawn, Supplier<SoundEvent> loop) {
+    }
+
+    /** Les sons du genre ; aucun pour le wither de base, qui garde ceux du vanilla. */
+    public static Sounds sounds(WitherKind kind) {
+        return switch (kind) {
+            case FUNNY -> new Sounds(FUNNY_WITHER_INVOKE, FUNNY_WITHER_SPAWN, FUNNY_WITHER_LOOP);
+            case BABY -> new Sounds(BABY_WITHER_INVOKE, BABY_WITHER_SPAWN, BABY_WITHER_LOOP);
+            case PASSIVE -> new Sounds(PASSIVE_WITHER_INVOKE, PASSIVE_WITHER_SPAWN, PASSIVE_WITHER_LOOP);
+            case THIRSTY -> new Sounds(THIRSTY_WITHER_INVOKE, THIRSTY_WITHER_SPAWN, THIRSTY_WITHER_LOOP);
+            case PREDATOR -> new Sounds(PREDATOR_WITHER_INVOKE, PREDATOR_WITHER_SPAWN, PREDATOR_WITHER_LOOP);
+            case SUPREME -> new Sounds(SUPREME_WITHER_INVOKE, SUPREME_WITHER_SPAWN, SUPREME_WITHER_LOOP);
+            default -> null;
+        };
+    }
 
     private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(

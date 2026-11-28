@@ -351,6 +351,26 @@ public final class Paint {
         end();
     }
 
+    /**
+     * Une image posee sur un rectangle du repere courant, en pixels physiques : la region
+     * {@code (u, v, regionWidth, regionHeight)} d'une texture de {@code textureWidth} x
+     * {@code textureHeight}, etiree au rectangle et teintee de {@code color}.
+     */
+    public void image(Identifier texture, float x, float y, float width, float height, float u, float v,
+                      int regionWidth, int regionHeight, int textureWidth, int textureHeight, int color) {
+        if (width <= 0 || height <= 0 || regionWidth <= 0 || regionHeight <= 0 || (color >>> 24) == 0) {
+            return;
+        }
+        begin();
+        int x0 = p(x);
+        int y0 = p(y);
+        int w = Math.max(1, p(x + width) - x0);
+        int h = Math.max(1, p(y + height) - y0);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x0, y0, u, v, w, h, regionWidth, regionHeight,
+                textureWidth, textureHeight, color);
+        end();
+    }
+
     /** Un trait horizontal en pointilles, d'un pixel physique d'epaisseur. */
     public void dashes(float x, float y, float width, float dash, float gap, int color) {
         if (width <= 0 || (color >>> 24) == 0) {

@@ -274,6 +274,7 @@ jobs:
           python3 -I tools/press_assets.py --check
           python3 -I tools/pet_assets.py --check
           python3 -I tools/palapet_assets.py --check
+          python3 -I tools/palawither_assets.py --check
           python3 -I tools/bcc_assets.py --check
           python3 -I tools/casino_assets.py --check
           python3 -I tools/unesco_assets.py --check

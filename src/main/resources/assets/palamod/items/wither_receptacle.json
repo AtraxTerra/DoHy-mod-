@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "palamod:block/wither_receptacle"
+    "model": "palamod:item/wither_receptacle"
   }
 }

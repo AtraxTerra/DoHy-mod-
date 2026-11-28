@@ -74,6 +74,101 @@
       "palamod:funny_wither/invoke"
     ]
   },
+  "baby_wither.invoke": {
+    "sounds": [
+      "palamod:baby_wither/invoke"
+    ]
+  },
+  "baby_wither.spawn": {
+    "sounds": [
+      "palamod:baby_wither/spawn"
+    ]
+  },
+  "baby_wither.loop": {
+    "sounds": [
+      {
+        "name": "palamod:baby_wither/loop",
+        "stream": true
+      }
+    ]
+  },
+  "passive_wither.invoke": {
+    "sounds": [
+      "palamod:passive_wither/invoke"
+    ]
+  },
+  "passive_wither.spawn": {
+    "sounds": [
+      "palamod:passive_wither/spawn"
+    ]
+  },
+  "passive_wither.loop": {
+    "sounds": [
+      {
+        "name": "palamod:passive_wither/loop",
+        "stream": true
+      }
+    ]
+  },
+  "thirsty_wither.invoke": {
+    "sounds": [
+      "palamod:thirsty_wither/invoke"
+    ]
+  },
+  "thirsty_wither.spawn": {
+    "sounds": [
+      "palamod:thirsty_wither/spawn"
+    ]
+  },
+  "thirsty_wither.loop": {
+    "sounds": [
+      {
+        "name": "palamod:thirsty_wither/loop",
+        "stream": true
+      }
+    ]
+  },
+  "predator_wither.invoke": {
+    "sounds": [
+      "palamod:predator_wither/invoke"
+    ]
+  },
+  "predator_wither.spawn": {
+    "sounds": [
+      "palamod:predator_wither/spawn"
+    ]
+  },
+  "predator_wither.loop": {
+    "sounds": [
+      {
+        "name": "palamod:predator_wither/loop",
+        "stream": true
+      }
+    ]
+  },
+  "supreme_wither.invoke": {
+    "sounds": [
+      "palamod:supreme_wither/invoke"
+    ]
+  },
+  "supreme_wither.spawn": {
+    "sounds": [
+      "palamod:supreme_wither/spawn"
+    ]
+  },
+  "supreme_wither.loop": {
+    "sounds": [
+      {
+        "name": "palamod:supreme_wither/loop",
+        "stream": true
+      }
+    ]
+  },
+  "wither_receptacle.error": {
+    "sounds": [
+      "palamod:wither_receptacle/error"
+    ]
+  },
   "snake.living": {
     "subtitle": "subtitles.palamod.snake.living",
     "sounds": [

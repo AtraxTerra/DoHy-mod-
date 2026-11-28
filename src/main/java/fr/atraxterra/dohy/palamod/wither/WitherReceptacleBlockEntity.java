@@ -53,6 +53,8 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
 
     /** Les receptacles charges, pour que les explosions les trouvent sans balayer les chunks. */
     static final Set<WitherReceptacleBlockEntity> LOADED = ConcurrentHashMap.newKeySet();
+    /** Ceux du monde du client : la boucle de l'invocation y joue (client.wither.WitherSounds). */
+    private static final Set<WitherReceptacleBlockEntity> CLIENT_LOADED = ConcurrentHashMap.newKeySet();
 
     private String owner = "";
     private int health = MAX_HEALTH;
@@ -79,6 +81,11 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
 
     public int absent() {
         return absent;
+    }
+
+    /** Les receptacles charges cote client. */
+    public static Set<WitherReceptacleBlockEntity> clientLoaded() {
+        return CLIENT_LOADED;
     }
 
     public void setOwner(ServerPlayer player) {
@@ -130,8 +137,15 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
                 if (progress >= kind.summonTicks()) {
                     summon(level, pos, kind, player);
                 }
-            } else if (++absent >= GRACE) {
-                fail(player, kind);
+            } else {
+                if (absent == 0 && player != null && player.level() == level) {
+                    // Le signal de PalaWither : l'invocateur vient de quitter la zone.
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                            PalaWithers.RECEPTACLE_ERROR.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                }
+                if (++absent >= GRACE) {
+                    fail(player, kind);
+                }
             }
             if (level.getGameTime() % 20L == 0L) {
                 sync();
@@ -157,8 +171,9 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
         }
         WitherSummons.mark(wither, player);
         level.addFreshEntity(wither);
-        level.playSound(null, pos, kind == WitherKind.FUNNY ? PalaWithers.FUNNY_WITHER_SPAWN.get()
-                : SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 1.0f, 1.0f);
+        PalaWithers.Sounds sounds = PalaWithers.sounds(kind);
+        level.playSound(null, pos, sounds == null ? SoundEvents.WITHER_SPAWN : sounds.spawn().get(),
+                SoundSource.HOSTILE, 1.0f, 1.0f);
         FactionApi.stat(player, kind.counter(), 1);
         FactionApi.tell(player, "Wither invoque : " + Component.translatable("entity.palamod." + kind.id()).getString()
                 + ".", ChatFormatting.GREEN);
@@ -218,8 +233,8 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
     @Override
     public void onLoad() {
         super.onLoad();
-        if (level != null && !level.isClientSide()) {
-            LOADED.add(this);
+        if (level != null) {
+            (level.isClientSide() ? CLIENT_LOADED : LOADED).add(this);
         }
     }
 
@@ -227,12 +242,14 @@ public class WitherReceptacleBlockEntity extends BlockEntity {
     public void setRemoved() {
         super.setRemoved();
         LOADED.remove(this);
+        CLIENT_LOADED.remove(this);
     }
 
     @Override
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
         LOADED.remove(this);
+        CLIENT_LOADED.remove(this);
     }
 
     @Override

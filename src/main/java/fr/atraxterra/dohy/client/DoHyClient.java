@@ -23,7 +23,6 @@ import fr.atraxterra.dohy.client.mount.TedarokRenderer;
 import fr.atraxterra.dohy.client.ui.screen.KitChestScreen;
 import fr.atraxterra.dohy.client.ui.screen.MachineDesigns;
 import fr.atraxterra.dohy.client.ui.screen.MachineKitScreen;
-import fr.atraxterra.dohy.client.wither.PalaWitherGeometry;
 import fr.atraxterra.dohy.client.wither.PalaWitherRenderer;
 import fr.atraxterra.dohy.client.wither.ReceptacleHudLayer;
 import fr.atraxterra.dohy.palamod.PalaMod;
@@ -172,7 +171,7 @@ public final class DoHyClient {
                 VindicatorRenderer::new);
         event.registerEntityRenderer((EntityType<EnderDragon>) (EntityType<?>) PalaBosses.VOLCANIA.get(),
                 VolcaniaRenderer::new);
-        // Les withers du pillage : le rendu du wither vanilla, une teinte par genre.
+        // Les withers du pillage : les modeles de PalaWither, le vanilla pour le wither de base et l'amusant.
         for (WitherKind kind : WitherKind.values()) {
             event.registerEntityRenderer((EntityType<WitherBoss>) (EntityType<?>) PalaWithers.type(kind).get(),
                     context -> new PalaWitherRenderer(context, kind));
@@ -221,7 +220,6 @@ public final class DoHyClient {
                 fr.atraxterra.dohy.client.arrakis.HarvesterGeometry::createBodyLayer);
         event.registerLayerDefinition(fr.atraxterra.dohy.client.arrakis.SandWormModel.LAYER,
                 fr.atraxterra.dohy.client.arrakis.SandWormGeometry::createBodyLayer);
-        PalaWitherGeometry.register(event);
         for (BossKind kind : BossKind.values()) {
             event.registerLayerDefinition(EventBossModel.layer(kind), () -> EventBossModel.definition(kind));
         }

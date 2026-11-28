@@ -195,6 +195,23 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 
 ## Journal des sessions
 
+### 2026-11-27 — les withers de PalaWither
+
+**Demande** : suite du remplacement des textures dessinées par celles des jars de Paladium, avec le
+crédit ; le jar PalaWither, qui manquait, donne les withers du pillage.
+
+- **Cinq withers** du jar PalaWither 3.6.0 (baby, passif, assoiffé, prédateur, suprême) : modèles 3D,
+  textures, animation d'attente, armure translucide sous la moitié des PV, anneau et éclats
+  lumineux ; tailles du jar (le suprême passe à 1,8 × 6). Le suprême a son compte à rebours d'éveil,
+  son réveil et sa mort animés.
+- **Objets** : gemmes, têtes, améliorations, laser et réceptacle du jar ; barres de vie à la bande de
+  chaque genre ; sons d'invocation, de naissance, boucle au réceptacle, signal de sortie de zone.
+- Les peaux, pièces et icônes dessinées d'après le wiki sont retirées (`tools/wither_skins.py`,
+  `PalaWitherGeometry`). Détail et écarts : `FACTION.md`, « Withers du pillage ».
+
+**Non vérifié en jeu** : le rendu des withers et du réceptacle, l'armure, les animations du suprême,
+les barres de vie, la boucle sonore.
+
 ### 2026-11-27 — les familiers de PalaPet
 
 **Demande** : remplacer les textures dessinées par celles des jars de Paladium, avec le crédit ;
