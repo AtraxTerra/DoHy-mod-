@@ -25,8 +25,8 @@ Avec --jar (PIL requis), il recopie de PalaMod :
   - les icones d'effet (18 x 18), tirees des images des evenements ;
   - les icones des objets des lucky blocks et les couches portees de leurs
     armures (`textures/items/`, `textures/models/`) ;
-  - et il dessine les filtres d'ecran (aplats), le chat de « I love cats », le
-    billet, et les images qui reprenaient une autre licence (DRAWN).
+  - et il dessine les filtres d'ecran (aplats), le chat de « I love cats » et
+    les images qui reprenaient une autre licence (DRAWN).
 
 Les evenements portes sont lus dans les sources Java (SOURCES) : --check echoue
 si l'un d'eux n'a pas son image, ou porte un nom avec un accent.
@@ -217,7 +217,9 @@ ITEMS = {
     "air_min_boots": ("items/airMin.png", "air_min_boots", False, "Air Min", "Air Min"),
     "speed_apple": ("items/speed_apple.png", "speed_apple", False, "Pomme de vitesse", "Speed Apple"),
     "calcium": ("items/calcium.png", "calcium", False, "Brique de lait", "Milk Carton"),
-    "fake_money": (None, "fake_money", False, "Billet", "Banknote"),
+    # Le billet : l'objet de PalaMod prend l'icone d'un autre mod (customnpcs:npcMoney) ;
+    # on lui donne l'image de son evenement (« Faux billets »), une liasse de billets.
+    "fake_money": ("gui/LuckyBlock/events/fakemoney.png", "fake_money", False, "Billet", "Banknote"),
     "couac_sword": ("items/couac_sword.png", "couac_sword", True, "Epee Couac", "Couac Sword"),
 }
 
@@ -702,29 +704,6 @@ SNEAKER_COLORS = {
     ".": (0, 0, 0, 0), "O": (40, 40, 48, 255), "W": (246, 246, 250, 255), "w": (190, 214, 236, 255),
     "G": (150, 150, 160, 255), "r": (120, 120, 132, 255),
 }
-MONEY_ITEM = [
-    "................",
-    "................",
-    "..OOOOOOOOOOOO..",
-    "..OaaaaaaaaaaO..",
-    "..OaOOOOOOOOOOOO",
-    "..OaOggggggggggO",
-    "..OaOgGggOOggGgO",
-    "..OaOggOOddOOggO",
-    "...OOggOdddOggO.",
-    "....OggOOddOOggO",
-    "....OgGggOOggGgO",
-    "....OggggggggggO",
-    "....OOOOOOOOOOOO",
-    "................",
-    "................",
-    "................",
-]
-MONEY_COLORS = {
-    ".": (0, 0, 0, 0), "O": (34, 74, 40, 255), "a": (150, 196, 140, 255), "g": (176, 222, 160, 255),
-    "G": (92, 150, 84, 255), "d": (120, 176, 110, 255),
-}
-
 # Les dessins du cinquieme lot : des chauves-souris (l'image de PalaMod etait le logo d'un
 # heros de bande dessinee), un champignon sans visage, un masque de bal, une canette verte et
 # une silhouette barree remplacent des images qui reprenaient un personnage, un logo ou une
@@ -1231,7 +1210,6 @@ DRAWN = {
 }
 # Les textures d'objet dessinees ici.
 DRAWN_ITEMS = {
-    "fake_money": (MONEY_ITEM, MONEY_COLORS),
     "giant_mushroom": (MUSHROOM_ICON, MUSHROOM_COLORS),
     "soda": (SODA_ICON, SODA_COLORS),
     "party_mask": (MASK_ICON, MASK_COLORS),

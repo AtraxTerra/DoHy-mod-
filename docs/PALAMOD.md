@@ -4066,8 +4066,9 @@ joueur sur un bloc que le serveur ne voit pas).
   voiture de dessin animé), « Michael Jordans » devient **Air Min** (le nom des bottes chez PalaMod ;
   l'image était le logo d'une marque de baskets), et **J'ai glissé chef** montre un panneau de sol
   glissant au lieu d'une peau de banane reprise d'un jeu de course. Les trois images sont dessinées
-  ici, comme l'icône du billet (PalaMod prenait celle d'un autre mod, Custom NPCs). La petite marque
-  sombre sur le côté des AirMin portées est effacée.
+  ici. Le billet, dont PalaMod prenait l'icône d'un autre mod (Custom NPCs), a celle de son
+  événement « Faux billets » dans le jar de PalaMod (une liasse de billets) depuis le 2026-11-27.
+  La petite marque sombre sur le côté des AirMin portées est effacée.
 - Le slimepad posé par les événements regarde au sud, comme la métadonnée 0 de PalaMod.
 
 ### Pas dans ce lot
