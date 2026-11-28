@@ -16,7 +16,9 @@
     [
       "minecraft:amethyst_geode"
     ],
-    [],
+    [
+      "dohy:mine/spawner_room"
+    ],
     [],
     [],
     [
