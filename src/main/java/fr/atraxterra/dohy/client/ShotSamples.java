@@ -63,6 +63,16 @@ final class ShotSamples {
         });
     }
 
+    /** Une capture d'un menu ouvert par le serveur, souris dans un coin. */
+    private static ShotHarness.Shot serverMenu(String name, int extra, Consumer<ServerPlayer> action) {
+        ShotHarness.Shot base = server(name, extra, action);
+        return new ShotHarness.Shot(name, () -> {
+            net.minecraft.client.gui.screens.Screen screen = base.screen().get();
+            parkWhenOpen();
+            return screen;
+        });
+    }
+
     private static ShotHarness.Shot client(String name, int extra, Runnable action) {
         return new ShotHarness.Shot(name, () -> {
             ShotHarness.extraWait = extra;
@@ -82,6 +92,33 @@ final class ShotSamples {
 
     private static void look(ServerPlayer player, double x, double y, double z, float yaw, float pitch) {
         command(player, String.format(java.util.Locale.ROOT, "tp @a %.2f %.2f %.2f %.1f %.1f", x, y, z, yaw, pitch));
+    }
+
+    /** Place la souris (en pixels de la fenetre), pour qu'aucune bulle ne cache l'ecran. */
+    private static void cursor(double x, double y) {
+        var handler = Minecraft.getInstance().mouseHandler;
+        try {
+            var xpos = handler.getClass().getDeclaredField("xpos");
+            var ypos = handler.getClass().getDeclaredField("ypos");
+            xpos.setAccessible(true);
+            ypos.setAccessible(true);
+            xpos.setDouble(handler, x);
+            ypos.setDouble(handler, y);
+        } catch (ReflectiveOperationException e) {
+            LOG.warn("dohy-shots: souris non deplacee", e);
+        }
+    }
+
+    /** La capture attend que l'ecran du menu soit ouvert, puis la souris part dans un coin. */
+    private static void parkWhenOpen() {
+        ShotHarness.until = () -> {
+            if (Minecraft.getInstance().gui.screen() instanceof net.minecraft.client.gui.screens.inventory
+                    .AbstractContainerScreen<?>) {
+                cursor(4.0d, 4.0d);
+                return true;
+            }
+            return false;
+        };
     }
 
     // -- Reflexion : poser une plante dans l'etat voulu ------------------------------------------
@@ -140,14 +177,16 @@ final class ShotSamples {
             command(player, "time set noon");
             command(player, "weather clear");
             command(player, "difficulty peaceful");
-            command(player, "gamerule doDaylightCycle false");
-            command(player, "gamerule doMobSpawning false");
             player.setGameMode(GameType.CREATIVE);
             JobApi.grantLevels(player, Job.FARMER, 70);
+            command(player, "clear @a");
+            // D'abord au jardin : ses chunks se chargent avant qu'on y pose quoi que ce soit.
+            look(player, X + 6.0, Y + 6.5, Z - 6.0, 0.0f, 32.0f);
+        }));
+        ShotHarness.SHOTS.add(server("a1_terrain", 20, player -> {
             command(player, String.format("fill %d %d %d %d %d %d minecraft:air", X - 4, Y, Z - 4, X + 24, Y + 6, Z + 24));
             command(player, String.format("fill %d %d %d %d %d %d minecraft:grass_block", X - 4, Y - 1, Z - 4, X + 24,
                     Y - 1, Z + 24));
-            command(player, "clear @a");
         }));
         // Les quinze plantes en fleur, une par pot ; les communes et rares mutees.
         ShotHarness.SHOTS.add(server("b1_quinze_plantes", 60, player -> {
@@ -181,6 +220,9 @@ final class ShotSamples {
             }
             look(player, X + 20.5, Y + 2.2, Z - 4.0, 0.0f, 18.0f);
         }));
+        // L'etiquette du pot vise : la fleur mutee du ble de fer.
+        ShotHarness.SHOTS.add(server("b5_etiquette_mutee", 40, player -> look(player, X + 0.5, Y, Z - 4.5, 0.0f,
+                14.0f)));
         // Un besoin de nibblers : l'icone, et les nibblers poses autour.
         ShotHarness.SHOTS.add(server("c1_besoin_nibblers", 60, player -> {
             try {
@@ -195,9 +237,10 @@ final class ShotSamples {
             } catch (ReflectiveOperationException e) {
                 LOG.error("dohy-shots: nibblers", e);
             }
-            player.setGameMode(GameType.SPECTATOR);
             look(player, X + 17.5, Y + 3.5, Z + 1.5, 0.0f, 28.0f);
         }));
+        ShotHarness.SHOTS.add(server("c1b_etiquette_besoin", 30, player -> look(player, X + 17.5, Y, Z + 3.5, 0.0f,
+                12.0f)));
         ShotHarness.SHOTS.add(server("c2_nibblers_proches", 30, player -> {
             List<Nibbler> nibblers = player.level().getEntitiesOfClass(Nibbler.class, player.getBoundingBox().inflate(30));
             if (!nibblers.isEmpty()) {
@@ -261,11 +304,11 @@ final class ShotSamples {
             look(player, X + 8.5, Y + 1.8, Z + 17.0, 180.0f, 14.0f);
         }));
         ShotHarness.SHOTS.add(server("d4_ecran_pret", 40, player -> player.openMenu(scanner(player))));
-        ShotHarness.SHOTS.add(server("d5_ecran_scan", 60, player -> {
+        ShotHarness.SHOTS.add(serverMenu("d5_ecran_scan", 60, player -> {
             boolean pressed = scanner(player).pressButton(player, GeneScannerBlockEntity.BUTTON_SCAN);
             LOG.info("dohy-shots: scan demande = {}", pressed);
         }));
-        ShotHarness.SHOTS.add(server("d6_ecran_scan_avance", 40, player -> {
+        ShotHarness.SHOTS.add(serverMenu("d6_ecran_scan_avance", 40, player -> {
             try {
                 set(scanner(player), "progress", 20 * 25);
             } catch (ReflectiveOperationException e) {
@@ -277,7 +320,7 @@ final class ShotSamples {
             player.closeContainer();
             look(player, X + 8.5, Y + 1.8, Z + 17.0, 180.0f, 14.0f);
         }));
-        ShotHarness.SHOTS.add(server("d8_ecran_resultat", 60, player -> {
+        ShotHarness.SHOTS.add(serverMenu("d8_ecran_resultat", 60, player -> {
             GeneScannerBlockEntity scanner = scanner(player);
             try {
                 set(scanner, "progress", Math.max(0, scanner.scanDuration() - 10));
@@ -291,7 +334,7 @@ final class ShotSamples {
             look(player, X + 8.5, Y + 1.8, Z + 17.0, 180.0f, 14.0f);
         }));
         // Une graine deja dans le codex : refusee.
-        ShotHarness.SHOTS.add(server("dz_ecran_deja_connue", 40, player -> {
+        ShotHarness.SHOTS.add(serverMenu("dz_ecran_deja_connue", 40, player -> {
             GeneScannerBlockEntity scanner = scanner(player);
             scanner.setItem(GeneScannerBlockEntity.SLOT_OUTPUT, ItemStack.EMPTY);
             scanner.setItem(GeneScannerBlockEntity.SLOT_INPUT, new ItemStack(PalaBotanist.IRONWHEAT_SEED.get()));
@@ -316,6 +359,7 @@ final class ShotSamples {
                 LOG.error("dohy-shots: codex", e);
             }
             Minecraft.getInstance().gui.setScreen(screen);
+            cursor(4.0d, 4.0d);
         }));
         ShotHarness.SHOTS.add(client("e3_codex_legendaire", 40, () -> {
             CodexScreen screen = new CodexScreen();
@@ -330,6 +374,7 @@ final class ShotSamples {
                 LOG.error("dohy-shots: codex", e);
             }
             Minecraft.getInstance().gui.setScreen(screen);
+            cursor(4.0d, 4.0d);
         }));
         // La recolte d'une fleur mutee : une mutation inconnue tombe, la plante disparait.
         ShotHarness.SHOTS.add(client("f0_fermer", 10, () -> Minecraft.getInstance().gui.setScreen(null)));
