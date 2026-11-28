@@ -39,9 +39,10 @@ import java.util.Arrays;
  * n'ont rien a faire dans une mine ; la chauve-souris et le cube de soufre, sans interet a la
  * chasse ; le serpent, l'escargot et l'elephant du PalaMod, appats et monture des familiers.
  *
- * <p><b>Le taux</b> : une chance sur six par chunk, entre y = -48 et 112. Les places refusees
- * (galerie trop large, lave, salle d'arrivee) laissent une salle tous les sept chunks environ, un
- * peu plus d'une a portee du detecteur de spawners (9 chunks).
+ * <p><b>Le taux</b> : une chance sur six par chunk, entre y = -48 et 112. La roche ne refuse
+ * presque aucune place (galerie trop large, lave, salle d'arrivee) : mesure en jeu le 2026-11-28,
+ * 142 salles sur les 29 x 29 chunks autour d'une arrivee, une tous les six chunks, une ou deux a
+ * portee du detecteur de spawners (9 chunks), aucune pres de l'arrivee.
  *
  * <p><b>Les materiaux</b> evitent la pierre, l'ardoise des abimes, l'andesite, la diorite, le
  * granite, le tuf et la calcite : les minerais, poses apres les salles, les remplaceraient, et le

@@ -1748,7 +1748,7 @@ def mine():
     })
     # Les salles a spawner (demande du 2026-11-28) : des monstres et des betes des metiers de
     # Chasseur et d'Alchimiste. Un essai par chunk a une chance sur six, que la roche valide presque
-    # toujours : une salle tous les sept chunks environ.
+    # toujours (mesure : 142 salles sur 29 x 29 chunks, une tous les six chunks).
     write("data/%s/worldgen/configured_feature/mine_spawner_room.json" % NS,
           {"type": "%s:mine_spawner_room" % NS, "config": {}})
     write("data/%s/worldgen/placed_feature/mine/spawner_room.json" % NS, {

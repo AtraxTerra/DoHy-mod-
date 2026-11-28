@@ -1075,10 +1075,11 @@ spawners pour les mobs des métiers de chasseur et alchimiste), un taux assez co
 
 - **Une salle close** de 7 × 7 sur 4 de haut, taillée dans la roche comme les cryptes de la
   dimension du Mineur, le spawner du jeu au milieu. On la trouve en creusant, ou au **détecteur de
-  spawners** : un peu plus d'une dans ses 9 chunks, en moyenne.
-- **Le taux** : une chance sur six par chunk, entre y = −48 et 112. Une fois refusées les places
-  qui ne vont pas (galerie trop large, lave à côté, salle d'arrivée à moins de 24 blocs), il reste
-  **une salle tous les sept chunks** environ, soit un peu plus de 2 000 par zone.
+  spawners** : une ou deux dans ses 9 chunks, en moyenne.
+- **Le taux** : une chance sur six par chunk, entre y = −48 et 112. La roche ne refuse presque
+  aucune place (galerie trop large, lave à côté, salle d'arrivée à moins de 24 blocs) : mesuré en
+  jeu, **142 salles sur 29 × 29 chunks** autour d'une arrivée, soit **une tous les six chunks**,
+  environ 2 600 par zone, entre y = −45 et 111, aucune près de l'arrivée.
 - **Les créatures**, tirées sur 100, toutes dans les tables d'XP du Chasseur ou de l'Alchimiste :
 
   | Créature | Part | Métiers | La salle |
@@ -1108,6 +1109,12 @@ spawners pour les mobs des métiers de chasseur et alchimiste), un taux assez co
   araignée, araignée venimeuse, sorcière, creeper, vache, cochon), le casser donne 1 250 XP de
   Chasseur à partir du niveau 40, et une créature qui en sort ne rapporte qu'un quarantième de son
   XP de métier : les règles de toujours.
+- **L'araignée venimeuse de spawner** (corrigé le même jour, `world/SpawnerBirth`) : NeoForge note
+  le type d'apparition d'une créature dans `Mob.finalizeSpawn`, que l'araignée venimeuse n'appelle
+  pas. Sortie d'un spawner, elle n'avait donc pas de type : la Mine la refusait (salle vide en jeu,
+  toutes les autres peuplées), et le Chasseur la payait plein tarif au lieu du quarantième, partout,
+  spawners customisés compris. Toute créature de spawner porte désormais l'étiquette
+  `dohy.spawner`, posée à la fin de son apparition.
 - **Les matériaux** évitent la pierre, l'ardoise des abîmes, l'andésite, la diorite, le granite, le
   tuf et la calcite : les minerais, posés après les salles, les remplaceraient, et le lichen
   luisant y pousserait, dont la lumière suffit à éteindre une salle à monstres.
@@ -1123,7 +1130,8 @@ spawners pour les mobs des métiers de chasseur et alchimiste), un taux assez co
   commande) ; `spawn/SpawnTerminalBlock` (le service MINE), `SpawnBuilder` (le contremaître près de
   l'entrée, depuis la version 11), `SpawnApi.backToPad`.
 - `mine/MineSpawnerRoomFeature` (les salles à spawner, sur le chantier `MinerRuinFeature.Site` des
-  cryptes du Mineur) et `mine/MineFeatures` (la feature `dohy:mine_spawner_room`) ;
+  cryptes du Mineur), `mine/MineFeatures` (la feature `dohy:mine_spawner_room`) et
+  `world/SpawnerBirth` (la marque des créatures de spawner) ;
   `worldgen/configured_feature/mine_spawner_room.json` et `worldgen/placed_feature/mine/spawner_room.json`,
   écrits par `tools/dohy_assets.py`.
 - `data/dohy/dimension/mine.json`, `dimension_type/mine.json` (plafond, pas de ciel),

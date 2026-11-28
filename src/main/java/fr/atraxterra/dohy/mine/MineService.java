@@ -6,6 +6,7 @@ import fr.atraxterra.dohy.spawn.DoHySpawn;
 import fr.atraxterra.dohy.spawn.SpawnApi;
 import fr.atraxterra.dohy.spawn.SpawnTerminalBlock;
 import fr.atraxterra.dohy.util.RealClock;
+import fr.atraxterra.dohy.world.SpawnerBirth;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,9 +20,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Inventory;
@@ -429,13 +428,12 @@ public final class MineService {
     }
 
     /**
-     * Ne d'un spawner : la creature elle-meme, son cavalier (le squelette d'une araignee chevauchee,
-     * monte avant d'entrer dans le monde), ou un petit cube de magma, ne de la mort d'un plus gros —
-     * la Mine n'en fait naitre aucun autrement.
+     * Ne d'un spawner ({@link SpawnerBirth}) : la creature elle-meme, son cavalier (le squelette
+     * d'une araignee chevauchee, monte avant d'entrer dans le monde), ou un petit cube de magma, ne
+     * de la mort d'un plus gros — la Mine n'en fait naitre aucun autrement.
      */
     private static boolean fromSpawner(Entity entity) {
-        return entity.getRootVehicle() instanceof Mob mob && mob.getSpawnType() == EntitySpawnReason.SPAWNER
-                || entity.getType() == EntityTypes.MAGMA_CUBE;
+        return SpawnerBirth.of(entity.getRootVehicle()) || entity.getType() == EntityTypes.MAGMA_CUBE;
     }
 
     // -- Le menage au demarrage --------------------------------------------------------

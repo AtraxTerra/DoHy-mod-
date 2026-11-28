@@ -198,10 +198,14 @@ PR #37 sans la #36 ; une heure de recherche dans du code déjà correct.
 ### 2026-11-28 — les salles à spawner de la Mine
 
 - `MineSpawnerRoomFeature` : des salles closes de 7 × 7 dans la roche de la Mine, une chance sur six
-  par chunk (une salle tous les sept chunks environ), treize créatures des métiers de Chasseur et
-  d'Alchimiste tirées au poids, chacune dans son décor. Les monstres de spawner, leur cavalier et
-  les petits du cube de magma sont admis à la Mine ; les autres monstres restent refusés. Voir
-  `docs/CONTENU_DOHY.md`, « Les salles à spawner ».
+  par chunk (mesuré en jeu : 142 salles sur 29 × 29 chunks, une tous les six chunks), treize
+  créatures des métiers de Chasseur et d'Alchimiste tirées au poids, chacune dans son décor. Les
+  monstres de spawner, leur cavalier et les petits du cube de magma sont admis à la Mine ; les
+  autres monstres restent refusés. Voir `docs/CONTENU_DOHY.md`, « Les salles à spawner ».
+- Vérifié en captures : treize salles visitées, créatures nées dans chacune. Sauf l'araignée
+  venimeuse : son `finalizeSpawn` n'appelle pas celui de `Mob`, où NeoForge note le type
+  d'apparition. `world/SpawnerBirth` marque désormais toute créature de spawner à la fin de son
+  apparition ; le Chasseur, qui la payait plein tarif, n'en donne plus que le quarantième.
 
 ### 2026-11-27 — les cartouches du HUD en cartes du kit
 
